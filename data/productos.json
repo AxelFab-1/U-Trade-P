@@ -1,0 +1,43 @@
+[ {
+  "id" : 1,
+  "nombre" : "Laptop HP",
+  "precio" : 1500.0,
+  "categoria" : "Productos",
+  "descripcion" : "Casi nueva, procesador i5",
+  "foto" : "laptop.jpg"
+}, {
+  "id" : 2,
+  "nombre" : "Codigo Fuente - Curso Integrador",
+  "precio" : 200.0,
+  "categoria" : "Servicios",
+  "descripcion" : "Codificacion de proyecto Integrador UTP con avances",
+  "foto" : "apuntes.jpg"
+}, {
+  "id" : 3,
+  "nombre" : "Grabado laser ",
+  "precio" : 1.0,
+  "categoria" : "Servicios",
+  "descripcion" : "Grabado en madera y metal",
+  "foto" : "grabado.png"
+}, {
+  "id" : 4,
+  "nombre" : "Laptop Razer",
+  "precio" : 2500.0,
+  "categoria" : "Productos",
+  "descripcion" : "Casi nueva, procesador i5",
+  "foto" : "laptop.jpg"
+}, {
+  "id" : 5,
+  "nombre" : "Laptop Victus",
+  "precio" : 4500.0,
+  "categoria" : "Productos",
+  "descripcion" : "Casi nueva, procesador i5",
+  "foto" : "laptop.jpg"
+}, {
+  "id" : 6,
+  "nombre" : "Redmi note 11s",
+  "precio" : 90.0,
+  "categoria" : "Producto",
+  "descripcion" : "Pantalla cambiada",
+  "foto" : "redmi11.jpg"
+} ]
