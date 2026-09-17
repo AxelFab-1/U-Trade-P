@@ -1,0 +1,228 @@
+.perfil-view-container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+}
+
+.perfil-card {
+  width: 100%;
+  max-width: 600px; /* Regla de max-width: 600px para PC */
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  padding: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-color);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* ==========================================================================
+   TARJETA SUPERIOR DEL PERFIL UNIVERSITARIO
+   ========================================================================== */
+
+.perfil-top-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.perfil-banner {
+  height: 120px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a8a 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 1rem;
+
+  .campus-pill {
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(6px);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
+.perfil-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 1.5rem;
+  margin-top: -48px;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: flex-end;
+    text-align: left;
+    gap: 1.5rem;
+    padding: 0 2rem;
+  }
+}
+
+.avatar-container {
+  position: relative;
+  display: inline-block;
+
+  .perfil-avatar {
+    width: 96px;
+    height: 96px;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    background-color: var(--bg-muted);
+  }
+
+  .avatar-edit-btn {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: var(--transition-fast);
+
+    &:hover {
+      background-color: var(--primary-hover);
+      transform: scale(1.08);
+    }
+  }
+}
+
+.user-meta {
+  margin-top: 0.75rem;
+
+  @media (min-width: 600px) {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .name-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+
+    @media (min-width: 600px) {
+      justify-content: flex-start;
+    }
+
+    .student-name {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background-color: #dbeafe;
+      color: var(--primary-color);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-pill);
+    }
+  }
+
+  .student-program {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+  }
+
+  .student-email {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+}
+
+.perfil-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin: 1.5rem 1.5rem 1rem;
+  padding: 0.9rem 1rem;
+  background-color: var(--bg-muted);
+  border-radius: var(--radius-input);
+  border: 1px solid var(--border-color);
+
+  @media (min-width: 600px) {
+    margin: 1.75rem 2rem 1rem;
+  }
+
+  .stat-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+
+    .stat-number {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 32px;
+    background-color: var(--border-color);
+  }
+}
+
+.perfil-section-placeholder {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+
+  @media (min-width: 600px) {
+    padding: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .section-desc {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
