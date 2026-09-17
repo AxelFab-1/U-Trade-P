@@ -1,1 +1,53 @@
-<router-outlet></router-outlet>
+<div class="app-layout">
+  <!-- Header Top (Desktop y Mobile) -->
+  <header class="app-header">
+    <div class="logo">
+      <div class="logo-icon">U</div>
+      <span class="logo-text">U-Market</span>
+    </div>
+    
+    <!-- Este menú será para Desktop y Mobile (Botón Perfil) -->
+    <div class="header-actions">
+      <!-- En Desktop aquí podrían ir los links del nav -->
+      <a class="nav-item desktop-only" routerLink="/explorar" routerLinkActive="active">Explorar</a>
+      <a class="nav-item desktop-only" routerLink="/publicar" routerLinkActive="active">Publicar</a>
+      <a class="nav-item desktop-only" routerLink="/mensajes" routerLinkActive="active">Mensajes</a>
+      
+      <button class="profile-btn" routerLink="/perfil">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+        </svg>
+        Perfil
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenido Principal Dinámico -->
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Bottom Navigation (Exclusivo para Mobile) -->
+  <nav class="bottom-nav mobile-only">
+    <a routerLink="/explorar" class="nav-btn" routerLinkActive="active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+      </svg>
+      <span>Explorar</span>
+    </a>
+    
+    <a routerLink="/publicar" class="nav-fab" routerLinkActive="active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+      </svg>
+    </a>
+
+    <a routerLink="/mensajes" class="nav-btn" routerLinkActive="active">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <span>Mensajes</span>
+    </a>
+  </nav>
+</div>
