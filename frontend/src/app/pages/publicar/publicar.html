@@ -1,0 +1,77 @@
+<section class="publicar-view-container form-view-container">
+  <div class="publicar-card form-card">
+    <div class="publicar-header">
+      <h1 class="publicar-title">Publicar Anuncio</h1>
+      <p class="publicar-subtitle">
+        Vende un producto u ofrece tus servicios a la comunidad estudiantil de UTP.
+      </p>
+    </div>
+
+    <form class="publicar-form">
+      <div class="form-group">
+        <label for="nombre" class="form-label">Título del producto o servicio *</label>
+        <input
+          type="text"
+          id="nombre"
+          class="form-control"
+          placeholder="Ej. Laptop HP Core i5 16GB RAM o Apuntes de Cálculo"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-half">
+          <label for="categoria" class="form-label">Categoría *</label>
+          <select id="categoria" class="form-control" required>
+            <option value="" disabled selected>Selecciona categoría</option>
+            <option value="Productos">Productos</option>
+            <option value="Servicios">Servicios</option>
+          </select>
+        </div>
+
+        <div class="form-group col-half">
+          <label for="precio" class="form-label">Precio (S/.) *</label>
+          <input
+            type="number"
+            id="precio"
+            class="form-control"
+            placeholder="0.00"
+            min="0"
+            step="0.5"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion" class="form-label">Descripción detallada *</label>
+        <textarea
+          id="descripcion"
+          class="form-control textarea-control"
+          rows="4"
+          placeholder="Describe el estado, detalles de entrega en campus (Lima Centro, San Juan, etc.) y características principales..."
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="foto" class="form-label">Fotografía del producto / servicio</label>
+        <div class="image-upload-zone">
+          <input
+            type="text"
+            id="foto"
+            class="form-control"
+            placeholder="Ingresa la URL de la imagen o nombre de archivo"
+          />
+          <p class="upload-hint">Puedes ingresar el nombre de la imagen o un enlace web directo.</p>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-pill btn-primary btn-block">
+          Publicar Ahora
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
