@@ -7,26 +7,44 @@
       </p>
     </div>
 
-    <form class="publicar-form">
+    @if (publicacionExitosa()) {
+      <div class="alert-success-banner">
+        ¡Tu anuncio ha sido publicado exitosamente en U-Market! 🎉
+      </div>
+    }
+
+    <form [formGroup]="publicarForm" (ngSubmit)="onSubmit()" class="publicar-form" novalidate>
       <div class="form-group">
         <label for="nombre" class="form-label">Título del producto o servicio *</label>
         <input
           type="text"
           id="nombre"
+          formControlName="nombre"
           class="form-control"
+          [class.is-invalid]="isFieldInvalid('nombre')"
           placeholder="Ej. Laptop HP Core i5 16GB RAM o Apuntes de Cálculo"
-          required
         />
+        @if (isFieldInvalid('nombre')) {
+          <span class="form-error">El título es obligatorio y debe tener al menos 3 caracteres.</span>
+        }
       </div>
 
       <div class="form-row">
         <div class="form-group col-half">
           <label for="categoria" class="form-label">Categoría *</label>
-          <select id="categoria" class="form-control" required>
-            <option value="" disabled selected>Selecciona categoría</option>
+          <select
+            id="categoria"
+            formControlName="categoria"
+            class="form-control"
+            [class.is-invalid]="isFieldInvalid('categoria')"
+          >
+            <option value="" disabled>Selecciona categoría</option>
             <option value="Productos">Productos</option>
             <option value="Servicios">Servicios</option>
           </select>
+          @if (isFieldInvalid('categoria')) {
+            <span class="form-error">Debes seleccionar una categoría.</span>
+          }
         </div>
 
         <div class="form-group col-half">
@@ -34,12 +52,16 @@
           <input
             type="number"
             id="precio"
+            formControlName="precio"
             class="form-control"
+            [class.is-invalid]="isFieldInvalid('precio')"
             placeholder="0.00"
             min="0"
             step="0.5"
-            required
           />
+          @if (isFieldInvalid('precio')) {
+            <span class="form-error">Ingresa un precio válido mayor o igual a 0.</span>
+          }
         </div>
       </div>
 
@@ -47,11 +69,15 @@
         <label for="descripcion" class="form-label">Descripción detallada *</label>
         <textarea
           id="descripcion"
+          formControlName="descripcion"
           class="form-control textarea-control"
+          [class.is-invalid]="isFieldInvalid('descripcion')"
           rows="4"
           placeholder="Describe el estado, detalles de entrega en campus (Lima Centro, San Juan, etc.) y características principales..."
-          required
         ></textarea>
+        @if (isFieldInvalid('descripcion')) {
+          <span class="form-error">La descripción es obligatoria (mínimo 10 caracteres).</span>
+        }
       </div>
 
       <div class="form-group">
@@ -60,6 +86,7 @@
           <input
             type="text"
             id="foto"
+            formControlName="foto"
             class="form-control"
             placeholder="Ingresa la URL de la imagen o nombre de archivo"
           />
