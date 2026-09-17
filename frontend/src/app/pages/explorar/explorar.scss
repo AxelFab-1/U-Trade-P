@@ -85,3 +85,21 @@
   outline: none;
   cursor: pointer;
 }
+
+/* --- NUEVO: Estilos del Grid de Productos --- */
+.products-grid {
+  display: grid;
+  /* Auto-fill crea tantas columnas como quepan. minmax(150px, 1fr) asegura
+     que en móvil haya 2 columnas (pantallas de 320px+) y escale en PC */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: #6B7280;
+  font-style: italic;
+}

@@ -36,4 +36,17 @@
     </select>
   </div>
 
+  <!-- Grid de Productos -->
+  <div class="products-grid">
+    <app-product-card 
+      *ngFor="let prod of productosFiltrados" 
+      [producto]="prod">
+    </app-product-card>
+    
+    <!-- Mensaje si no hay productos -->
+    <div *ngIf="productosFiltrados.length === 0" class="empty-state">
+      <p>No hay publicaciones en esta categoría todavía.</p>
+    </div>
+  </div>
+
 </div>
