@@ -7,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrl: './explorar.scss',
 })
 export class Explorar {
+  activeTab: string = 'Producto';
 
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
+  }
 }
