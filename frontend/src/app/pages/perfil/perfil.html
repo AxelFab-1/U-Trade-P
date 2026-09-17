@@ -1,0 +1,173 @@
+<section class="perfil-view-container form-view-container">
+  <div class="perfil-card form-card">
+    <!-- Tarjeta superior del perfil universitario -->
+    <header class="perfil-top-card">
+      <div class="perfil-banner">
+        <span class="campus-pill">{{ estudiante().campus }}</span>
+      </div>
+
+      <div class="perfil-identity">
+        <div class="avatar-container">
+          <img
+            [src]="estudiante().avatar"
+            [alt]="estudiante().nombre"
+            class="avatar-circle perfil-avatar"
+          />
+          <button type="button" class="avatar-edit-btn" title="Cambiar foto">
+            📷
+          </button>
+        </div>
+
+        <div class="user-meta">
+          <div class="name-badge-row">
+            <h1 class="student-name">{{ estudiante().nombre }}</h1>
+            <span class="verified-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+              Verificado UTP
+            </span>
+          </div>
+          <p class="student-program">{{ estudiante().carrera }}</p>
+          <p class="student-email">{{ estudiante().correo }}</p>
+        </div>
+      </div>
+
+      <!-- Barra de estadísticas universitarias -->
+      <div class="perfil-stats-bar">
+        <div class="stat-box">
+          <span class="stat-number">6</span>
+          <span class="stat-label">Publicaciones</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-box">
+          <span class="stat-number">4.9 ★</span>
+          <span class="stat-label">Calificación</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-box">
+          <span class="stat-number">2024</span>
+          <span class="stat-label">Miembro desde</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Formulario de edición de perfil -->
+    <div class="perfil-edit-section">
+      <div class="section-header">
+        <h2 class="section-title">Editar Perfil Universitario</h2>
+        <p class="section-desc">Actualiza tus datos para que otros alumnos puedan contactarte fácilmente.</p>
+      </div>
+
+      @if (guardadoExitoso()) {
+        <div class="alert-success-banner">
+          ¡Datos de perfil actualizados con éxito! ✨
+        </div>
+      }
+
+      <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="perfil-form" novalidate>
+        <div class="form-group">
+          <label for="nombre" class="form-label">Nombre Completo *</label>
+          <input
+            type="text"
+            id="nombre"
+            formControlName="nombre"
+            class="form-control"
+            [class.is-invalid]="isFieldInvalid('nombre')"
+            placeholder="Nombres y Apellidos"
+          />
+          @if (isFieldInvalid('nombre')) {
+            <span class="form-error">El nombre es obligatorio (mínimo 3 caracteres).</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="correo" class="form-label">Correo Institucional (No modificable)</label>
+          <input
+            type="email"
+            id="correo"
+            formControlName="correo"
+            class="form-control disabled-input"
+            title="El correo institucional está verificado por la universidad"
+          />
+          <span class="field-hint">Vinculado a tu cuenta estudiantil UTP.</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label for="telefono" class="form-label">Teléfono / WhatsApp *</label>
+            <input
+              type="tel"
+              id="telefono"
+              formControlName="telefono"
+              class="form-control"
+              [class.is-invalid]="isFieldInvalid('telefono')"
+              placeholder="987654321"
+            />
+            @if (isFieldInvalid('telefono')) {
+              <span class="form-error">Ingresa un número de 9 dígitos válido.</span>
+            }
+          </div>
+
+          <div class="form-group col-half">
+            <label for="campus" class="form-label">Campus UTP *</label>
+            <select
+              id="campus"
+              formControlName="campus"
+              class="form-control"
+              [class.is-invalid]="isFieldInvalid('campus')"
+            >
+              <option value="Campus Lima Centro">Campus Lima Centro</option>
+              <option value="Campus Lima Norte">Campus Lima Norte</option>
+              <option value="Campus Lima Sur">Campus Lima Sur</option>
+              <option value="Campus San Juan de Lurigancho">Campus San Juan de Lurigancho</option>
+              <option value="Campus Ate">Campus Ate</option>
+              <option value="Campus Arequipa">Campus Arequipa</option>
+              <option value="Campus Chiclayo">Campus Chiclayo</option>
+              <option value="Campus Piura">Campus Piura</option>
+              <option value="Campus Huancayo">Campus Huancayo</option>
+              <option value="Campus Trujillo">Campus Trujillo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="carrera" class="form-label">Carrera Profesional *</label>
+          <select
+            id="carrera"
+            formControlName="carrera"
+            class="form-control"
+            [class.is-invalid]="isFieldInvalid('carrera')"
+          >
+            <option value="Ingeniería de Sistemas e Informática">Ingeniería de Sistemas e Informática</option>
+            <option value="Ingeniería de Software">Ingeniería de Software</option>
+            <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+            <option value="Ingeniería Civil">Ingeniería Civil</option>
+            <option value="Administración y Marketing">Administración y Marketing</option>
+            <option value="Contabilidad y Finanzas">Contabilidad y Finanzas</option>
+            <option value="Derecho">Derecho</option>
+            <option value="Ciencias de la Comunicación">Ciencias de la Comunicación</option>
+            <option value="Psicología">Psicología</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="bio" class="form-label">Biografía / Presentación</label>
+          <textarea
+            id="bio"
+            formControlName="bio"
+            class="form-control textarea-control"
+            rows="3"
+            placeholder="Cuéntale a la comunidad qué ciclo cursas o qué tipo de productos/servicios ofreces..."
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-pill btn-primary btn-block">
+            Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

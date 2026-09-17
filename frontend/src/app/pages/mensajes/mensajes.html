@@ -1,0 +1,68 @@
+<section class="mensajes-view-container form-view-container">
+  <div class="mensajes-card form-card">
+    <div class="mensajes-header">
+      <div class="header-titles">
+        <h1 class="mensajes-title">Bandeja de Mensajes</h1>
+        <p class="mensajes-subtitle">Comunícate con compradores y vendedores de la comunidad UTP</p>
+      </div>
+      <span class="badge-active">En línea</span>
+    </div>
+
+    <div class="search-box">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar mensajes por nombre o producto..."
+      />
+    </div>
+
+    <div class="conversaciones-list">
+      @for (item of conversaciones(); track item.id) {
+        <article class="chat-item" [class.unread]="item.noLeidos > 0">
+          <div class="avatar-wrapper">
+            <img [src]="item.avatar" [alt]="item.nombre" class="avatar-circle chat-avatar" />
+            @if (item.noLeidos > 0) {
+              <span class="status-indicator"></span>
+            }
+          </div>
+
+          <div class="chat-content">
+            <div class="chat-meta-top">
+              <div class="sender-info">
+                <h3 class="sender-name">{{ item.nombre }}</h3>
+                <span class="sender-career">{{ item.carrera }}</span>
+              </div>
+              <span class="chat-timestamp">{{ item.tiempo }}</span>
+            </div>
+
+            <div class="product-tag">
+              <span class="tag-icon">📦</span>
+              <span class="tag-text">{{ item.productoRelacionado }}</span>
+            </div>
+
+            <p class="chat-preview">{{ item.ultimoMensaje }}</p>
+          </div>
+
+          <div class="chat-actions">
+            @if (item.noLeidos > 0) {
+              <span class="unread-pill">{{ item.noLeidos }}</span>
+            }
+            <a
+              [href]="'https://wa.me/' + item.telefono"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-pill btn-whatsapp btn-sm"
+              title="Contactar por WhatsApp"
+            >
+              WhatsApp
+            </a>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state">
+          <p>No tienes mensajes activos en este momento.</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
