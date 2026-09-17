@@ -1,0 +1,52 @@
+<div class="explorar-container">
+  <!-- Pestañas Superiores -->
+  <div class="tabs-container">
+    <button class="tab-btn" [class.active]="activeTab === 'Producto'" (click)="setActiveTab('Producto')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/></svg>
+      Producto
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'Comida'" (click)="setActiveTab('Comida')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.5 6.027a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm2.5-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm-6.5-3h1v6h-1v-6z"/><path d="M12.027 8.5H8v6h4.027c2.552 0 4.473-2.656 4.473-5.5S14.579 3 12.027 3c-1.394 0-2.63.486-3.527 1.306A4.985 4.985 0 0 0 5 3C2.245 3 0 5.462 0 8.5S2.245 14 5 14c1.115 0 2.146-.388 2.96-1.034.86 1.353 2.176 2.034 4.067 2.034V14.5zM8 4.043c.895-.694 1.954-1.043 3.027-1.043 1.93 0 3.473 2.03 3.473 4.5S12.957 12 11.027 12H8V4.043z"/></svg>
+      Comida
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'Servicios'" (click)="setActiveTab('Servicios')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/><path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/></svg>
+      Servicios
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <div class="search-box">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input type="text" placeholder="Buscar laptops, cargadores, utiles..." class="search-input" />
+    </div>
+  </div>
+
+  <!-- Filtro de Categoría -->
+  <div class="category-filter">
+    <span class="filter-label">Categoría:</span>
+    <select class="category-select">
+      <option>Todas las categorias</option>
+      <option>Electrónica</option>
+      <option>Útiles</option>
+      <option>Material de Estudio</option>
+    </select>
+  </div>
+
+  <!-- Grid de Productos -->
+  <div class="products-grid">
+    <app-product-card 
+      *ngFor="let prod of productosFiltrados" 
+      [producto]="prod">
+    </app-product-card>
+    
+    <!-- Mensaje si no hay productos -->
+    <div *ngIf="productosFiltrados.length === 0" class="empty-state">
+      <p>No hay publicaciones en esta categoría todavía.</p>
+    </div>
+  </div>
+
+</div>
