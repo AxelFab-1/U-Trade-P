@@ -1,1 +1,235 @@
-/* You can add global styles to this file, and also import other style files */
+/* ==========================================================================
+   U-MARKET - GUÍA DE ESTILOS Y VARIABLES GLOBALES
+   ========================================================================== */
+
+:root {
+  /* Paleta de Colores */
+  --primary-color: #0056D2;
+  --primary-hover: #0043A8;
+  --primary-light: #EBF3FF;
+  --primary-focus: rgba(0, 86, 210, 0.2);
+
+  --accent-whatsapp: #25D366;
+  --accent-whatsapp-hover: #1EBE5D;
+
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  --text-white: #FFFFFF;
+
+  --border-color: #E5E7EB;
+  --border-focus: #0056D2;
+
+  --bg-app: #F9FAFB;
+  --bg-card: #FFFFFF;
+  --bg-muted: #F3F4F6;
+
+  --color-error: #EF4444;
+  --color-error-bg: #FEF2F2;
+  --color-success: #10B981;
+  --color-success-bg: #ECFDF5;
+  --color-warning: #F59E0B;
+
+  /* Formas y Bordes */
+  --radius-sm: 6px;
+  --radius-input: 8px;
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+  --radius-avatar: 50%;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+
+  /* Tipografía */
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --transition-fast: all 0.2s ease-in-out;
+}
+
+/* Reset y configuraciones base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition-fast);
+
+  &:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+  }
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ==========================================================================
+   UTILIDADES REUTILIZABLES (Mobile-First & Responsive)
+   ========================================================================== */
+
+/* Contenedor flotante centrado para formularios en Desktop (max-width: 600px) */
+.form-view-container {
+  width: 100%;
+  padding: 1rem;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    padding: 2.5rem 1rem;
+  }
+}
+
+.form-card {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-color);
+
+  @media (min-width: 768px) {
+    padding: 2.5rem;
+  }
+}
+
+/* Botones principales en forma de píldora */
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition-fast);
+  text-decoration: none;
+
+  &:hover:not(:disabled) {
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--text-white);
+
+    &:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+      box-shadow: 0 4px 12px rgba(0, 86, 210, 0.25);
+    }
+  }
+
+  &.btn-secondary {
+    background-color: var(--bg-muted);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+
+    &:hover:not(:disabled) {
+      background-color: var(--border-color);
+    }
+  }
+
+  &.btn-whatsapp {
+    background-color: var(--accent-whatsapp);
+    color: var(--text-white);
+
+    &:hover:not(:disabled) {
+      background-color: var(--accent-whatsapp-hover);
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+    }
+  }
+
+  &.btn-block {
+    width: 100%;
+  }
+}
+
+/* Campos de Formulario con bordes suaves */
+.form-group {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-input);
+  outline: none;
+  transition: var(--transition-fast);
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--primary-focus);
+  }
+
+  &.is-invalid {
+    border-color: var(--color-error);
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+  }
+}
+
+.form-error {
+  font-size: 0.8rem;
+  color: var(--color-error);
+  margin-top: 0.25rem;
+}
+
+/* Avatar circular */
+.avatar-circle {
+  border-radius: var(--radius-avatar);
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+}
