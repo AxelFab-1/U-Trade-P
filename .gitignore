@@ -1,8 +1,25 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
+### Spring Boot / Backend ###
+backend/HELP.md
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+backend/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### Angular / Frontend ###
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+frontend/.sass-cache/
+frontend/connect.lock
+frontend/coverage/
+frontend/libpeerconnection.log
+frontend/npm-debug.log
+frontend/yarn-error.log
+frontend/testem.log
+frontend/typings/
 
 ### STS ###
 .apt_generated
@@ -14,7 +31,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -25,9 +42,10 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
+### VS Code & Editores ###
 .vscode/
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
