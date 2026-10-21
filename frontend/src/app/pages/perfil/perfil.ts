@@ -1,6 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { Producto } from '../../core/models/producto.model';
 
 export interface PerfilEstudiante {
   nombre: string;
@@ -18,8 +21,9 @@ export interface PerfilEstudiante {
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
-export class Perfil {
+export class Perfil implements OnInit {
   private readonly fb = inject(FormBuilder);
+  private readonly http = inject(HttpClient);
 
   readonly estudiante = signal<PerfilEstudiante>({
     nombre: 'Fabian Z. A.',
@@ -33,6 +37,8 @@ export class Perfil {
 
   readonly guardadoExitoso = signal(false);
   readonly isSubmitted = signal(false);
+  readonly misPublicaciones = signal<Producto[]>([]);
+  readonly cargandoPublicaciones = signal(false);
 
   readonly perfilForm: FormGroup = this.fb.group({
     nombre: [this.estudiante().nombre, [Validators.required, Validators.minLength(3)]],
@@ -42,6 +48,23 @@ export class Perfil {
     campus: [this.estudiante().campus, [Validators.required]],
     bio: [this.estudiante().bio, [Validators.maxLength(200)]]
   });
+
+  ngOnInit() {
+    this.cargarMisPublicaciones();
+  }
+
+  cargarMisPublicaciones() {
+    this.cargandoPublicaciones.set(true);
+    this.http.get<Producto[]>(`${environment.apiUrl}/productos/vendedor/1`).subscribe({
+      next: (prods) => {
+        this.misPublicaciones.set(prods || []);
+        this.cargandoPublicaciones.set(false);
+      },
+      error: () => {
+        this.cargandoPublicaciones.set(false);
+      }
+    });
+  }
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.perfilForm.get(fieldName);
@@ -66,8 +89,6 @@ export class Perfil {
       campus: formValues.campus,
       bio: formValues.bio
     }));
-
-    console.log('Perfil actualizado:', this.estudiante());
 
     this.guardadoExitoso.set(true);
     this.isSubmitted.set(false);
