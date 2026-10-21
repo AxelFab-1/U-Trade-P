@@ -1,0 +1,70 @@
+<div class="registro-container">
+  <div class="registro-card">
+    <div class="registro-header">
+      <div class="logo-circle">U</div>
+      <h2>Crear Cuenta Estudiantil</h2>
+      <p class="subtitle">Únete a la comunidad de compra y venta de tu universidad</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="registro-form">
+      <div class="form-group">
+        <label for="nombre">Nombre Completo</label>
+        <input 
+          type="text" 
+          id="nombre" 
+          name="nombre" 
+          [(ngModel)]="nombre" 
+          placeholder="Ej. Juan Pérez" 
+          required 
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="correo">Correo Institucional</label>
+        <input 
+          type="email" 
+          id="correo" 
+          name="correo" 
+          [(ngModel)]="correo" 
+          placeholder="u12345678@utp.edu.pe" 
+          required 
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          [(ngModel)]="password" 
+          placeholder="Mínimo 4 caracteres" 
+          required 
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="carrera">Carrera Universitaria</label>
+        <input 
+          type="text" 
+          id="carrera" 
+          name="carrera" 
+          [(ngModel)]="carrera" 
+          placeholder="Ej. Ingeniería de Sistemas" 
+          class="form-control"
+        />
+      </div>
+
+      <button type="submit" class="btn-submit">
+        Registrarme en U-Market
+      </button>
+
+      <p class="login-redirect">
+        ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión aquí</a>
+      </p>
+    </form>
+  </div>
+</div>

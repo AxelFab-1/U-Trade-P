@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
+import { Registro } from './pages/registro/registro';
 import { Publicar } from './pages/publicar/publicar';
 import { Mensajes } from './pages/mensajes/mensajes';
 import { Perfil } from './pages/perfil/perfil';
@@ -14,6 +15,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/detalle-producto/detalle-producto').then(m => m.DetalleProducto)
   },
   { path: 'login', component: Login },
+  { path: 'registro', component: Registro },
   { path: 'publicar', component: Publicar },
   { path: 'mensajes', component: Mensajes },
   { path: 'perfil', component: Perfil },
