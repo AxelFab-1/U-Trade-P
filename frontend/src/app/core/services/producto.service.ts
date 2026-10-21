@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, catchError, of } from 'rxjs';
 import { Producto } from '../models/producto.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
-  // Datos falsos basados en el prototipo
+  private apiUrl = `${environment.apiUrl}/productos`;
+
   private mockProductos: Producto[] = [
     {
       id: 1,
@@ -18,6 +21,7 @@ export class ProductoService {
       condicion: 'Como nuevo',
       universidad: 'PUCP',
       rating: 4.9,
+      disponible: true,
       fechaPublicacion: 'Hace 2h',
       vendedor: {
         id: 101,
@@ -38,7 +42,8 @@ export class ProductoService {
       foto: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80',
       condicion: 'Nuevo',
       universidad: 'ULIMA',
-      rating: 4.8
+      rating: 4.8,
+      disponible: true
     },
     {
       id: 3,
@@ -49,7 +54,8 @@ export class ProductoService {
       foto: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80',
       condicion: 'Buen estado',
       universidad: 'UPC',
-      rating: 4.5
+      rating: 4.5,
+      disponible: true
     },
     {
       id: 4,
@@ -60,7 +66,8 @@ export class ProductoService {
       foto: 'https://images.unsplash.com/photo-1517701550927-30cf4b1e5dc5?w=500&q=80',
       condicion: 'Nuevo',
       universidad: 'PUCP',
-      rating: 5.0
+      rating: 5.0,
+      disponible: true
     },
     {
       id: 5,
@@ -71,7 +78,8 @@ export class ProductoService {
       foto: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80',
       condicion: 'Nuevo',
       universidad: 'ULIMA',
-      rating: 4.9
+      rating: 4.9,
+      disponible: true
     },
     {
       id: 6,
@@ -82,7 +90,8 @@ export class ProductoService {
       foto: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500&q=80',
       condicion: 'Nuevo',
       universidad: 'PUCP / UNI',
-      rating: 5.0
+      rating: 5.0,
+      disponible: true
     },
     {
       id: 7,
@@ -93,20 +102,40 @@ export class ProductoService {
       foto: 'https://images.unsplash.com/photo-1633613286991-611fe299c4be?w=500&q=80',
       condicion: 'Nuevo',
       universidad: 'UNMSM / PUCP',
-      rating: 4.9
+      rating: 4.9,
+      disponible: true
     }
   ];
 
-  constructor() { }
+  constructor(private http: HttpClient) {}
 
-  // Obtener todos los productos simulados
   getProductos(): Observable<Producto[]> {
-    return of(this.mockProductos);
+    return this.http.get<Producto[]>(this.apiUrl).pipe(
+      catchError(() => of(this.mockProductos))
+    );
   }
 
-  // Obtener producto por ID simulado
   getProductoById(id: number): Observable<Producto | undefined> {
-    const producto = this.mockProductos.find(p => p.id === id);
-    return of(producto);
+    return this.http.get<Producto>(`${this.apiUrl}/${id}`).pipe(
+      catchError(() => of(this.mockProductos.find(p => p.id === id)))
+    );
+  }
+
+  getProductosPorVendedor(usuarioId: number): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.apiUrl}/vendedor/${usuarioId}`).pipe(
+      catchError(() => of(this.mockProductos.filter(p => p.vendedor?.id === usuarioId)))
+    );
+  }
+
+  crearProducto(producto: Partial<Producto>): Observable<Producto> {
+    return this.http.post<Producto>(this.apiUrl, producto);
+  }
+
+  comprarProducto(id: number): Observable<Producto> {
+    return this.http.post<Producto>(`${this.apiUrl}/${id}/comprar`, {});
+  }
+
+  eliminarProducto(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

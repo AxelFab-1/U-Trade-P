@@ -75,6 +75,22 @@
     color: #0056D2;
   }
 
+  .status-badge {
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+  }
+
+  .badge-disponible {
+    background-color: #ECFDF5;
+    color: #059669;
+  }
+
+  .badge-vendido {
+    background-color: #FEE2E2;
+    color: #DC2626;
+  }
+
   .date-text {
     color: #9CA3AF;
     font-weight: 500;
