@@ -6,12 +6,18 @@
       <p class="login-subtitle">Accede con tu cuenta institucional para comprar y vender en la comunidad</p>
     </div>
 
-    <form class="login-form">
+    <div *ngIf="errorMensaje" class="alert-error" style="background-color: #FEE2E2; color: #DC2626; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 0.875rem;">
+      {{ errorMensaje }}
+    </div>
+
+    <form class="login-form" (ngSubmit)="onLogin()">
       <div class="form-group">
         <label for="correo" class="form-label">Correo Institucional</label>
         <input
           type="email"
           id="correo"
+          name="correo"
+          [(ngModel)]="correo"
           class="form-control"
           placeholder="ejemplo@utp.edu.pe"
           required
@@ -23,6 +29,8 @@
         <input
           type="password"
           id="password"
+          name="password"
+          [(ngModel)]="password"
           class="form-control"
           placeholder="••••••••"
           required
@@ -37,13 +45,13 @@
         <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
       </div>
 
-      <button type="submit" class="btn-pill btn-primary btn-block">
-        Ingresar a U-Market
+      <button type="submit" class="btn-pill btn-primary btn-block" [disabled]="cargando">
+        {{ cargando ? 'Iniciando sesión...' : 'Ingresar a U-Market' }}
       </button>
 
       <div class="register-prompt">
         <span>¿Aún no tienes cuenta?</span>
-        <a href="#">Regístrate aquí</a>
+        <a routerLink="/registro">Regístrate aquí</a>
       </div>
     </form>
   </div>
