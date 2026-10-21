@@ -26,14 +26,14 @@ class UsuarioControllerTest {
 
     @Test
     void listar_devuelveLosUsuariosDelServicio() {
-        List<Usuario> datos = List.of(
-            new Usuario(1L, "Fabian", "fabian@umarket.com", "123456")
-        );
+        Usuario u = new Usuario("Fabian", "fabian@umarket.com", "123456", "ESTUDIANTE");
+        u.setId(1L);
+        List<Usuario> datos = List.of(u);
         when(service.listarTodos()).thenReturn(datos);
 
         ResponseEntity<List<Usuario>> respuesta = controller.listar();
 
         assertThat(respuesta.getBody()).hasSize(1);
-        assertThat(respuesta.getBody().get(0).nombre()).isEqualTo("Fabian");
+        assertThat(respuesta.getBody().get(0).getNombre()).isEqualTo("Fabian");
     }
 }

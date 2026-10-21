@@ -1,6 +1,7 @@
 ### Spring Boot / Backend ###
 backend/HELP.md
 backend/target/
+backend/data/
 backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -20,6 +21,7 @@ frontend/npm-debug.log
 frontend/yarn-error.log
 frontend/testem.log
 frontend/typings/
+frontend/Users/
 
 ### STS ###
 .apt_generated

@@ -26,14 +26,14 @@ class ProductoControllerTest {
 
     @Test
     void listar_devuelveLosProductosDelServicio() {
-        List<Producto> datos = List.of(
-            new Producto(1L, "Apuntes de Sistemas", 15.0, "Servicios", "Resumen del ciclo", "apuntes.jpg")
-        );
+        Producto p = new Producto("Apuntes de Sistemas", 15.0, "Servicios", "Resumen del ciclo", "apuntes.jpg", null);
+        p.setId(1L);
+        List<Producto> datos = List.of(p);
         when(service.listarTodos()).thenReturn(datos);
 
         ResponseEntity<List<Producto>> respuesta = controller.listar();
 
         assertThat(respuesta.getBody()).hasSize(1);
-        assertThat(respuesta.getBody().get(0).nombre()).isEqualTo("Apuntes de Sistemas");
+        assertThat(respuesta.getBody().get(0).getNombre()).isEqualTo("Apuntes de Sistemas");
     }
 }
