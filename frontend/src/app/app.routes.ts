@@ -4,6 +4,7 @@ import { Registro } from './pages/registro/registro';
 import { Publicar } from './pages/publicar/publicar';
 import { Mensajes } from './pages/mensajes/mensajes';
 import { Perfil } from './pages/perfil/perfil';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -16,9 +17,9 @@ export const routes: Routes = [
   },
   { path: 'login', component: Login },
   { path: 'registro', component: Registro },
-  { path: 'publicar', component: Publicar },
-  { path: 'mensajes', component: Mensajes },
-  { path: 'perfil', component: Perfil },
+  { path: 'publicar', component: Publicar, canActivate: [authGuard] },
+  { path: 'mensajes', component: Mensajes, canActivate: [authGuard] },
+  { path: 'perfil', component: Perfil, canActivate: [authGuard] },
   {
     path: '',
     redirectTo: 'explorar',
