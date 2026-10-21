@@ -36,7 +36,7 @@
       <!-- Barra de estadísticas universitarias -->
       <div class="perfil-stats-bar">
         <div class="stat-box">
-          <span class="stat-number">6</span>
+          <span class="stat-number">{{ misPublicaciones().length }}</span>
           <span class="stat-label">Publicaciones</span>
         </div>
         <div class="stat-divider"></div>
@@ -168,6 +168,38 @@
           </button>
         </div>
       </form>
+    </div>
+
+    <!-- Sección de Mis Publicaciones -->
+    <div class="mis-publicaciones-section">
+      <div class="section-header">
+        <h2 class="section-title">Mis Publicaciones</h2>
+        <p class="section-desc">Artículos que tienes activos o vendidos en el mercado universitario.</p>
+      </div>
+
+      <div *ngIf="cargandoPublicaciones()" class="loading-state">
+        Cargando tus publicaciones...
+      </div>
+
+      <div class="publicaciones-list" *ngIf="!cargandoPublicaciones()">
+        <div *ngFor="let item of misPublicaciones()" class="publicacion-item">
+          <img [src]="item.foto" [alt]="item.nombre" class="item-img" />
+          <div class="item-details">
+            <h4 class="item-nombre">{{ item.nombre }}</h4>
+            <span class="item-precio">S/ {{ item.precio }}</span>
+            <span class="item-estado" [ngClass]="item.disponible !== false ? 'estado-activo' : 'estado-vendido'">
+              {{ item.disponible !== false ? 'Disponible' : 'Vendido' }}
+            </span>
+          </div>
+          <button (click)="eliminarPublicacion(item.id!)" class="btn-eliminar" title="Eliminar publicación">
+            🗑️
+          </button>
+        </div>
+
+        <div *ngIf="misPublicaciones().length === 0" class="empty-publicaciones">
+          <p>No tienes publicaciones activas actualmente.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
