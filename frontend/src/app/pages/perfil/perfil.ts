@@ -66,6 +66,21 @@ export class Perfil implements OnInit {
     });
   }
 
+  eliminarPublicacion(id: number) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
+      return;
+    }
+
+    this.http.delete(`${environment.apiUrl}/productos/${id}`).subscribe({
+      next: () => {
+        this.misPublicaciones.update(lista => lista.filter(p => p.id !== id));
+      },
+      error: (err) => {
+        alert(err?.error?.message || 'No se pudo eliminar la publicación.');
+      }
+    });
+  }
+
   isFieldInvalid(fieldName: string): boolean {
     const field = this.perfilForm.get(fieldName);
     return !!field && field.invalid && (field.dirty || field.touched || this.isSubmitted());
