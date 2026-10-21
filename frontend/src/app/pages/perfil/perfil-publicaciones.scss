@@ -1,0 +1,96 @@
+.mis-publicaciones-section {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-card);
+
+  @media (min-width: 600px) {
+    padding: 2rem;
+  }
+
+  .loading-state, .empty-publicaciones {
+    text-align: center;
+    padding: 24px 16px;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+
+  .publicaciones-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 1rem;
+  }
+
+  .publicacion-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border-radius: var(--radius-input);
+    border: 1px solid var(--border-color);
+    background: white;
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .item-img {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--bg-muted);
+    }
+
+    .item-details {
+      flex: 1;
+
+      .item-nombre {
+        margin: 0;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .item-precio {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-right: 8px;
+      }
+
+      .item-estado {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 9999px;
+      }
+
+      .estado-activo {
+        background: #ecfdf5;
+        color: #059669;
+      }
+
+      .estado-vendido {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+    }
+
+    .btn-eliminar {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #fee2e2;
+      }
+    }
+  }
+}
