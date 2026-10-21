@@ -17,7 +17,35 @@ export class Registro {
   carrera: string = '';
   universidad: string = 'UTP';
 
+  errorMensaje: string = '';
+  exitoMensaje: string = '';
+
+  validarFormulario(): boolean {
+    this.errorMensaje = '';
+
+    if (!this.nombre.trim()) {
+      this.errorMensaje = 'El nombre completo es obligatorio.';
+      return false;
+    }
+
+    const correoLimpio = this.correo.trim().toLowerCase();
+    if (!correoLimpio || !correoLimpio.endsWith('@utp.edu.pe')) {
+      this.errorMensaje = 'Solo se permiten correos institucionales de la UTP (@utp.edu.pe).';
+      return false;
+    }
+
+    if (!this.password || this.password.length < 4) {
+      this.errorMensaje = 'La contraseña debe tener un mínimo de 4 caracteres.';
+      return false;
+    }
+
+    return true;
+  }
+
   onSubmit() {
-    console.log('Registro enviado');
+    if (!this.validarFormulario()) {
+      return;
+    }
+    console.log('Formulario válido');
   }
 }
