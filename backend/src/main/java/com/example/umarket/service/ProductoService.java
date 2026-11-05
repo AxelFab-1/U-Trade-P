@@ -42,18 +42,60 @@ public class ProductoService {
 
     @Transactional
     public Producto guardarProducto(Producto p) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            Usuario vendedor = usuarioRepository.findByCorreoIgnoreCase(auth.getName()).orElse(null);
+            if (vendedor != null) {
+                p.setVendedor(vendedor);
+            }
+        }
+        if (p.getStock() == null || p.getStock() < 1) {
+            p.setStock(1);
+        }
+        if (p.getDisponible() == null) {
+            p.setDisponible(true);
+        }
         return repository.save(p);
     }
     
     @Transactional
     public Producto actualizarProducto(Long id, Producto p) {
         return repository.findById(id).map(productoExistente -> {
-            productoExistente.setNombre(p.getNombre());
-            productoExistente.setPrecio(p.getPrecio());
-            productoExistente.setCategoria(p.getCategoria());
-            productoExistente.setDescripcion(p.getDescripcion());
-            productoExistente.setFoto(p.getFoto());
-            productoExistente.setVendedor(p.getVendedor());
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String correoAutenticado = (auth != null && auth.isAuthenticated()) ? auth.getName() : null;
+            boolean esAdmin = auth != null && auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+            if (!esAdmin && correoAutenticado != null && !"anonymousUser".equals(correoAutenticado)) {
+                if (productoExistente.getVendedor() != null && !productoExistente.getVendedor().getCorreo().equalsIgnoreCase(correoAutenticado)) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puedes modificar una publicación que no te pertenece.");
+                }
+            }
+
+            if (p.getNombre() != null && !p.getNombre().trim().isEmpty()) {
+                productoExistente.setNombre(p.getNombre().trim());
+            }
+            if (p.getPrecio() != null && p.getPrecio() > 0) {
+                productoExistente.setPrecio(p.getPrecio());
+            }
+            if (p.getCategoria() != null && !p.getCategoria().trim().isEmpty()) {
+                productoExistente.setCategoria(p.getCategoria().trim());
+            }
+            if (p.getDescripcion() != null && !p.getDescripcion().trim().isEmpty()) {
+                productoExistente.setDescripcion(p.getDescripcion().trim());
+            }
+            if (p.getFoto() != null && !p.getFoto().trim().isEmpty()) {
+                productoExistente.setFoto(p.getFoto().trim());
+            }
+            if (p.getStock() != null) {
+                productoExistente.setStock(Math.max(0, p.getStock()));
+            }
+            if (p.getDisponible() != null) {
+                productoExistente.setDisponible(p.getDisponible());
+            }
+            if (p.getVendedor() != null) {
+                productoExistente.setVendedor(p.getVendedor());
+            }
             return repository.save(productoExistente);
         }).orElse(null); 
     }
@@ -71,13 +113,36 @@ public class ProductoService {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         if (!esAdmin) {
-            if (producto.getVendedor() != null && !producto.getVendedor().getCorreo().equals(correoAutenticado)) {
+            if (producto.getVendedor() != null && !producto.getVendedor().getCorreo().equalsIgnoreCase(correoAutenticado)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puedes borrar un producto que no te pertenece");
             }
         }
 
         repository.deleteById(id);
         return true;
+    }
+
+    @Transactional
+    public Producto cambiarDisponibilidad(Long id, Boolean estadoDeseado) {
+        Producto producto = repository.findById(id).orElse(null);
+        if (producto == null) {
+            return null;
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String correoAutenticado = (auth != null && auth.isAuthenticated()) ? auth.getName() : null;
+        boolean esAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!esAdmin && correoAutenticado != null && !"anonymousUser".equals(correoAutenticado)) {
+            if (producto.getVendedor() != null && !producto.getVendedor().getCorreo().equalsIgnoreCase(correoAutenticado)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puedes modificar una publicación ajena.");
+            }
+        }
+
+        boolean nuevoEstado = (estadoDeseado != null) ? estadoDeseado : (producto.getDisponible() == null || !producto.getDisponible());
+        producto.setDisponible(nuevoEstado);
+        return repository.save(producto);
     }
 
     // --- TRANSACCIÓN ACID: Compra de Producto ---
@@ -87,17 +152,17 @@ public class ProductoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
 
         if (producto.getDisponible() != null && !producto.getDisponible()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lo sentimos, este producto ya fue vendido.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lo sentimos, esta publicación no está disponible o se encuentra pausada temporalmente.");
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String correoComprador = auth.getName();
 
-        if (producto.getVendedor() != null && producto.getVendedor().getCorreo().equals(correoComprador)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes comprar tu propio producto.");
+        if (producto.getVendedor() != null && producto.getVendedor().getCorreo().equalsIgnoreCase(correoComprador)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes comprar tu propia publicación.");
         }
 
-        Usuario comprador = usuarioRepository.findByCorreo(correoComprador)
+        Usuario comprador = usuarioRepository.findByCorreoIgnoreCase(correoComprador)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comprador no encontrado en la base de datos"));
 
         producto.setDisponible(false); 
