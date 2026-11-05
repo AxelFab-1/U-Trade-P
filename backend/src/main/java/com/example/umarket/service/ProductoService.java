@@ -2,6 +2,7 @@ package com.example.umarket.service;
 
 import com.example.umarket.model.Producto;
 import com.example.umarket.model.Usuario;
+import com.example.umarket.repository.PedidoRepository;
 import com.example.umarket.repository.ProductoRepository;
 import com.example.umarket.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,14 @@ public class ProductoService {
     
     private final ProductoRepository repository;
     private final UsuarioRepository usuarioRepository; 
+    private final PedidoRepository pedidoRepository;
 
-    public ProductoService(ProductoRepository repository, UsuarioRepository usuarioRepository) {
+    public ProductoService(ProductoRepository repository, 
+                           UsuarioRepository usuarioRepository,
+                           PedidoRepository pedidoRepository) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
+        this.pedidoRepository = pedidoRepository;
     }
 
     public List<Producto> listarTodos() {
@@ -108,17 +113,23 @@ public class ProductoService {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String correoAutenticado = auth.getName();
-        boolean esAdmin = auth.getAuthorities().stream()
+        String correoAutenticado = (auth != null && auth.isAuthenticated()) ? auth.getName() : null;
+        boolean esAdmin = auth != null && auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         if (!esAdmin) {
+            if (correoAutenticado == null || "anonymousUser".equals(correoAutenticado)) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Debes iniciar sesión para eliminar una publicación");
+            }
             if (producto.getVendedor() != null && !producto.getVendedor().getCorreo().equalsIgnoreCase(correoAutenticado)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puedes borrar un producto que no te pertenece");
             }
         }
 
-        repository.deleteById(id);
+        // Eliminar pedidos asociados para no violar la integridad referencial
+        pedidoRepository.deleteByProductoId(id);
+
+        repository.delete(producto);
         return true;
     }
 
