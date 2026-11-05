@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -14,6 +14,9 @@ export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   private tokenKey = 'umarket_token';
 
+  readonly isLoggedIn = signal<boolean>(this.isAuthenticated());
+  readonly currentUserEmail = signal<string | null>(this.getCorreoUsuario());
+
   constructor(private http: HttpClient) {}
 
   login(credentials: { correo: string; password: string }): Observable<AuthResponse> {
@@ -28,6 +31,8 @@ export class AuthService {
 
   setToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
+    this.isLoggedIn.set(true);
+    this.currentUserEmail.set(this.getCorreoUsuario());
   }
 
   getToken(): string | null {
@@ -36,6 +41,8 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    this.isLoggedIn.set(false);
+    this.currentUserEmail.set(null);
   }
 
   isAuthenticated(): boolean {

@@ -1,6 +1,8 @@
 package com.example.umarket.controller;
 
+import com.example.umarket.dto.RegistroUsuarioRequest;
 import com.example.umarket.model.Usuario;
+import com.example.umarket.service.CodigoVerificacionService;
 import com.example.umarket.service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +15,11 @@ import java.util.List;
 public class UsuarioController {
 
     private final UsuarioService service;
+    private final CodigoVerificacionService codigoVerificacionService;
 
-    public UsuarioController(UsuarioService service) {
+    public UsuarioController(UsuarioService service, CodigoVerificacionService codigoVerificacionService) {
         this.service = service;
+        this.codigoVerificacionService = codigoVerificacionService;
     }
 
     @GetMapping
@@ -33,19 +37,33 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody Usuario u) {
-        if (u.getNombre() == null || u.getNombre().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Error: El nombre es obligatorio.");
+    public ResponseEntity<?> crear(@RequestBody RegistroUsuarioRequest req) {
+        if (req.getNombre() == null || !req.getNombre().trim().matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]{3,60}$")) {
+            return ResponseEntity.badRequest().body("Error: El nombre completo solo debe contener letras y espacios (entre 3 y 60 caracteres), sin números ni símbolos.");
         }
 
-        if (u.getCorreo() == null || !u.getCorreo().toLowerCase().endsWith("@utp.edu.pe")) {
-            return ResponseEntity.badRequest().body("Error: Solo se permiten correos institucionales de la UTP (@utp.edu.pe).");
+        if (req.getCorreo() == null || !req.getCorreo().trim().toLowerCase().matches("^[a-zA-Z0-9._%+-]+@utp\\.edu\\.pe$")) {
+            return ResponseEntity.badRequest().body("Error: Solo se permiten correos institucionales válidos de la UTP (@utp.edu.pe).");
         }
         
-        if (u.getPassword() == null || u.getPassword().trim().length() < 4) {
-            return ResponseEntity.badRequest().body("Error: La contraseña es obligatoria y debe tener al menos 4 caracteres.");
+        if (req.getPassword() == null || req.getPassword().trim().length() < 6) {
+            return ResponseEntity.badRequest().body("Error: La contraseña debe tener al menos 6 caracteres.");
         }
 
+        // Validación estricta del código OTP enviado al correo
+        if (req.getCodigoVerificacion() == null || !req.getCodigoVerificacion().trim().matches("^\\d{6}$")) {
+            return ResponseEntity.badRequest().body("Error: El código de verificación de 6 dígitos es obligatorio.");
+        }
+
+        boolean esValido = codigoVerificacionService.validarYConsumir(req.getCorreo(), req.getCodigoVerificacion());
+        if (!esValido) {
+            return ResponseEntity.badRequest().body("Error: Código de verificación incorrecto o expirado. Solicita un nuevo código.");
+        }
+
+        Usuario u = new Usuario();
+        u.setNombre(req.getNombre().trim());
+        u.setCorreo(req.getCorreo().trim().toLowerCase());
+        u.setPassword(req.getPassword());
         u.setRol("ESTUDIANTE");
 
         Usuario creado = service.guardarUsuario(u);
@@ -56,14 +74,14 @@ public class UsuarioController {
 
     @PutMapping("/{id:[0-9]+}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Usuario u) {
-        if (u.getNombre() == null || u.getNombre().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Error: El nombre es obligatorio.");
+        if (u.getNombre() == null || !u.getNombre().trim().matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]{3,60}$")) {
+            return ResponseEntity.badRequest().body("Error: El nombre completo solo debe contener letras y espacios (entre 3 y 60 caracteres).");
         }
         if (u.getCorreo() == null || !u.getCorreo().toLowerCase().endsWith("@utp.edu.pe")) {
             return ResponseEntity.badRequest().body("Error: Solo se permiten correos institucionales de la UTP (@utp.edu.pe).");
         }
-        if (u.getPassword() == null || u.getPassword().trim().length() < 4) {
-            return ResponseEntity.badRequest().body("Error: La contraseña es obligatoria y debe tener al menos 4 caracteres.");
+        if (u.getPassword() == null || u.getPassword().trim().length() < 6) {
+            return ResponseEntity.badRequest().body("Error: La contraseña debe tener al menos 6 caracteres.");
         }
 
         Usuario usuarioActualizado = service.actualizarUsuario(id, u);

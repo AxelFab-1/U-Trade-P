@@ -65,6 +65,7 @@
 
 .product-header {
   display: flex;
+  align-items: center;
   gap: 12px;
   margin-bottom: 8px;
   font-size: 0.8rem;
@@ -76,7 +77,7 @@
   }
 
   .status-badge {
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 9999px;
     font-size: 0.75rem;
   }
@@ -84,6 +85,12 @@
   .badge-disponible {
     background-color: #ECFDF5;
     color: #059669;
+  }
+
+  .badge-stock {
+    background-color: #FEF3C7;
+    color: #B45309;
+    border: 1px solid #FDE68A;
   }
 
   .badge-vendido {
@@ -94,6 +101,7 @@
   .date-text {
     color: #9CA3AF;
     font-weight: 500;
+    margin-left: auto;
   }
 }
 
@@ -102,24 +110,31 @@
   color: #1F2937;
   font-weight: 700;
   line-height: 1.3;
-  margin: 0 0 24px 0;
+  margin: 0 0 20px 0;
 }
 
 .seller-card {
   display: flex;
   align-items: center;
-  padding: 12px;
-  border: 1px solid #E5E7EB;
+  padding: 12px 14px;
+  border: 1px solid #E2E8F0;
   border-radius: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  background: #FFFFFF;
   
-  .seller-avatar {
+  .seller-monogram {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #F3F4F6;
+    background: linear-gradient(135deg, #0056D2 0%, #1E3A8A 100%);
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 700;
     margin-right: 12px;
-    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 
   .seller-info {
@@ -128,14 +143,14 @@
     .seller-name {
       margin: 0;
       font-weight: 700;
-      color: #1F2937;
+      color: #0F172A;
       font-size: 0.95rem;
     }
     
     .seller-major {
       margin: 2px 0 0 0;
-      font-size: 0.75rem;
-      color: #6B7280;
+      font-size: 0.775rem;
+      color: #64748B;
     }
   }
 
@@ -151,8 +166,76 @@
   }
 }
 
+/* Selector de Cantidad para Comida */
+.cantidad-selector-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+
+  .cantidad-info {
+    display: flex;
+    flex-direction: column;
+
+    .label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1F2937;
+    }
+
+    .sublabel {
+      font-size: 0.75rem;
+      color: #6B7280;
+    }
+  }
+
+  .cantidad-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .btn-qty {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid #D1D5DB;
+      background: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover:not(:disabled) {
+        background: #F3F4F6;
+        border-color: #9CA3AF;
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+    }
+
+    .qty-number {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111827;
+      min-width: 20px;
+      text-align: center;
+    }
+  }
+}
+
 .description-block {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
   
   h3 {
     font-size: 0.95rem;
@@ -165,6 +248,76 @@
     color: #4B5563;
     line-height: 1.5;
     margin: 0;
+  }
+}
+
+.alert-owner-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  color: #1E40AF;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+
+  svg {
+    color: #2563EB;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .alert-owner-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.85rem;
+
+    strong {
+      color: #1E3A8A;
+      font-weight: 700;
+    }
+
+    span {
+      color: #3B82F6;
+      line-height: 1.4;
+    }
+  }
+}
+
+.alert-paused-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  color: #92400E;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+
+  svg {
+    color: #D97706;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .alert-paused-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.85rem;
+
+    strong {
+      color: #78350F;
+      font-weight: 700;
+    }
+
+    span {
+      color: #B45309;
+      line-height: 1.4;
+    }
   }
 }
 
@@ -187,11 +340,36 @@
     gap: 8px;
     transition: opacity 0.2s, transform 0.1s;
 
-    &:hover {
-      opacity: 0.9;
+    &:hover:not(:disabled) {
+      opacity: 0.92;
     }
-    &:active {
+    &:active:not(:disabled) {
       transform: scale(0.98);
+    }
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-yape {
+    background-color: #742284; /* Púrpura oficial de Yape */
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(116, 34, 132, 0.3);
+
+    .yape-badge-icon {
+      background: white;
+      color: #742284;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 0.85rem;
     }
   }
   
@@ -206,11 +384,483 @@
   }
 }
 
-.loading-state, .error-state {
+/* ================================================= */
+/* ESTILOS DEL MODAL DE PASARELA YAPE                */
+/* ================================================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.yape-modal-card {
+  background: white;
+  border-radius: 20px;
+  max-width: 440px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.yape-modal-header {
+  background: #742284;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+
+  .yape-logo-group {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+
+    .yape-brand {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .yape-tag {
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+  }
+
+  .btn-close-modal {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+.yape-modal-body {
+  padding: 20px;
+}
+
+.order-summary-box {
+  display: flex;
+  align-items: center;
+  background: #F9FAFB;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  gap: 12px;
+  border: 1px solid #E5E7EB;
+
+  .summary-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .summary-details {
+    flex: 1;
+
+    .summary-title {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1F2937;
+      line-height: 1.2;
+    }
+
+    .summary-meta {
+      margin: 2px 0 0 0;
+      font-size: 0.75rem;
+      color: #6B7280;
+    }
+  }
+
+  .summary-total {
+    text-align: right;
+
+    .total-label {
+      display: block;
+      font-size: 0.7rem;
+      color: #6B7280;
+      text-transform: uppercase;
+    }
+
+    .total-amount {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #742284;
+    }
+  }
+}
+
+.form-group-yape {
+  margin-bottom: 16px;
+
+  .label-yape {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+
+  .input-with-prefix {
+    display: flex;
+    align-items: center;
+    border: 1px solid #D1D5DB;
+    border-radius: 10px;
+    background: white;
+    overflow: hidden;
+
+    &:focus-within {
+      border-color: #742284;
+      box-shadow: 0 0 0 3px rgba(116, 34, 132, 0.15);
+    }
+
+    .prefix {
+      padding: 10px 12px;
+      background: #F3F4F6;
+      color: #4B5563;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-right: 1px solid #D1D5DB;
+    }
+
+    .input-yape {
+      border: none;
+      outline: none;
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 1rem;
+      color: #111827;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .input-code {
+      width: 100%;
+      border: 1px solid #D1D5DB;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 1rem;
+      outline: none;
+      letter-spacing: 3px;
+
+      &:focus {
+        border-color: #742284;
+        box-shadow: 0 0 0 3px rgba(116, 34, 132, 0.15);
+      }
+    }
+
+    .code-badge {
+      position: absolute;
+      right: 12px;
+      background: #F3F4F6;
+      color: #6B7280;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  }
+
+  .input-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-top: 4px;
+  }
+
+  .how-to-yape {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: #742284;
+    background: #FBF6FC;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+}
+
+.sandbox-note-box {
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  color: #1E40AF;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  margin-bottom: 20px;
+  line-height: 1.4;
+
+  p {
+    margin: 4px 0 0 0;
+  }
+
+  code {
+    background: #DBEAFE;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+}
+
+.modal-actions-yape {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .btn-submit-yape {
+    background: #742284;
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:hover:not(:disabled) {
+      opacity: 0.93;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-cancel-yape {
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    padding: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      color: #1F2937;
+    }
+  }
+
+  .spinner-yape {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    .dot-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ================================================= */
+/* ESTILOS DEL VOUCHER EXITOSO                       */
+/* ================================================= */
+.yape-modal-voucher {
+  padding: 24px 20px;
+  text-align: center;
+
+  .voucher-success-header {
+    .check-circle {
+      width: 60px;
+      height: 60px;
+      background: #10B981;
+      color: white;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 900;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .voucher-title {
+      font-size: 1.3rem;
+      color: #111827;
+      font-weight: 800;
+      margin: 0 0 4px 0;
+    }
+
+    .voucher-subtitle {
+      font-size: 0.8rem;
+      color: #6B7280;
+      margin: 0 0 16px 0;
+    }
+  }
+
+  .voucher-ticket {
+    background: #F9FAFB;
+    border: 1px dashed #D1D5DB;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    text-align: left;
+
+    .ticket-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #F3F4F6;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .t-label {
+        color: #6B7280;
+      }
+
+      .t-value {
+        color: #1F2937;
+        font-weight: 600;
+
+        &.highlight {
+          color: #742284;
+          font-family: monospace;
+          font-size: 0.95rem;
+          font-weight: 700;
+        }
+
+        &.total-bold {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: #059669;
+        }
+      }
+    }
+  }
+
+  .voucher-delivery-hint {
+    font-size: 0.8rem;
+    color: #4B5563;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin: 0 0 20px 0;
+    line-height: 1.4;
+  }
+
+  .voucher-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .btn-view-purchases {
+      background: #0056D2;
+      color: white;
+      border: none;
+      border-radius: 9999px;
+      padding: 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+
+      &:hover {
+        background: #0046B0;
+      }
+    }
+
+    .btn-close-voucher {
+      background: #F3F4F6;
+      color: #374151;
+      border: none;
+      border-radius: 9999px;
+      padding: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover {
+        background: #E5E7EB;
+      }
+    }
+  }
+}
+
+.loading-state, .error-state, .loading-state-box, .error-state-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   text-align: center;
   padding: 40px;
-  color: #6B7280;
+  color: #64748B;
   font-weight: 500;
+
+  .inline-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #E2E8F0;
+    border-top-color: #0056D2;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+}
+
+.error-state, .error-state-box {
+  color: #DC2626;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* --- Responsive para PC --- */
