@@ -1,205 +1,646 @@
-<section class="perfil-view-container form-view-container">
-  <div class="perfil-card form-card">
-    <!-- Tarjeta superior del perfil universitario -->
-    <header class="perfil-top-card">
-      <div class="perfil-banner">
-        <span class="campus-pill">{{ estudiante().campus }}</span>
-      </div>
+<section class="perfil-view-container">
+  <div class="perfil-card">
+    
+    <!-- CABECERA PROFESIONAL DEL PERFIL -->
+    <header class="perfil-header">
+      <div class="perfil-cover"></div>
 
-      <div class="perfil-identity">
-        <div class="avatar-container">
-          <img
-            [src]="estudiante().avatar"
-            [alt]="estudiante().nombre"
-            class="avatar-circle perfil-avatar"
-          />
-          <button type="button" class="avatar-edit-btn" title="Cambiar foto">
-            📷
-          </button>
+      <div class="perfil-main-info">
+        <div class="avatar-wrapper">
+          <div class="avatar-monogram">
+            {{ obtenerIniciales() }}
+          </div>
+          <span class="avatar-status-dot" title="Cuenta activa"></span>
         </div>
 
-        <div class="user-meta">
-          <div class="name-badge-row">
-            <h1 class="student-name">{{ estudiante().nombre }}</h1>
-            <span class="verified-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        <div class="identity-content">
+          <div class="name-row">
+            <h1 class="student-name">{{ estudiante().nombre || 'Estudiante UTP' }}</h1>
+            <span class="verified-pill">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
               Verificado UTP
             </span>
           </div>
-          <p class="student-program">{{ estudiante().carrera }}</p>
-          <p class="student-email">{{ estudiante().correo }}</p>
-        </div>
-      </div>
 
-      <!-- Barra de estadísticas universitarias -->
-      <div class="perfil-stats-bar">
-        <div class="stat-box">
-          <span class="stat-number">{{ misPublicaciones().length }}</span>
-          <span class="stat-label">Publicaciones</span>
+          <div class="student-email-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L1 7"></path>
+            </svg>
+            <span>{{ estudiante().correo }}</span>
+          </div>
+
+          <!-- Etiquetas informativas (solo se muestran si tienen valor definido) -->
+          <div class="meta-tags-row" *ngIf="estudiante().campus || estudiante().carrera || estudiante().telefono">
+            <span class="meta-tag" *ngIf="estudiante().campus">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              {{ estudiante().campus }}
+            </span>
+
+            <span class="meta-tag" *ngIf="estudiante().carrera">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+              {{ estudiante().carrera }}
+            </span>
+
+            <span class="meta-tag" *ngIf="estudiante().telefono">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+              {{ estudiante().telefono }}
+            </span>
+          </div>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-box">
-          <span class="stat-number">4.9 ★</span>
-          <span class="stat-label">Calificación</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-box">
-          <span class="stat-number">2024</span>
-          <span class="stat-label">Miembro desde</span>
+
+        <!-- Estadísticas compactas -->
+        <div class="stats-summary">
+          <div class="stat-cell" (click)="setTab('compras')">
+            <span class="stat-val">{{ misCompras().length }}</span>
+            <span class="stat-lbl">Compras</span>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-cell" (click)="setTab('ventas')">
+            <span class="stat-val">{{ misVentas().length }}</span>
+            <span class="stat-lbl">Ventas</span>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-cell" (click)="setTab('publicaciones')">
+            <span class="stat-val">{{ misPublicaciones().length }}</span>
+            <span class="stat-lbl">Publicaciones</span>
+          </div>
         </div>
       </div>
     </header>
 
-    <!-- Formulario de edición de perfil -->
-    <div class="perfil-edit-section">
-      <div class="section-header">
-        <h2 class="section-title">Editar Perfil Universitario</h2>
-        <p class="section-desc">Actualiza tus datos para que otros alumnos puedan contactarte fácilmente.</p>
+    <!-- NAVEGACIÓN PROFESIONAL POR PESTAÑAS -->
+    <nav class="perfil-tabs-bar">
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="tabActiva() === 'datos'" 
+        (click)="setTab('datos')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>Mis Datos</span>
+      </button>
+
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="tabActiva() === 'compras'" 
+        (click)="setTab('compras')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+          <path d="M3 6h18"></path>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span>Mis Compras</span>
+        <span class="badge-count" *ngIf="misCompras().length > 0">{{ misCompras().length }}</span>
+      </button>
+
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="tabActiva() === 'ventas'" 
+        (click)="setTab('ventas')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+        <span>Mis Ventas</span>
+        <span class="badge-count" *ngIf="misVentas().length > 0">{{ misVentas().length }}</span>
+      </button>
+
+      <button 
+        type="button" 
+        class="tab-btn" 
+        [class.active]="tabActiva() === 'publicaciones'" 
+        (click)="setTab('publicaciones')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span>Publicaciones</span>
+        <span class="badge-count" *ngIf="misPublicaciones().length > 0">{{ misPublicaciones().length }}</span>
+      </button>
+    </nav>
+
+    <!-- PESTAÑA 1: FORMULARIO DE DATOS PERSONALES -->
+    <div class="tab-pane" *ngIf="tabActiva() === 'datos'">
+      <div class="pane-header">
+        <h2>Información de Perfil</h2>
       </div>
 
-      @if (guardadoExitoso()) {
-        <div class="alert-success-banner">
-          ¡Datos de perfil actualizados con éxito! ✨
+      <!-- Banner de advertencia si viene redirigido desde Publicar -->
+      <div *ngIf="vieneDePublicar()" class="alert-info-banner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div class="alert-info-content">
+          <strong>Completa tu información para publicar</strong>
+          <span>Para publicar en el catálogo, es necesario registrar tu número de teléfono, campus y carrera profesional.</span>
         </div>
-      }
+      </div>
 
-      <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="perfil-form" novalidate>
-        <div class="form-group">
-          <label for="nombre" class="form-label">Nombre Completo *</label>
-          <input
-            type="text"
-            id="nombre"
-            formControlName="nombre"
-            class="form-control"
-            [class.is-invalid]="isFieldInvalid('nombre')"
-            placeholder="Nombres y Apellidos"
-          />
-          @if (isFieldInvalid('nombre')) {
-            <span class="form-error">El nombre es obligatorio (mínimo 3 caracteres).</span>
-          }
+      <!-- Banner de confirmación de guardado -->
+      <div *ngIf="guardadoExitoso()" class="alert-success-banner">
+        <div class="alert-success-left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Tus datos han sido actualizados exitosamente.</span>
         </div>
+        <a *ngIf="vieneDePublicar()" routerLink="/publicar" class="btn-banner-action">
+          Continuar a Publicar →
+        </a>
+      </div>
 
-        <div class="form-group">
-          <label for="correo" class="form-label">Correo Institucional (No modificable)</label>
-          <input
-            type="email"
-            id="correo"
-            formControlName="correo"
-            class="form-control disabled-input"
-            title="El correo institucional está verificado por la universidad"
-          />
-          <span class="field-hint">Vinculado a tu cuenta estudiantil UTP.</span>
-        </div>
+      <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="form-clean" novalidate>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="nombre">Nombre Completo *</label>
+            <input
+              type="text"
+              id="nombre"
+              formControlName="nombre"
+              class="field-input"
+              [class.is-invalid]="isFieldInvalid('nombre')"
+              placeholder="Ej. Juan Pérez"
+            />
+            <span *ngIf="isFieldInvalid('nombre')" class="field-error-text">
+              El nombre es obligatorio (mínimo 3 caracteres).
+            </span>
+          </div>
 
-        <div class="form-row">
-          <div class="form-group col-half">
-            <label for="telefono" class="form-label">Teléfono / WhatsApp *</label>
+          <div class="form-field">
+            <label for="correo">Correo Institucional UTP</label>
+            <input
+              type="email"
+              id="correo"
+              formControlName="correo"
+              class="field-input field-disabled"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="telefono">Teléfono Celular *</label>
             <input
               type="tel"
               id="telefono"
               formControlName="telefono"
-              class="form-control"
+              class="field-input"
               [class.is-invalid]="isFieldInvalid('telefono')"
-              placeholder="987654321"
+              placeholder="Ej. 987654321"
+              maxlength="9"
             />
-            @if (isFieldInvalid('telefono')) {
-              <span class="form-error">Ingresa un número de 9 dígitos válido.</span>
-            }
+            <span *ngIf="isFieldInvalid('telefono')" class="field-error-text">
+              Ingresa un celular válido de 9 dígitos.
+            </span>
           </div>
 
-          <div class="form-group col-half">
-            <label for="campus" class="form-label">Campus UTP *</label>
-            <select
-              id="campus"
-              formControlName="campus"
-              class="form-control"
-              [class.is-invalid]="isFieldInvalid('campus')"
-            >
+          <div class="form-field">
+            <label for="campus">Campus UTP *</label>
+            <select id="campus" formControlName="campus" class="field-input field-select" [class.is-invalid]="isFieldInvalid('campus')">
+              <option value="">Selecciona tu campus</option>
               <option value="Campus Lima Centro">Campus Lima Centro</option>
               <option value="Campus Lima Norte">Campus Lima Norte</option>
-              <option value="Campus Lima Sur">Campus Lima Sur</option>
               <option value="Campus San Juan de Lurigancho">Campus San Juan de Lurigancho</option>
               <option value="Campus Ate">Campus Ate</option>
+              <option value="Campus Lima Sur">Campus Lima Sur</option>
               <option value="Campus Arequipa">Campus Arequipa</option>
               <option value="Campus Chiclayo">Campus Chiclayo</option>
-              <option value="Campus Piura">Campus Piura</option>
               <option value="Campus Huancayo">Campus Huancayo</option>
-              <option value="Campus Trujillo">Campus Trujillo</option>
             </select>
+            <span *ngIf="isFieldInvalid('campus')" class="field-error-text">
+              Selecciona tu campus UTP.
+            </span>
+          </div>
+
+          <div class="form-field full-col">
+            <label for="carrera">Carrera Profesional *</label>
+            <select id="carrera" formControlName="carrera" class="field-input field-select" [class.is-invalid]="isFieldInvalid('carrera')">
+              <option value="">Selecciona tu carrera</option>
+              <option value="Ingeniería de Sistemas e Informática">Ingeniería de Sistemas e Informática</option>
+              <option value="Ingeniería de Software">Ingeniería de Software</option>
+              <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+              <option value="Administración y Negocios">Administración y Negocios</option>
+              <option value="Derecho">Derecho</option>
+              <option value="Psicología">Psicología</option>
+              <option value="Comunicaciones">Comunicaciones</option>
+              <option value="Contabilidad">Contabilidad</option>
+            </select>
+            <span *ngIf="isFieldInvalid('carrera')" class="field-error-text">
+              Selecciona tu carrera profesional.
+            </span>
+          </div>
+
+          <div class="form-field full-col">
+            <label for="bio">Presentación Breve</label>
+            <textarea
+              id="bio"
+              formControlName="bio"
+              class="field-input field-textarea"
+              rows="3"
+              placeholder="Escribe una breve presentación o detalles de entrega..."
+            ></textarea>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="carrera" class="form-label">Carrera Profesional *</label>
-          <select
-            id="carrera"
-            formControlName="carrera"
-            class="form-control"
-            [class.is-invalid]="isFieldInvalid('carrera')"
-          >
-            <option value="Ingeniería de Sistemas e Informática">Ingeniería de Sistemas e Informática</option>
-            <option value="Ingeniería de Software">Ingeniería de Software</option>
-            <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-            <option value="Ingeniería Civil">Ingeniería Civil</option>
-            <option value="Administración y Marketing">Administración y Marketing</option>
-            <option value="Contabilidad y Finanzas">Contabilidad y Finanzas</option>
-            <option value="Derecho">Derecho</option>
-            <option value="Ciencias de la Comunicación">Ciencias de la Comunicación</option>
-            <option value="Psicología">Psicología</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="bio" class="form-label">Biografía / Presentación</label>
-          <textarea
-            id="bio"
-            formControlName="bio"
-            class="form-control textarea-control"
-            rows="3"
-            placeholder="Cuéntale a la comunidad qué ciclo cursas o qué tipo de productos/servicios ofreces..."
-          ></textarea>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn-pill btn-primary btn-block">
+        <div class="form-submit-row">
+          <button type="submit" class="btn-save">
             Guardar Cambios
           </button>
         </div>
       </form>
     </div>
 
-    <!-- Sección de Mis Publicaciones -->
-    <div class="mis-publicaciones-section">
-      <div class="section-header">
-        <h2 class="section-title">Mis Publicaciones</h2>
-        <p class="section-desc">Artículos que tienes activos o vendidos en el mercado universitario.</p>
+    <!-- PESTAÑA 2: MIS COMPRAS -->
+    <div class="tab-pane" *ngIf="tabActiva() === 'compras'">
+      <div class="pane-header">
+        <h2>Mis Compras</h2>
       </div>
 
-      <div *ngIf="cargandoPublicaciones()" class="loading-state">
-        Cargando tus publicaciones...
+      <div *ngIf="cargandoCompras()" class="loading-state">
+        <span class="inline-spinner"></span>
+        <span>Cargando compras...</span>
       </div>
 
-      <div class="publicaciones-list" *ngIf="!cargandoPublicaciones()">
-        <div *ngFor="let item of misPublicaciones()" class="publicacion-item">
-          <img [src]="item.foto" [alt]="item.nombre" class="item-img" />
-          <div class="item-details">
-            <h4 class="item-nombre">{{ item.nombre }}</h4>
-            <span class="item-precio">S/ {{ item.precio }}</span>
-            <span class="item-estado" [ngClass]="item.disponible !== false ? 'estado-activo' : 'estado-vendido'">
-              {{ item.disponible !== false ? 'Disponible' : 'Vendido' }}
-            </span>
+      <div class="items-list" *ngIf="!cargandoCompras()">
+        <div *ngFor="let pedido of misCompras()" class="item-card">
+          <img [src]="pedido.producto.foto" [alt]="pedido.producto.nombre" class="item-thumb" />
+          <div class="item-body">
+            <div class="item-title-row">
+              <h4 class="item-name">{{ pedido.producto.nombre }}</h4>
+              <span class="tx-tag">{{ pedido.numeroTransaccion }}</span>
+            </div>
+            <div class="item-meta-row">
+              <span class="price-highlight">S/ {{ pedido.montoTotal }}</span>
+              <span class="meta-dot">•</span>
+              <span>{{ pedido.cantidad }} unid.</span>
+              <span class="meta-dot">•</span>
+              <span>Vendedor: {{ pedido.vendedor?.nombre || 'Estudiante UTP' }}</span>
+            </div>
+            <div class="item-sub-row">
+              <span>{{ pedido.fecha | date:'medium' }}</span>
+              <span class="badge-yape">Yape</span>
+            </div>
           </div>
-          <button (click)="eliminarPublicacion(item.id!)" class="btn-eliminar" title="Eliminar publicación">
-            🗑️
-          </button>
+          <div class="item-action">
+            <button type="button" class="btn-view-receipt" (click)="abrirComprobante(pedido)">
+              Ver Voucher
+            </button>
+          </div>
         </div>
 
-        <div *ngIf="misPublicaciones().length === 0" class="empty-publicaciones">
-          <p>No tienes publicaciones activas actualmente.</p>
+        <div *ngIf="misCompras().length === 0" class="empty-state">
+          <div class="empty-icon">🛍️</div>
+          <h3>Sin compras registradas</h3>
+          <p>Aún no has realizado compras a través de la plataforma.</p>
+          <a routerLink="/explorar" class="btn-action-primary">
+            Explorar Catálogo
+          </a>
         </div>
       </div>
     </div>
+
+    <!-- PESTAÑA 3: MIS VENTAS -->
+    <div class="tab-pane" *ngIf="tabActiva() === 'ventas'">
+      <div class="pane-header">
+        <h2>Mis Ventas</h2>
+      </div>
+
+      <div *ngIf="cargandoVentas()" class="loading-state">
+        <span class="inline-spinner"></span>
+        <span>Cargando ventas...</span>
+      </div>
+
+      <div class="items-list" *ngIf="!cargandoVentas()">
+        <div *ngFor="let venta of misVentas()" class="item-card">
+          <img [src]="venta.producto.foto" [alt]="venta.producto.nombre" class="item-thumb" />
+          <div class="item-body">
+            <div class="item-title-row">
+              <h4 class="item-name">{{ venta.producto.nombre }}</h4>
+              <span class="tx-tag">{{ venta.numeroTransaccion }}</span>
+            </div>
+            <div class="item-meta-row">
+              <span class="price-highlight text-green">S/ {{ venta.montoTotal }}</span>
+              <span class="meta-dot">•</span>
+              <span>{{ venta.cantidad }} unid.</span>
+              <span class="meta-dot">•</span>
+              <span>Comprador: {{ venta.comprador.nombre }}</span>
+            </div>
+            <div class="item-sub-row">
+              <span>Celular: <strong>+51 {{ venta.celularComprador }}</strong></span>
+              <span class="meta-dot">•</span>
+              <span>{{ venta.fecha | date:'short' }}</span>
+            </div>
+          </div>
+          <div class="item-action">
+            <button type="button" class="btn-view-receipt" (click)="abrirComprobante(venta)">
+              Ver Detalle
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="misVentas().length === 0" class="empty-state">
+          <div class="empty-icon">💰</div>
+          <h3>Sin ventas registradas</h3>
+          <p>Cuando otros estudiantes compren tus productos con Yape, aparecerán aquí.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 4: MIS PUBLICACIONES -->
+    <div class="tab-pane" *ngIf="tabActiva() === 'publicaciones'">
+      <div class="pane-header">
+        <h2>Mis Publicaciones</h2>
+      </div>
+
+      <div *ngIf="cargandoPublicaciones()" class="loading-state">
+        <span class="inline-spinner"></span>
+        <span>Cargando publicaciones...</span>
+      </div>
+
+      <div class="items-list" *ngIf="!cargandoPublicaciones()">
+        <div *ngFor="let item of misPublicaciones()" class="item-card">
+          <img [src]="item.foto" [alt]="item.nombre" class="item-thumb" />
+          <div class="item-body">
+            <div class="item-title-row">
+              <h4 class="item-name">{{ item.nombre }}</h4>
+              <span class="status-badge" [class.badge-available]="item.disponible !== false" [class.badge-paused]="item.disponible === false">
+                {{ item.disponible !== false ? 'Activo' : 'Pausado' }}
+              </span>
+            </div>
+            <div class="item-meta-row">
+              <span class="price-highlight">S/ {{ item.precio }}</span>
+              <span class="meta-dot">•</span>
+              <span>Categoría: {{ item.categoria }}</span>
+              <span class="stock-pill" *ngIf="item.stock !== undefined">
+                Stock: {{ item.stock }} unid.
+              </span>
+            </div>
+          </div>
+          <div class="item-actions-group">
+            <button 
+              type="button" 
+              class="btn-pub-action btn-pub-toggle" 
+              [class.is-paused]="item.disponible === false"
+              (click)="toggleDisponibilidad(item)" 
+              [title]="item.disponible !== false ? 'Pausar compras temporalmente (en clase / fuera de campus)' : 'Activar compras de este producto'">
+              <svg *ngIf="item.disponible !== false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="10" y1="15" x2="10" y2="9"></line>
+                <line x1="14" y1="15" x2="14" y2="9"></line>
+              </svg>
+              <svg *ngIf="item.disponible === false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>{{ item.disponible !== false ? 'Pausar' : 'Activar' }}</span>
+            </button>
+
+            <a [routerLink]="['/producto', item.id]" class="btn-pub-action btn-pub-view" title="Ver publicación completa">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>Ver</span>
+            </a>
+
+            <button type="button" class="btn-pub-action btn-pub-edit" (click)="abrirEditarPublicacion(item)" title="Editar publicación">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              <span>Editar</span>
+            </button>
+
+            <button type="button" class="btn-pub-action btn-pub-delete" (click)="eliminarPublicacion(item.id!)" title="Eliminar publicación">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="misPublicaciones().length === 0" class="empty-state">
+          <div class="empty-icon">📢</div>
+          <h3>Sin publicaciones activas</h3>
+          <p>Aún no tienes publicaciones en el mercado universitario.</p>
+          <a routerLink="/publicar" class="btn-action-primary">
+            Publicar un Producto
+          </a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
+
+<!-- MODAL DE COMPROBANTE DIGITAL -->
+<div class="modal-backdrop" *ngIf="pedidoSeleccionado() as p" (click)="cerrarComprobante()">
+  <div class="receipt-card" (click)="$event.stopPropagation()">
+    <div class="receipt-header">
+      <div class="receipt-brand">
+        <span class="yape-tag">Yape</span>
+        <span class="receipt-tag">Comprobante de Pago</span>
+      </div>
+      <button class="btn-close" (click)="cerrarComprobante()" title="Cerrar">✕</button>
+    </div>
+
+    <div class="receipt-body">
+      <div class="check-circle">✓</div>
+      <h3 class="tx-status">Pago Confirmado</h3>
+      <p class="tx-id">{{ p.numeroTransaccion }}</p>
+
+      <div class="receipt-details">
+        <div class="receipt-row">
+          <span class="rl">Producto:</span>
+          <span class="rv font-semibold">{{ p.producto.nombre }}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="rl">Cantidad:</span>
+          <span class="rv">{{ p.cantidad }} unid.</span>
+        </div>
+        <div class="receipt-row">
+          <span class="rl">Monto Pagado:</span>
+          <span class="rv amount-val">S/ {{ p.montoTotal }}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="rl">Vendedor:</span>
+          <span class="rv">{{ p.vendedor?.nombre || 'Estudiante UTP' }}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="rl">Comprador:</span>
+          <span class="rv">{{ p.comprador.nombre }}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="rl">Celular:</span>
+          <span class="rv">+51 {{ p.celularComprador }}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="rl">Fecha:</span>
+          <span class="rv">{{ p.fecha | date:'medium' }}</span>
+        </div>
+      </div>
+
+      <div class="receipt-notice">
+        📍 Muestra este comprobante digital o código de transacción para coordinar la entrega en campus.
+      </div>
+
+      <button type="button" class="btn-done" (click)="cerrarComprobante()">
+        Aceptar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE EDICIÓN DE PUBLICACIÓN -->
+<div class="modal-backdrop" *ngIf="publicacionEnEdicion() as pub" (click)="cerrarEditarPublicacion()">
+  <div class="edit-modal-card" (click)="$event.stopPropagation()">
+    <div class="edit-modal-header">
+      <div class="edit-modal-title">
+        <h3>Editar Publicación</h3>
+      </div>
+      <button type="button" class="btn-close" (click)="cerrarEditarPublicacion()" title="Cerrar">✕</button>
+    </div>
+
+    <!-- Banner de error si falla la actualización -->
+    <div *ngIf="errorEdicion()" class="edit-error-banner">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ errorEdicion() }}</span>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="guardarEdicionPublicacion()" class="edit-form-content" novalidate>
+      <div class="edit-fields-grid">
+        <!-- Título -->
+        <div class="modal-field full-width">
+          <label for="edit-nombre">Título *</label>
+          <input
+            type="text"
+            id="edit-nombre"
+            formControlName="nombre"
+            class="modal-input"
+            [class.is-invalid]="isEditFieldInvalid('nombre')"
+            placeholder="Título del producto"
+          />
+        </div>
+
+        <!-- Categoría -->
+        <div class="modal-field">
+          <label for="edit-categoria">Categoría *</label>
+          <select id="edit-categoria" formControlName="categoria" class="modal-input modal-select">
+            <option value="Producto">Producto</option>
+            <option value="Comida">Comida</option>
+            <option value="Servicios">Servicios</option>
+          </select>
+        </div>
+
+        <!-- Precio -->
+        <div class="modal-field">
+          <label for="edit-precio">Precio (S/) *</label>
+          <div class="price-input-box">
+            <span class="currency-tag">S/</span>
+            <input
+              type="number"
+              id="edit-precio"
+              formControlName="precio"
+              class="modal-input has-currency"
+              [class.is-invalid]="isEditFieldInvalid('precio')"
+              placeholder="0.00"
+              step="0.5"
+              min="0.1"
+            />
+          </div>
+        </div>
+
+        <!-- Stock -->
+        <div class="modal-field">
+          <label for="edit-stock">Stock disponible *</label>
+          <input
+            type="number"
+            id="edit-stock"
+            formControlName="stock"
+            class="modal-input"
+            [class.is-invalid]="isEditFieldInvalid('stock')"
+            min="0"
+          />
+        </div>
+
+        <!-- Estado / Disponibilidad -->
+        <div class="modal-field">
+          <label for="edit-disponible">Disponibilidad de Entrega *</label>
+          <select id="edit-disponible" formControlName="disponible" class="modal-input modal-select">
+            <option [ngValue]="true">Activo (Disponible en campus)</option>
+            <option [ngValue]="false">Pausado (En clase / fuera de campus)</option>
+          </select>
+        </div>
+
+        <!-- Descripción -->
+        <div class="modal-field full-width">
+          <label for="edit-descripcion">Descripción *</label>
+          <textarea
+            id="edit-descripcion"
+            formControlName="descripcion"
+            rows="3"
+            class="modal-input modal-textarea"
+            [class.is-invalid]="isEditFieldInvalid('descripcion')"
+            placeholder="Detalles del producto o condiciones de entrega"
+          ></textarea>
+        </div>
+
+        <!-- Imagen URL -->
+        <div class="modal-field full-width">
+          <label for="edit-foto">URL de Imagen</label>
+          <div class="photo-input-preview-row">
+            <input
+              type="text"
+              id="edit-foto"
+              formControlName="foto"
+              class="modal-input"
+              placeholder="https://ejemplo.com/imagen.jpg"
+            />
+            <div class="modal-photo-thumb" *ngIf="editForm.get('foto')?.value">
+              <img [src]="editForm.get('foto')?.value" alt="Preview" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="edit-modal-footer">
+        <a [routerLink]="['/producto', pub.id]" (click)="cerrarEditarPublicacion()" class="btn-link-preview">
+          Ver como Comprador →
+        </a>
+
+        <div class="footer-btn-actions">
+          <button type="button" class="btn-cancel" (click)="cerrarEditarPublicacion()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-save-edit" [disabled]="guardandoEdicion()">
+            <span *ngIf="!guardandoEdicion()">Guardar Cambios</span>
+            <span *ngIf="guardandoEdicion()" class="spinner-saving">
+              Guardando...
+            </span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

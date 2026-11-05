@@ -24,6 +24,13 @@
   font-weight: 700;
   font-size: 1.2rem;
   color: #1F2937;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
 }
 
 .logo-icon {
@@ -41,7 +48,37 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+}
+
+.auth-btn {
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  transition: all 0.2s;
+
+  &.login-link {
+    color: #0056D2;
+    background-color: transparent;
+    border: 1px solid #D1D5DB;
+
+    &:hover {
+      background-color: #EFF6FF;
+      border-color: #93C5FD;
+    }
+  }
+
+  &.register-link {
+    color: white;
+    background-color: #0056D2;
+    border: 1px solid #0056D2;
+
+    &:hover {
+      background-color: #0043A8;
+    }
+  }
 }
 
 .profile-btn {
@@ -49,12 +86,44 @@
   align-items: center;
   gap: 6px;
   background-color: #F3F4F6;
-  border: none;
-  padding: 8px 16px;
+  border: 1px solid #E5E7EB;
+  padding: 8px 14px;
   border-radius: 9999px;
   font-weight: 600;
   cursor: pointer;
   color: #374151;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #E5E7EB;
+  }
+
+  .user-chip-text {
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FEE2E2;
+  border: 1px solid #FECACA;
+  color: #DC2626;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #FCA5A5;
+    color: #991B1B;
+  }
 }
 
 .app-main {
