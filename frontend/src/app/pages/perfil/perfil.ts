@@ -232,7 +232,7 @@ export class Perfil implements OnInit {
   }
 
   eliminarPublicacion(id: number) {
-    if (!confirm('¿Deseas eliminar esta publicación?')) {
+    if (!confirm('¿Deseas eliminar esta publicación de forma definitiva?')) {
       return;
     }
 
@@ -241,7 +241,9 @@ export class Perfil implements OnInit {
         this.misPublicaciones.update(lista => lista.filter(p => p.id !== id));
       },
       error: (err) => {
-        alert(err?.error?.message || 'No se pudo eliminar la publicación.');
+        console.error('Error al eliminar publicación:', err);
+        const msg = err?.error?.message || (typeof err?.error === 'string' ? err.error : null) || 'No se pudo eliminar la publicación.';
+        alert(msg);
       }
     });
   }
