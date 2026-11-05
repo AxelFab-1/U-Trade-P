@@ -59,6 +59,7 @@ export class Perfil implements OnInit {
 
   // Modal para ver comprobante digital
   readonly pedidoSeleccionado = signal<Pedido | null>(null);
+  readonly tipoComprobante = signal<'compra' | 'venta'>('compra');
 
   // Edición de Publicaciones
   readonly publicacionEnEdicion = signal<Producto | null>(null);
@@ -76,13 +77,15 @@ export class Perfil implements OnInit {
     disponible: [true]
   });
 
+  readonly modoEdicion = signal<boolean>(false);
+
   readonly perfilForm: FormGroup = this.fb.group({
-    nombre: ['', [Validators.required, Validators.minLength(3)]],
+    nombre: [{ value: '', disabled: true }, [Validators.required, Validators.minLength(3)]],
     correo: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-    telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
-    carrera: ['', [Validators.required]],
-    campus: ['', [Validators.required]],
-    bio: ['', [Validators.maxLength(200)]]
+    telefono: [{ value: '', disabled: true }, [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
+    carrera: [{ value: '', disabled: true }, [Validators.required]],
+    campus: [{ value: '', disabled: true }, [Validators.required]],
+    bio: [{ value: '', disabled: true }, [Validators.maxLength(200)]]
   });
 
   ngOnInit() {
@@ -102,7 +105,42 @@ export class Perfil implements OnInit {
     }
   }
 
+  activarEdicion(): void {
+    this.modoEdicion.set(true);
+    this.perfilForm.get('nombre')?.enable();
+    this.perfilForm.get('telefono')?.enable();
+    this.perfilForm.get('campus')?.enable();
+    this.perfilForm.get('carrera')?.enable();
+    this.perfilForm.get('bio')?.enable();
+  }
+
+  desactivarEdicion(): void {
+    this.modoEdicion.set(false);
+    this.perfilForm.get('nombre')?.disable();
+    this.perfilForm.get('telefono')?.disable();
+    this.perfilForm.get('campus')?.disable();
+    this.perfilForm.get('carrera')?.disable();
+    this.perfilForm.get('bio')?.disable();
+    this.isSubmitted.set(false);
+  }
+
+  cancelarEdicion(): void {
+    const est = this.estudiante();
+    this.perfilForm.patchValue({
+      nombre: est.nombre,
+      correo: est.correo,
+      telefono: est.telefono,
+      carrera: est.carrera,
+      campus: est.campus,
+      bio: est.bio
+    });
+    this.desactivarEdicion();
+  }
+
   setTab(tab: 'datos' | 'compras' | 'ventas' | 'publicaciones') {
+    if (this.tabActiva() === 'datos' && tab !== 'datos' && this.modoEdicion()) {
+      this.cancelarEdicion();
+    }
     this.tabActiva.set(tab);
     if (tab === 'compras') this.cargarMisCompras();
     if (tab === 'ventas') this.cargarMisVentas();
@@ -223,12 +261,22 @@ export class Perfil implements OnInit {
     });
   }
 
-  abrirComprobante(pedido: Pedido) {
+  abrirComprobante(pedido: Pedido, tipo: 'compra' | 'venta' = 'compra') {
+    this.tipoComprobante.set(tipo);
     this.pedidoSeleccionado.set(pedido);
   }
 
   cerrarComprobante() {
     this.pedidoSeleccionado.set(null);
+  }
+
+  esVentaModal(): boolean {
+    const sel = this.pedidoSeleccionado();
+    if (!sel) return false;
+    if (this.tipoComprobante() === 'venta') return true;
+    if (this.tabActiva() === 'ventas') return true;
+    const correoAuth = this.authService.getCorreoUsuario();
+    return !!correoAuth && sel.vendedor?.correo?.toLowerCase() === correoAuth.toLowerCase();
   }
 
   eliminarPublicacion(id: number) {
@@ -248,7 +296,38 @@ export class Perfil implements OnInit {
     });
   }
 
+  estaAgotado(item: Producto): boolean {
+    return Boolean(item.comprador || (item.stock !== undefined && item.stock !== null && item.stock <= 0));
+  }
+
+  estaPausado(item: Producto): boolean {
+    return !this.estaAgotado(item) && item.disponible === false;
+  }
+
+  obtenerEstadoBadge(item: Producto): { texto: string; clase: string } {
+    if (this.estaAgotado(item)) {
+      return {
+        texto: item.categoria === 'Comida' ? 'Agotado' : 'Vendido',
+        clase: 'badge-agotado'
+      };
+    }
+    if (this.estaPausado(item)) {
+      return {
+        texto: 'Pausado',
+        clase: 'badge-paused'
+      };
+    }
+    return {
+      texto: 'Activo',
+      clase: 'badge-available'
+    };
+  }
+
   toggleDisponibilidad(producto: Producto): void {
+    if (this.estaAgotado(producto)) {
+      alert('Esta publicación está agotada. Edita la publicación para reponer stock antes de activarla.');
+      return;
+    }
     const nuevoEstado = producto.disponible === false ? true : false;
     this.http.patch<Producto>(`${environment.apiUrl}/productos/${producto.id}/disponibilidad`, { disponible: nuevoEstado }).subscribe({
       next: (actualizado) => {
@@ -366,7 +445,7 @@ export class Perfil implements OnInit {
         }
 
         this.guardadoExitoso.set(true);
-        this.isSubmitted.set(false);
+        this.desactivarEdicion();
 
         setTimeout(() => {
           this.guardadoExitoso.set(false);
@@ -390,7 +469,7 @@ export class Perfil implements OnInit {
         }
 
         this.guardadoExitoso.set(true);
-        this.isSubmitted.set(false);
+        this.desactivarEdicion();
 
         setTimeout(() => {
           this.guardadoExitoso.set(false);
