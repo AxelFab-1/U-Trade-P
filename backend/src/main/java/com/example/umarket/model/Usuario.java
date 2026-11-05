@@ -18,6 +18,10 @@ public class Usuario {
     private String password;
     private String rol; 
 
+    private String telefono;
+    private String campus;
+    private String carrera;
+
     public Usuario() {
     }
 
@@ -39,4 +43,13 @@ public class Usuario {
     public void setPassword(String password) { this.password = password; }
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
+
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+
+    public String getCampus() { return campus; }
+    public void setCampus(String campus) { this.campus = campus; }
+
+    public String getCarrera() { return carrera; }
+    public void setCarrera(String carrera) { this.carrera = carrera; }
 }

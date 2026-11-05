@@ -43,14 +43,19 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) 
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() 
+                .requestMatchers("/api/auth/**", "/error").permitAll() 
                 .requestMatchers("/h2-console/**").permitAll() 
                 
-                .requestMatchers(HttpMethod.GET, "/api/productos/**").hasAnyRole("ESTUDIANTE", "ADMIN")
+                // Catálogo de Productos: GET público para explorar, mutaciones protegidas con RBAC
+                .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyRole("ESTUDIANTE", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasAnyRole("ESTUDIANTE", "ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasAnyRole("ESTUDIANTE", "ADMIN")                
                 
+                // Pasarela Yape y Pedidos
+                .requestMatchers("/api/pagos/**").hasAnyRole("ESTUDIANTE", "ADMIN")
+                .requestMatchers("/api/pedidos/**").hasAnyRole("ESTUDIANTE", "ADMIN")
+
                 // Reglas para Usuarios
                 .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll() 
                 .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
