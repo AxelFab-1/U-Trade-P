@@ -142,7 +142,7 @@ export class DetalleProducto implements OnInit {
     if (!prod || !prod.id) return;
 
     if (this.esMiProducto()) {
-      this.errorCompra.set('Eres el vendedor de esta publicación. No puedes comprar tu propio producto.');
+      this.errorCompra.set('No puedes comprar tu propia publicación.');
       this.cdr.markForCheck();
       return;
     }

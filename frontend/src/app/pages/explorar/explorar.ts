@@ -123,6 +123,10 @@ export class Explorar implements OnInit {
     const filtroActivo = opcionesTab.find(f => f.value === valorFiltro);
 
     const filtrados = this.todosLosProductos().filter(p => {
+      // 0. Excluir productos vendidos / sin stock disponible (stock <= 0 o con comprador)
+      const noEstaVendido = (p.stock === undefined || p.stock === null || p.stock > 0) && !p.comprador;
+      if (!noEstaVendido) return false;
+
       // 1. Filtro de pestaña activa (Producto, Comida, Servicios)
       const coincideTab = !tab || p.categoria === tab;
       if (!coincideTab) return false;

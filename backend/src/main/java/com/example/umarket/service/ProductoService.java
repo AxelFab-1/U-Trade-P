@@ -94,6 +94,9 @@ public class ProductoService {
             }
             if (p.getStock() != null) {
                 productoExistente.setStock(Math.max(0, p.getStock()));
+                if (p.getStock() > 0) {
+                    productoExistente.setComprador(null);
+                }
             }
             if (p.getDisponible() != null) {
                 productoExistente.setDisponible(p.getDisponible());
@@ -152,6 +155,9 @@ public class ProductoService {
         }
 
         boolean nuevoEstado = (estadoDeseado != null) ? estadoDeseado : (producto.getDisponible() == null || !producto.getDisponible());
+        if (nuevoEstado && ((producto.getStock() != null && producto.getStock() <= 0) || producto.getComprador() != null)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes activar un producto agotado o vendido. Repón stock primero.");
+        }
         producto.setDisponible(nuevoEstado);
         return repository.save(producto);
     }
