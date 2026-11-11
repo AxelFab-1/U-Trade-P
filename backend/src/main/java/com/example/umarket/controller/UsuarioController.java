@@ -93,6 +93,35 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioActualizado);
     }
 
+    @PostMapping("/admin")
+    public ResponseEntity<?> crearAdmin(@RequestBody Usuario req) {
+        if (req.getNombre() == null || !req.getNombre().trim().matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]{3,60}$")) {
+            return ResponseEntity.badRequest().body("Error: El nombre completo solo debe contener letras y espacios (entre 3 y 60 caracteres).");
+        }
+
+        if (req.getCorreo() == null || !req.getCorreo().trim().toLowerCase().matches("^[a-zA-Z0-9._%+-]+@utp\\.edu\\.pe$")) {
+            return ResponseEntity.badRequest().body("Error: Solo se permiten correos institucionales de la UTP (@utp.edu.pe).");
+        }
+
+        if (req.getPassword() == null || req.getPassword().trim().length() < 6) {
+            return ResponseEntity.badRequest().body("Error: La contraseña debe tener al menos 6 caracteres.");
+        }
+
+        if (service.existePorCorreo(req.getCorreo().trim().toLowerCase())) {
+            return ResponseEntity.badRequest().body("Error: Ya existe un usuario registrado con este correo.");
+        }
+
+        Usuario nuevoAdmin = new Usuario();
+        nuevoAdmin.setNombre(req.getNombre().trim());
+        nuevoAdmin.setCorreo(req.getCorreo().trim().toLowerCase());
+        nuevoAdmin.setPassword(req.getPassword());
+        nuevoAdmin.setRol("ADMIN");
+
+        Usuario creado = service.guardarUsuario(nuevoAdmin);
+        creado.setPassword(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+    }
+
     @DeleteMapping("/{id:[0-9]+}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         if (service.eliminarUsuario(id)) {

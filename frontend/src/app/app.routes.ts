@@ -6,7 +6,9 @@ import { Login } from './pages/login/login';
 import { Registro } from './pages/registro/registro';
 import { Mensajes } from './pages/mensajes/mensajes';
 import { Perfil } from './pages/perfil/perfil';
+import { Admin } from './pages/admin/admin';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   // Ruta principal del catálogo
@@ -20,6 +22,9 @@ export const routes: Routes = [
 
   // Alias compatible para navegación directa a publicar
   { path: 'publicar', redirectTo: 'producto/nuevo', pathMatch: 'full' },
+
+  // Panel exclusivo de Administración (Protegido por rol ADMIN)
+  { path: 'admin', component: Admin, canActivate: [adminGuard] },
 
   // Autenticación y perfil
   { path: 'login', component: Login },

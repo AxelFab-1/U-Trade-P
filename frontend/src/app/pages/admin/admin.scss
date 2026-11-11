@@ -1,0 +1,115 @@
+// Variables SASS para el Panel de Administrador (Requisito Unidad 3 - Semana 11)
+$color-primario: #0d6efd;
+$color-peligro: #dc3545;
+$color-fondo-suave: #f8f9fa;
+$color-borde: #dee2e6;
+$sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.06);
+$radio-tarjeta: 12px;
+
+.admin-container {
+  max-width: 1300px;
+  min-height: calc(100vh - 140px);
+
+  .admin-header {
+    .custom-pills {
+      background: $color-fondo-suave;
+      padding: 4px;
+      border-radius: 10px;
+      gap: 4px;
+
+      .nav-link {
+        color: #495057;
+        font-weight: 500;
+        font-size: 0.9rem;
+        padding: 8px 16px;
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+          color: $color-peligro;
+          background-color: rgba($color-peligro, 0.05);
+        }
+
+        &.active {
+          background-color: $color-peligro;
+          color: #ffffff;
+          box-shadow: 0 2px 6px rgba($color-peligro, 0.35);
+        }
+      }
+    }
+  }
+
+  // Estilos del patrón Master-Detail
+  .master-detail-layout {
+    .master-card, .detail-card {
+      border-radius: $radio-tarjeta;
+      box-shadow: $sombra-suave;
+      height: 100%;
+    }
+
+    .master-list-body {
+      max-height: 580px;
+      overflow-y: auto;
+    }
+
+    .user-list-group {
+      .user-item {
+        border-left: 3px solid transparent;
+        transition: all 0.15s ease-in-out;
+
+        &:hover {
+          background-color: $color-fondo-suave;
+          border-left-color: $color-peligro;
+        }
+
+        &.active {
+          background-color: #fff5f5;
+          border-left-color: $color-peligro;
+          color: inherit;
+
+          .user-name {
+            color: $color-peligro;
+            font-weight: 700;
+          }
+        }
+      }
+    }
+
+    .detail-card {
+      .avatar-circle {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background-color: #fee2e2;
+        color: $color-peligro;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  // Tabla de moderación
+  .table-responsive {
+    .table {
+      thead th {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+
+      tbody tr {
+        transition: background-color 0.15s ease;
+
+        &:hover {
+          background-color: rgba($color-peligro, 0.02);
+        }
+      }
+    }
+  }
+}

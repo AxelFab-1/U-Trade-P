@@ -69,7 +69,11 @@ export class Login implements OnInit {
       next: () => {
         this.cargando.set(false);
         this.cdr.markForCheck();
-        this.router.navigate(['/explorar']);
+        if (this.authService.isAdmin()) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/explorar']);
+        }
       },
       error: (err) => {
         this.cargando.set(false);
