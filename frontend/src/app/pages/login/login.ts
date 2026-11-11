@@ -56,8 +56,8 @@ export class Login implements OnInit {
     // Normalizar correo: convertir comas a puntos en caso de error tipográfico, recortar y pasar a minúsculas
     const emailNormalizado = emailRaw.replace(/,/g, '.').toLowerCase();
 
-    if (!emailNormalizado.endsWith('@utp.edu.pe')) {
-      this.errorMensaje.set('El correo debe pertenecer al dominio institucional (@utp.edu.pe).');
+    if (!emailNormalizado.includes('@') || !emailNormalizado.includes('.')) {
+      this.errorMensaje.set('Ingresa un correo electrónico válido.');
       this.cdr.markForCheck();
       return;
     }

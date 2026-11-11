@@ -23,7 +23,7 @@ export class Admin implements OnInit {
   // Pestaña activa ('usuarios' | 'productos' | 'nuevo-admin')
   readonly pestanaActiva = signal<'usuarios' | 'productos' | 'nuevo-admin'>('usuarios');
 
-  // Signals para Gestión de Usuarios (Master-Detail)
+  // Signals para Gestión de Usuarios
   readonly usuarios = signal<Usuario[]>([]);
   readonly usuarioSeleccionado = signal<Usuario | null>(null);
   readonly cargandoUsuarios = signal<boolean>(false);
@@ -41,8 +41,8 @@ export class Admin implements OnInit {
 
   // Formulario Reactivo para Nuevo Administrador
   readonly adminForm: FormGroup = this.fb.group({
-    nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]{3,60}$/)]],
-    correo: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@utp\.edu\.pe$/i)]],
+    nombre: ['', [Validators.required, Validators.minLength(3)]],
+    correo: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]]
   });
 
@@ -83,21 +83,20 @@ export class Admin implements OnInit {
     this.mensajeError.set('');
   }
 
-  // --- GESTIÓN DE USUARIOS (MASTER-DETAIL) ---
+  // --- GESTIÓN DE USUARIOS ---
   cargarUsuarios(): void {
     this.cargandoUsuarios.set(true);
     this.usuarioService.listar().subscribe({
       next: (data) => {
         this.usuarios.set(data);
         this.cargandoUsuarios.set(false);
-        // Si no hay seleccionado o el seleccionado ya no existe, seleccionar el primero
         if (data.length > 0 && !this.usuarioSeleccionado()) {
           this.usuarioSeleccionado.set(data[0]);
         }
       },
-      error: (err) => {
+      error: () => {
         this.cargandoUsuarios.set(false);
-        this.mensajeError.set('Error al cargar la lista de usuarios desde el servidor.');
+        this.mensajeError.set('Error al cargar la lista de usuarios.');
       }
     });
   }
@@ -115,7 +114,7 @@ export class Admin implements OnInit {
       return;
     }
 
-    const confirmacion = confirm(`¿Estás seguro de eliminar al usuario "${u.nombre}" (${u.correo})?\nSe eliminarán sus publicaciones indebidas y se protegerán las compras de otros estudiantes.`);
+    const confirmacion = confirm('¿Eliminar usuario?');
     if (!confirmacion) return;
 
     this.limpiarMensajes();
@@ -127,7 +126,6 @@ export class Admin implements OnInit {
           const restantes = this.usuarios();
           this.usuarioSeleccionado.set(restantes.length > 0 ? restantes[0] : null);
         }
-        // Refrescar también productos en caso se hayan eliminado los del usuario
         this.cargarProductos();
       },
       error: (err) => {
@@ -137,7 +135,7 @@ export class Admin implements OnInit {
     });
   }
 
-  // --- MODERACIÓN DE PRODUCTOS ---
+  // --- PUBLICACIONES ---
   cargarProductos(): void {
     this.cargandoProductos.set(true);
     this.productoService.getProductos().subscribe({
@@ -154,13 +152,13 @@ export class Admin implements OnInit {
   eliminarProducto(p: Producto): void {
     if (!p.id) return;
 
-    const confirmacion = confirm(`¿Estás seguro de dar de baja la publicación "${p.nombre}"?`);
+    const confirmacion = confirm('¿Eliminar publicación?');
     if (!confirmacion) return;
 
     this.limpiarMensajes();
     this.productoService.eliminarProducto(p.id).subscribe({
       next: () => {
-        this.mensajeExito.set(`Publicación "${p.nombre}" eliminada del catálogo por moderación.`);
+        this.mensajeExito.set(`Publicación "${p.nombre}" eliminada correctamente.`);
         this.productos.update(lista => lista.filter(item => item.id !== p.id));
       },
       error: (err) => {
@@ -174,6 +172,7 @@ export class Admin implements OnInit {
   registrarAdmin(): void {
     if (this.adminForm.invalid) {
       this.adminForm.markAllAsTouched();
+      this.mensajeError.set('Por favor completa todos los campos requeridos correctamente.');
       return;
     }
 
@@ -181,14 +180,18 @@ export class Admin implements OnInit {
     this.guardandoAdmin.set(true);
 
     const formVal = this.adminForm.value;
+    const nombre = formVal.nombre ? formVal.nombre.trim() : '';
+    const correo = formVal.correo ? formVal.correo.trim().toLowerCase() : '';
+    const password = formVal.password;
+
     this.usuarioService.crearAdmin({
-      nombre: formVal.nombre.trim(),
-      correo: formVal.correo.trim().toLowerCase(),
-      password: formVal.password
+      nombre,
+      correo,
+      password
     }).subscribe({
       next: (nuevoAdmin) => {
         this.guardandoAdmin.set(false);
-        this.mensajeExito.set(`¡Administrador "${nuevoAdmin.nombre}" creado exitosamente!`);
+        this.mensajeExito.set(`Administrador "${nuevoAdmin.nombre}" creado exitosamente.`);
         this.adminForm.reset();
         this.usuarios.update(lista => [nuevoAdmin, ...lista]);
         this.usuarioSeleccionado.set(nuevoAdmin);
