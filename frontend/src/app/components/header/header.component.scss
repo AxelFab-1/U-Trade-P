@@ -1,0 +1,152 @@
+// Variables SASS para el componente Header (Requisito Semana 11)
+$header-bg: #FFFFFF;
+$border-color: #E5E7EB;
+$color-primario: #0056D2;
+$color-primario-hover: #0043A8;
+$sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: $header-bg;
+  border-bottom: 1px solid $border-color;
+  box-shadow: $sombra-header;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1F2937;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background-color: $color-primario;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #4B5563;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    color: $color-primario;
+    background-color: #F3F4F6;
+  }
+
+  &.active {
+    color: $color-primario;
+    font-weight: 600;
+  }
+}
+
+.auth-btn {
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  transition: all 0.2s;
+
+  &.login-link {
+    color: $color-primario;
+    background-color: transparent;
+    border: 1px solid #D1D5DB;
+
+    &:hover {
+      background-color: #EFF6FF;
+      border-color: #93C5FD;
+    }
+  }
+
+  &.register-link {
+    color: white;
+    background-color: $color-primario;
+    border: 1px solid $color-primario;
+
+    &:hover {
+      background-color: $color-primario-hover;
+    }
+  }
+}
+
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #F3F4F6;
+  border: 1px solid $border-color;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #374151;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #E5E7EB;
+  }
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid $border-color;
+  background-color: white;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #FEE2E2;
+    color: #DC2626;
+    border-color: #FCA5A5;
+  }
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktop-only {
+    display: inline-block;
+  }
+}

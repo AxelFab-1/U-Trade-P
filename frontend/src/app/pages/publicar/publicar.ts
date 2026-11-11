@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { ProductoService } from '../../core/services/producto.service';
 
 @Component({
   selector: 'app-publicar',
@@ -16,6 +17,7 @@ export class Publicar implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly productoService = inject(ProductoService);
 
   // Estados de validación de perfil previo a publicar
   readonly cargandoPerfil = signal<boolean>(true);
@@ -32,6 +34,7 @@ export class Publicar implements OnInit {
   // 'UNICO' (1 sola unidad) o 'STOCK' (múltiples unidades con contador)
   readonly tipoInventario = signal<'UNICO' | 'STOCK'>('UNICO');
 
+  // Formulario Reactivo con FormBuilder y Validators (Requisito Unidad 3 - Semana 13)
   readonly publicarForm: FormGroup = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
     categoria: ['', [Validators.required]],
@@ -92,11 +95,6 @@ export class Publicar implements OnInit {
     this.fotoUrl.set(valor.trim());
   }
 
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.publicarForm.get(fieldName);
-    return !!field && field.invalid && (field.dirty || field.touched || this.isSubmitted());
-  }
-
   onSubmit(): void {
     this.isSubmitted.set(true);
     this.errorPublicacion.set('');
@@ -113,7 +111,6 @@ export class Publicar implements OnInit {
 
     this.guardando.set(true);
     const formVal = this.publicarForm.getRawValue();
-
     const stockFinal = this.tipoInventario() === 'UNICO' ? 1 : Math.max(1, Number(formVal.stock) || 1);
 
     const nuevoProducto = {
@@ -125,7 +122,8 @@ export class Publicar implements OnInit {
       foto: formVal.foto?.trim() || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&q=80'
     };
 
-    this.http.post<any>(`${environment.apiUrl}/productos`, nuevoProducto).subscribe({
+    // CRUD mediante servicio centralizado (Requisito Unidad 3 - Semana 14)
+    this.productoService.crearProducto(nuevoProducto).subscribe({
       next: (creado) => {
         this.guardando.set(false);
         this.publicacionExitosa.set(true);

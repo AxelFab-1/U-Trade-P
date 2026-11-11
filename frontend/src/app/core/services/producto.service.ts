@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Producto } from '../models/producto.model';
 import { environment } from '../../../environments/environment';
 
@@ -8,43 +8,38 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ProductoService {
-  private apiUrl = `${environment.apiUrl}/productos`;
+  private readonly apiUrl = `${environment.apiUrl}/productos`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
+  // 1. READ / LISTAR: Obtener todos los productos (Requisito Unidad 3 - Semana 14)
   getProductos(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(this.apiUrl).pipe(
-      catchError((error) => {
-        console.error('Error al obtener productos desde la base de datos H2:', error);
-        return of([]);
-      })
-    );
+    return this.http.get<Producto[]>(this.apiUrl);
   }
 
-  getProductoById(id: number): Observable<Producto | undefined> {
-    return this.http.get<Producto>(`${this.apiUrl}/${id}`).pipe(
-      catchError((error) => {
-        console.error(`Error al obtener producto ${id} desde H2:`, error);
-        return of(undefined);
-      })
-    );
+  // 2. READ / DETALLE: Obtener un producto por ID (Requisito Unidad 3 - Semana 14)
+  getProductoById(id: number): Observable<Producto> {
+    return this.http.get<Producto>(`${this.apiUrl}/${id}`);
   }
 
-  getProductosPorVendedor(usuarioId: number): Observable<Producto[]> {
-    return this.http.get<Producto[]>(`${this.apiUrl}/vendedor/${usuarioId}`).pipe(
-      catchError((error) => {
-        console.error(`Error al obtener productos del vendedor ${usuarioId}:`, error);
-        return of([]);
-      })
-    );
-  }
-
+  // 3. CREATE / CREAR: Publicar un nuevo producto (Requisito Unidad 3 - Semana 14)
   crearProducto(producto: Partial<Producto>): Observable<Producto> {
     return this.http.post<Producto>(this.apiUrl, producto);
   }
 
-  comprarProducto(id: number): Observable<Producto> {
-    return this.http.post<Producto>(`${this.apiUrl}/${id}/comprar`, {});
+  // 4. UPDATE / ACTUALIZAR: Modificar datos de un producto (Requisito Unidad 3 - Semana 14)
+  actualizarProducto(id: number, producto: Partial<Producto>): Observable<Producto> {
+    return this.http.put<Producto>(`${this.apiUrl}/${id}`, producto);
+  }
+
+  // 5. DELETE / ELIMINAR: Dar de baja una publicación (Requisito Unidad 3 - Semana 14)
+  eliminarProducto(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // Métodos complementarios del negocio
+  getProductosPorVendedor(usuarioId: number): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.apiUrl}/vendedor/${usuarioId}`);
   }
 
   cambiarDisponibilidad(id: number, disponible?: boolean): Observable<Producto> {
@@ -52,8 +47,7 @@ export class ProductoService {
     return this.http.patch<Producto>(`${this.apiUrl}/${id}/disponibilidad`, body);
   }
 
-  eliminarProducto(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  comprarProducto(id: number): Observable<Producto> {
+    return this.http.post<Producto>(`${this.apiUrl}/${id}/comprar`, {});
   }
 }
-
