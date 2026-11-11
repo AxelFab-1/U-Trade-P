@@ -27,13 +27,14 @@
         (ngModelChange)="onSearchChange($event)"
         [placeholder]="placeholderBusqueda()" 
         class="search-input" />
-      <button 
-        *ngIf="searchTerm()" 
-        (click)="limpiarFiltros()" 
-        class="clear-btn" 
-        title="Limpiar búsqueda">
-        ✕
-      </button>
+      @if (searchTerm()) {
+        <button 
+          (click)="limpiarFiltros()" 
+          class="clear-btn" 
+          title="Limpiar búsqueda">
+          ✕
+        </button>
+      }
     </div>
   </div>
 
@@ -48,35 +49,39 @@
   </div>
 
   <!-- Estado de carga -->
-  <div *ngIf="cargando()" class="loading-state-explorar">
-    <span class="inline-spinner"></span>
-    <span>Cargando catálogo...</span>
-  </div>
-
-  <!-- Grid de Productos -->
-  <div class="products-grid" *ngIf="!cargando()">
-    <app-product-card 
-      *ngFor="let prod of productosFiltrados()" 
-      [producto]="prod">
-    </app-product-card>
-    
-    <!-- Mensaje si no hay productos -->
-    <div *ngIf="productosFiltrados().length === 0" class="empty-state-card">
-      <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#94A3B8" stroke-width="1.75">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <h3>Sin resultados</h3>
-      <p>
-        {{ searchTerm() ? 'No encontramos coincidencias para "' + searchTerm() + '".' : 'No hay publicaciones en esta categoría.' }}
-      </p>
-      <button 
-        *ngIf="searchTerm() || categoriaSeleccionada() !== 'TODAS'" 
-        (click)="limpiarFiltros()"
-        class="btn-reset-filters">
-        Restablecer filtros
-      </button>
+  @if (cargando()) {
+    <div class="loading-state-explorar">
+      <span class="inline-spinner"></span>
+      <span>Cargando catálogo desde la base de datos...</span>
     </div>
-  </div>
-
+  } @else {
+    <!-- Grid de Productos (Comunicación Padre-Hijo con @Input y @Output) -->
+    <div class="products-grid">
+      @for (prod of productosFiltrados(); track prod.id) {
+        <app-product-card 
+          [producto]="prod"
+          (verDetalle)="irADetalle($event)">
+        </app-product-card>
+      } @empty {
+        <!-- Estado vacío cuando no hay resultados -->
+        <div class="empty-state-card">
+          <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#94A3B8" stroke-width="1.75">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <h3>Sin resultados</h3>
+          <p>
+            {{ searchTerm() ? 'No encontramos coincidencias para "' + searchTerm() + '".' : 'No hay publicaciones en esta categoría.' }}
+          </p>
+          @if (searchTerm() || categoriaSeleccionada() !== 'TODAS') {
+            <button 
+              (click)="limpiarFiltros()"
+              class="btn-reset-filters">
+              Restablecer filtros
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
 </div>

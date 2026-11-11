@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ProductoService } from '../../core/services/producto.service';
 import { Producto } from '../../core/models/producto.model';
 import { ProductCard } from '../../components/product-card/product-card';
@@ -49,6 +50,7 @@ export const FILTROS_POR_TAB: Record<string, FiltroOpcion[]> = {
 })
 export class Explorar implements OnInit {
   private readonly productoService = inject(ProductoService);
+  private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
 
   readonly activeTab = signal<string>('Producto');
@@ -79,6 +81,7 @@ export class Explorar implements OnInit {
     this.cargarProductos();
   }
 
+  // Suscripción básica a Observable y actualización de Signals (Zoneless)
   cargarProductos() {
     this.cargando.set(true);
     this.productoService.getProductos().subscribe({
@@ -97,9 +100,13 @@ export class Explorar implements OnInit {
     });
   }
 
+  // Comunicación Padre-Hijo: Manejo del @Output() emitido por la tarjeta
+  irADetalle(id: number): void {
+    this.router.navigate(['/producto', id]);
+  }
+
   setActiveTab(tab: string) {
     this.activeTab.set(tab);
-    // Al cambiar de categoría principal, resetear el filtro rápido a "TODAS"
     this.categoriaSeleccionada.set('TODAS');
     this.filtrarProductos();
   }
@@ -123,21 +130,17 @@ export class Explorar implements OnInit {
     const filtroActivo = opcionesTab.find(f => f.value === valorFiltro);
 
     const filtrados = this.todosLosProductos().filter(p => {
-      // 0. Excluir productos vendidos / sin stock disponible (stock <= 0 o con comprador)
       const noEstaVendido = (p.stock === undefined || p.stock === null || p.stock > 0) && !p.comprador;
       if (!noEstaVendido) return false;
 
-      // 1. Filtro de pestaña activa (Producto, Comida, Servicios)
       const coincideTab = !tab || p.categoria === tab;
       if (!coincideTab) return false;
 
-      // 2. Filtro por término de búsqueda en nombre o descripción
       const coincideTerm = !term ||
         Boolean(p.nombre && p.nombre.toLowerCase().includes(term)) ||
         Boolean(p.descripcion && p.descripcion.toLowerCase().includes(term));
       if (!coincideTerm) return false;
 
-      // 3. Filtro rápido de subcategoría según pestaña activa
       if (filtroActivo && filtroActivo.keywords.length > 0) {
         const match = filtroActivo.keywords.some(k => {
           const kw = k.toLowerCase();

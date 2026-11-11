@@ -1,14 +1,24 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { Producto } from '../../core/models/producto.model';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CommonModule, RouterModule],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss'
 })
 export class ProductCard {
+  // Comunicación Padre -> Hijo (Requisito Semana 12)
   @Input() producto!: Producto;
+
+  // Comunicación Hijo -> Padre vía EventEmitter (Requisito Semana 12)
+  @Output() verDetalle = new EventEmitter<number>();
+
+  onVerDetalle(): void {
+    if (this.producto && this.producto.id) {
+      this.verDetalle.emit(this.producto.id);
+    }
+  }
 }

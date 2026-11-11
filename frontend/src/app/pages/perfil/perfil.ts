@@ -8,6 +8,7 @@ import { Producto } from '../../core/models/producto.model';
 import { Pedido } from '../../core/models/pedido.model';
 import { AuthService } from '../../core/services/auth.service';
 import { PedidoService } from '../../core/services/pedido.service';
+import { ProductoService } from '../../core/services/producto.service';
 
 export interface PerfilEstudiante {
   nombre: string;
@@ -31,6 +32,7 @@ export class Perfil implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   private readonly pedidoService = inject(PedidoService);
+  private readonly productoService = inject(ProductoService);
 
   readonly tabActiva = signal<'datos' | 'compras' | 'ventas' | 'publicaciones'>('datos');
   readonly vieneDePublicar = signal<boolean>(false);
@@ -109,8 +111,8 @@ export class Perfil implements OnInit {
     this.modoEdicion.set(true);
     this.perfilForm.get('nombre')?.enable();
     this.perfilForm.get('telefono')?.enable();
-    this.perfilForm.get('campus')?.enable();
     this.perfilForm.get('carrera')?.enable();
+    this.perfilForm.get('campus')?.enable();
     this.perfilForm.get('bio')?.enable();
   }
 
@@ -118,17 +120,15 @@ export class Perfil implements OnInit {
     this.modoEdicion.set(false);
     this.perfilForm.get('nombre')?.disable();
     this.perfilForm.get('telefono')?.disable();
-    this.perfilForm.get('campus')?.disable();
     this.perfilForm.get('carrera')?.disable();
+    this.perfilForm.get('campus')?.disable();
     this.perfilForm.get('bio')?.disable();
-    this.isSubmitted.set(false);
   }
 
   cancelarEdicion(): void {
     const est = this.estudiante();
     this.perfilForm.patchValue({
       nombre: est.nombre,
-      correo: est.correo,
       telefono: est.telefono,
       carrera: est.carrera,
       campus: est.campus,
@@ -161,22 +161,33 @@ export class Perfil implements OnInit {
     const correoAuth = this.authService.getCorreoUsuario();
     if (!correoAuth) return;
 
-    const storageKey = 'umarket_profile_' + correoAuth.toLowerCase();
-    const guardado = localStorage.getItem(storageKey);
     let datosLocales: any = null;
-    if (guardado) {
+    const cacheLocal = localStorage.getItem('umarket_profile_' + correoAuth.toLowerCase());
+    if (cacheLocal) {
       try {
-        datosLocales = JSON.parse(guardado);
-      } catch {}
+        datosLocales = JSON.parse(cacheLocal);
+      } catch (e) {
+        console.warn('Error leyendo caché de perfil:', e);
+      }
     }
 
-    // Consulta perfil al backend para obtener los datos oficiales
     this.http.get<any>(`${environment.apiUrl}/auth/perfil`).subscribe({
       next: (perfilDb) => {
-        const nombreReal = perfilDb.nombre || datosLocales?.nombre || correoAuth.split('@')[0];
-        const telReal = perfilDb.telefono || datosLocales?.telefono || '';
-        const campusReal = perfilDb.campus || datosLocales?.campus || '';
-        const carreraReal = perfilDb.carrera || datosLocales?.carrera || '';
+        const nombreReal = (perfilDb.nombre && perfilDb.nombre.trim().length > 0)
+          ? perfilDb.nombre
+          : (datosLocales?.nombre || correoAuth.split('@')[0]);
+
+        const telReal = (perfilDb.telefono && perfilDb.telefono.trim().length > 0)
+          ? perfilDb.telefono
+          : (datosLocales?.telefono || '');
+
+        const campusReal = (perfilDb.campus && perfilDb.campus.trim().length > 0)
+          ? perfilDb.campus
+          : (datosLocales?.campus || '');
+
+        const carreraReal = (perfilDb.carrera && perfilDb.carrera.trim().length > 0)
+          ? perfilDb.carrera
+          : (datosLocales?.carrera || '');
 
         const datos: PerfilEstudiante = {
           nombre: nombreReal,
@@ -220,7 +231,8 @@ export class Perfil implements OnInit {
 
   cargarMisPublicaciones() {
     this.cargandoPublicaciones.set(true);
-    this.http.get<Producto[]>(`${environment.apiUrl}/productos`).subscribe({
+    // Consumo de ProductoService.getProductos() (Requisito Unidad 3 - Semana 14)
+    this.productoService.getProductos().subscribe({
       next: (prods) => {
         const correo = this.authService.getCorreoUsuario();
         const filtrados = (prods || []).filter(p => p.vendedor?.correo?.toLowerCase() === correo?.toLowerCase());
@@ -261,7 +273,7 @@ export class Perfil implements OnInit {
     });
   }
 
-  abrirComprobante(pedido: Pedido, tipo: 'compra' | 'venta' = 'compra') {
+  abrirComprobante(pedido: Pedido, tipo: 'compra' | 'venta') {
     this.tipoComprobante.set(tipo);
     this.pedidoSeleccionado.set(pedido);
   }
@@ -279,12 +291,13 @@ export class Perfil implements OnInit {
     return !!correoAuth && sel.vendedor?.correo?.toLowerCase() === correoAuth.toLowerCase();
   }
 
+  // DELETE mediante ProductoService (Requisito Unidad 3 - Semana 14)
   eliminarPublicacion(id: number) {
     if (!confirm('¿Deseas eliminar esta publicación de forma definitiva?')) {
       return;
     }
 
-    this.http.delete(`${environment.apiUrl}/productos/${id}`).subscribe({
+    this.productoService.eliminarProducto(id).subscribe({
       next: () => {
         this.misPublicaciones.update(lista => lista.filter(p => p.id !== id));
       },
@@ -329,7 +342,7 @@ export class Perfil implements OnInit {
       return;
     }
     const nuevoEstado = producto.disponible === false ? true : false;
-    this.http.patch<Producto>(`${environment.apiUrl}/productos/${producto.id}/disponibilidad`, { disponible: nuevoEstado }).subscribe({
+    this.productoService.cambiarDisponibilidad(producto.id!, nuevoEstado).subscribe({
       next: (actualizado) => {
         this.misPublicaciones.update(lista =>
           lista.map(p => p.id === producto.id ? { ...p, disponible: actualizado.disponible } : p)
@@ -366,6 +379,7 @@ export class Perfil implements OnInit {
     return !!field && field.invalid && (field.dirty || field.touched);
   }
 
+  // UPDATE / PUT mediante ProductoService (Requisito Unidad 3 - Semana 14)
   guardarEdicionPublicacion(): void {
     if (this.editForm.invalid) {
       this.editForm.markAllAsTouched();
@@ -373,7 +387,10 @@ export class Perfil implements OnInit {
     }
 
     const id = this.editForm.get('id')?.value;
-    if (!id) return;
+    if (!id) {
+      this.errorEdicion.set('Identificador de publicación no válido.');
+      return;
+    }
 
     this.guardandoEdicion.set(true);
     this.errorEdicion.set('');
@@ -389,7 +406,7 @@ export class Perfil implements OnInit {
       disponible: val.disponible === true || val.disponible === 'true'
     };
 
-    this.http.put<Producto>(`${environment.apiUrl}/productos/${id}`, payload).subscribe({
+    this.productoService.actualizarProducto(id, payload).subscribe({
       next: (actualizado) => {
         this.guardandoEdicion.set(false);
         this.misPublicaciones.update(lista =>
@@ -420,7 +437,6 @@ export class Perfil implements OnInit {
 
     const formValues = this.perfilForm.getRawValue();
 
-    // Guardar en la base de datos a través de PUT /api/auth/perfil
     this.http.put<any>(`${environment.apiUrl}/auth/perfil`, {
       nombre: formValues.nombre,
       telefono: formValues.telefono || '',

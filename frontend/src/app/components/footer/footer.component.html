@@ -1,0 +1,54 @@
+<!-- Footer Web / Desktop (Requisito Semana 11) -->
+<footer class="app-footer desktop-only">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <span class="logo-icon">U</span>
+        <strong>U-Market</strong>
+      </div>
+      <p class="footer-desc">Marketplace exclusivo para la comunidad universitaria UTP. Compra, vende y conecta de forma segura.</p>
+    </div>
+
+    <div class="footer-links">
+      <span class="footer-heading">Navegación</span>
+      <a routerLink="/explorar">Explorar Productos</a>
+      <a routerLink="/publicar">Publicar Aviso</a>
+      <a routerLink="/mensajes">Mensajería</a>
+    </div>
+
+    <div class="footer-links">
+      <span class="footer-heading">Seguridad</span>
+      <span>Pagos simulados con Yape</span>
+      <span>Validación con correo @utp.edu.pe</span>
+      <span>Control de stock en tiempo real</span>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {{ currentYear }} U-Market • Proyecto de Desarrollo Web Integrado (UTP). Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<!-- Bottom Navigation (Exclusivo para Mobile) -->
+<nav class="bottom-nav mobile-only">
+  <a routerLink="/explorar" class="nav-btn" routerLinkActive="active">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"></circle>
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+    </svg>
+    <span>Explorar</span>
+  </a>
+  
+  <a routerLink="/publicar" class="nav-fab" routerLinkActive="active" title="Publicar">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+    </svg>
+  </a>
+
+  <a routerLink="/mensajes" class="nav-btn" routerLinkActive="active">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <span>Mensajes</span>
+  </a>
+</nav>

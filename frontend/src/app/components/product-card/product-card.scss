@@ -1,17 +1,32 @@
+// Variables SASS para la tarjeta (Requisito Unidad 3 - Semana 11)
+$sombra: 0 2px 8px rgba(0, 0, 0, 0.08);
+$sombra-hover: 0 6px 18px rgba(0, 0, 0, 0.12);
+$radio-tarjeta: 12px;
+$color-primario: #0056D2;
+$color-primario-hover: #0043A8;
+$borde-tarjeta: #E5E7EB;
+
 .product-card {
-  display: block;
-  text-decoration: none;
-  color: inherit;
+  display: flex;
+  flex-direction: column;
   background-color: white;
-  border-radius: 12px;
+  border-radius: $radio-tarjeta;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  border: 1px solid #E5E7EB;
+  box-shadow: $sombra;
+  border: 1px solid $borde-tarjeta;
+  cursor: pointer;
+  outline: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
+  // Anidación SASS con &:hover (Requisito Semana 11)
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+    box-shadow: $sombra-hover;
+
+    .btn-ver-detalle {
+      background-color: $color-primario;
+      color: white;
+    }
   }
 }
 
@@ -65,49 +80,81 @@
 .badge-light {
   background-color: white;
   color: #1F2937;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .product-details {
   padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-price-row {
+  margin-bottom: 4px;
 }
 
 .product-price {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #1F2937;
-  margin: 0 0 6px 0;
+  color: #111827;
 }
 
 .product-name {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   color: #4B5563;
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.3;
-  height: 2.6em; /* para mantener el alto fijo aunque haya 1 sola linea */
+  height: 2.6em;
 }
 
 .product-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #F3F4F6;
   font-size: 0.75rem;
+  color: #9CA3AF;
 }
 
 .product-uni {
-  color: #0056D2;
-  font-weight: 700;
-  font-size: 0.7rem;
+  font-weight: 600;
+  color: #6B7280;
 }
 
 .product-rating {
   display: flex;
   align-items: center;
-  gap: 4px;
-  color: #6B7280;
+  gap: 2px;
   font-weight: 600;
+  color: #374151;
+}
+
+.card-action-row {
+  margin-top: 10px;
+}
+
+.btn-ver-detalle {
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid $color-primario;
+  background-color: transparent;
+  color: $color-primario;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: $color-primario-hover;
+    color: white;
+  }
 }

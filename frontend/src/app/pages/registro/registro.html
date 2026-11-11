@@ -10,16 +10,22 @@
     <div class="steps-progress-bar">
       <div class="step-item" [class.active]="pasoActual() === 'DATOS'" [class.completed]="pasoActual() === 'CODIGO' || pasoActual() === 'EXITO'">
         <span class="step-number">
-          <span *ngIf="pasoActual() === 'CODIGO' || pasoActual() === 'EXITO'">✓</span>
-          <span *ngIf="pasoActual() === 'DATOS'">1</span>
+          @if (pasoActual() === 'CODIGO' || pasoActual() === 'EXITO') {
+            <span>✓</span>
+          } @else {
+            <span>1</span>
+          }
         </span>
         <span class="step-label">Datos</span>
       </div>
       <div class="step-connector" [class.active]="pasoActual() === 'CODIGO' || pasoActual() === 'EXITO'"></div>
       <div class="step-item" [class.active]="pasoActual() === 'CODIGO'" [class.completed]="pasoActual() === 'EXITO'">
         <span class="step-number">
-          <span *ngIf="pasoActual() === 'EXITO'">✓</span>
-          <span *ngIf="pasoActual() !== 'EXITO'">2</span>
+          @if (pasoActual() === 'EXITO') {
+            <span>✓</span>
+          } @else {
+            <span>2</span>
+          }
         </span>
         <span class="step-label">Código</span>
       </div>
@@ -31,241 +37,269 @@
     </div>
 
     <!-- Alertas visuales de error y éxito para pasos 1 y 2 -->
-    <div *ngIf="errorMensaje()" class="alert-box alert-error">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="8" x2="12" y2="12"></line>
-        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-      </svg>
-      <span>{{ errorMensaje() }}</span>
-    </div>
+    @if (errorMensaje()) {
+      <div class="alert-box alert-error">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ errorMensaje() }}</span>
+      </div>
+    }
 
-    <div *ngIf="exitoMensaje() && pasoActual() !== 'EXITO'" class="alert-box alert-success">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-      </svg>
-      <span>{{ exitoMensaje() }}</span>
-    </div>
+    @if (exitoMensaje() && pasoActual() !== 'EXITO') {
+      <div class="alert-box alert-success">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>{{ exitoMensaje() }}</span>
+      </div>
+    }
 
     <!-- PASO 1: DATOS BÁSICOS -->
-    <form (ngSubmit)="onSubmit()" class="registro-form" *ngIf="pasoActual() === 'DATOS'">
-      <div class="form-group">
-        <label for="nombre">Nombre Completo *</label>
-        <input 
-          type="text" 
-          id="nombre" 
-          name="nombre" 
-          [ngModel]="nombre()" 
-          (ngModelChange)="nombre.set($event)" 
-          placeholder="Ej. Juan Pérez" 
-          required 
-          class="form-control"
-        />
-        <span class="input-tip">Solo letras y espacios (entre 3 y 60 caracteres).</span>
-      </div>
-
-      <div class="form-group">
-        <label for="correo">Correo Institucional UTP (@utp.edu.pe) *</label>
-        <input 
-          type="email" 
-          id="correo" 
-          name="correo" 
-          [ngModel]="correo()" 
-          (ngModelChange)="correo.set($event)" 
-          placeholder="u12345678@utp.edu.pe" 
-          required 
-          class="form-control"
-        />
-        <span class="input-tip">Enviaremos un código a este correo para validar tu cuenta.</span>
-      </div>
-
-      <!-- Contraseña con botón de Ver/Ocultar -->
-      <div class="form-group">
-        <label for="password">Contraseña *</label>
-        <div class="password-input-wrapper">
-          <input 
-            [type]="verPassword() ? 'text' : 'password'" 
-            id="password" 
-            name="password" 
-            [ngModel]="password()" 
-            (ngModelChange)="password.set($event)" 
-            placeholder="Mínimo 6 caracteres" 
-            required 
-            class="form-control"
-          />
-          <button 
-            type="button" 
-            class="btn-toggle-eye" 
-            (click)="toggleVerPassword()" 
-            [title]="verPassword() ? 'Ocultar contraseña' : 'Ver contraseña'">
-            <svg *ngIf="!verPassword()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            <svg *ngIf="verPassword()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-              <line x1="1" y1="1" x2="23" y2="23"></line>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Confirmar Contraseña con botón de Ver/Ocultar -->
-      <div class="form-group">
-        <label for="confirmPassword">Confirmar Contraseña *</label>
-        <div class="password-input-wrapper">
-          <input 
-            [type]="verConfirmPassword() ? 'text' : 'password'" 
-            id="confirmPassword" 
-            name="confirmPassword" 
-            [ngModel]="confirmPassword()" 
-            (ngModelChange)="confirmPassword.set($event)" 
-            placeholder="Repite tu contraseña" 
-            required 
-            class="form-control"
-          />
-          <button 
-            type="button" 
-            class="btn-toggle-eye" 
-            (click)="toggleVerConfirmPassword()" 
-            [title]="verConfirmPassword() ? 'Ocultar contraseña' : 'Ver contraseña'">
-            <svg *ngIf="!verConfirmPassword()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            <svg *ngIf="verConfirmPassword()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-              <line x1="1" y1="1" x2="23" y2="23"></line>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <button type="submit" class="btn-submit" [disabled]="enviandoCodigo()">
-        <span *ngIf="!enviandoCodigo()">Continuar</span>
-        <span *ngIf="enviandoCodigo()" class="spinner-text">
-          <span class="inline-spinner"></span> Enviando código al correo...
-        </span>
-      </button>
-
-      <p class="login-redirect">
-        ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
-      </p>
-    </form>
-
-    <!-- PASO 2: VERIFICACIÓN OTP POR CORREO -->
-    <div class="otp-verification-container" *ngIf="pasoActual() === 'CODIGO'">
-      <div class="otp-icon-header">
-        <div class="mail-icon-bubble">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L1 7"></path>
-          </svg>
-        </div>
-        <h3>Revisa tu Correo Institucional</h3>
-        <p class="otp-instruction">
-          Ingresa el código de 6 dígitos enviado a:
-        </p>
-        <div class="email-pill-row">
-          <span class="email-highlight">{{ obtenerCorreoNormalizado() }}</span>
-          <button type="button" class="btn-edit-mail" (click)="regresarAPaso1()">Cambiar</button>
-        </div>
-      </div>
-
-      <form (ngSubmit)="onSubmit()" class="otp-form">
-        <div class="form-group otp-group">
-          <label for="codigoVerificacion" class="otp-label">Código de Verificación</label>
+    @if (pasoActual() === 'DATOS') {
+      <form (ngSubmit)="onSubmit()" class="registro-form">
+        <div class="form-group">
+          <label for="nombre">Nombre Completo *</label>
           <input 
             type="text" 
-            id="codigoVerificacion" 
-            name="codigoVerificacion" 
-            [ngModel]="codigoVerificacion()" 
-            (ngModelChange)="codigoVerificacion.set($event)" 
-            placeholder="000000" 
-            maxlength="6" 
-            autocomplete="one-time-code"
+            id="nombre" 
+            name="nombre" 
+            [ngModel]="nombre()" 
+            (ngModelChange)="nombre.set($event)" 
+            placeholder="Ej. Juan Pérez" 
             required 
-            class="form-control input-otp"
-            autofocus
+            class="form-control"
           />
+          <span class="input-tip">Solo letras y espacios (entre 3 y 60 caracteres).</span>
         </div>
 
-        <p class="otp-help-text">
-          Revisa la bandeja de entrada o spam de tu correo institucional UTP. Válido por 10 minutos.
-        </p>
+        <div class="form-group">
+          <label for="correo">Correo Institucional UTP (@utp.edu.pe) *</label>
+          <input 
+            type="email" 
+            id="correo" 
+            name="correo" 
+            [ngModel]="correo()" 
+            (ngModelChange)="correo.set($event)" 
+            placeholder="u12345678@utp.edu.pe" 
+            required 
+            class="form-control"
+          />
+          <span class="input-tip">Enviaremos un código a este correo para validar tu cuenta.</span>
+        </div>
 
-        <button 
-          type="submit" 
-          class="btn-submit btn-verify" 
-          [disabled]="cargando() || codigoVerificacion().length !== 6">
-          <span *ngIf="!cargando()">Verificar y Registrar</span>
-          <span *ngIf="cargando()" class="spinner-text">
-            <span class="inline-spinner"></span> Validando código...
-          </span>
+        <!-- Contraseña con botón de Ver/Ocultar -->
+        <div class="form-group">
+          <label for="password">Contraseña *</label>
+          <div class="password-input-wrapper">
+            <input 
+              [type]="verPassword() ? 'text' : 'password'" 
+              id="password" 
+              name="password" 
+              [ngModel]="password()" 
+              (ngModelChange)="password.set($event)" 
+              placeholder="Mínimo 6 caracteres" 
+              required 
+              class="form-control"
+            />
+            <button 
+              type="button" 
+              class="btn-toggle-eye" 
+              (click)="toggleVerPassword()" 
+              [title]="verPassword() ? 'Ocultar contraseña' : 'Ver contraseña'">
+              @if (!verPassword()) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <!-- Confirmar Contraseña con botón de Ver/Ocultar -->
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Contraseña *</label>
+          <div class="password-input-wrapper">
+            <input 
+              [type]="verConfirmPassword() ? 'text' : 'password'" 
+              id="confirmPassword" 
+              name="confirmPassword" 
+              [ngModel]="confirmPassword()" 
+              (ngModelChange)="confirmPassword.set($event)" 
+              placeholder="Repite tu contraseña" 
+              required 
+              class="form-control"
+            />
+            <button 
+              type="button" 
+              class="btn-toggle-eye" 
+              (click)="toggleVerConfirmPassword()" 
+              [title]="verConfirmPassword() ? 'Ocultar contraseña' : 'Ver contraseña'">
+              @if (!verConfirmPassword()) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="enviandoCodigo()">
+          @if (!enviandoCodigo()) {
+            <span>Continuar</span>
+          } @else {
+            <span class="spinner-text">
+              <span class="inline-spinner"></span> Enviando código al correo...
+            </span>
+          }
         </button>
 
-        <div class="resend-container">
-          <button 
-            type="button" 
-            class="btn-resend" 
-            (click)="reenviarCodigo()" 
-            [disabled]="segundosRestantes() > 0 || enviandoCodigo()">
-            <span *ngIf="segundosRestantes() > 0">Reenviar código en {{ segundosRestantes() }}s</span>
-            <span *ngIf="segundosRestantes() === 0 && !enviandoCodigo()">Reenviar código ahora</span>
-            <span *ngIf="enviandoCodigo()">Reenviando...</span>
-          </button>
-        </div>
-
         <p class="login-redirect">
-          <a (click)="regresarAPaso1()" style="cursor: pointer; color: #64748B; font-size: 0.85rem;">
-            ← Volver al paso anterior
-          </a>
+          ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
         </p>
       </form>
-    </div>
+    }
+
+    <!-- PASO 2: VERIFICACIÓN OTP POR CORREO -->
+    @if (pasoActual() === 'CODIGO') {
+      <div class="otp-verification-container">
+        <div class="otp-icon-header">
+          <div class="mail-icon-bubble">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L1 7"></path>
+            </svg>
+          </div>
+          <h3>Revisa tu Correo Institucional</h3>
+          <p class="otp-instruction">
+            Ingresa el código de 6 dígitos enviado a:
+          </p>
+          <div class="email-pill-row">
+            <span class="email-highlight">{{ obtenerCorreoNormalizado() }}</span>
+            <button type="button" class="btn-edit-mail" (click)="regresarAPaso1()">Cambiar</button>
+          </div>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" class="otp-form">
+          <div class="form-group otp-group">
+            <label for="codigoVerificacion" class="otp-label">Código de Verificación</label>
+            <input 
+              type="text" 
+              id="codigoVerificacion" 
+              name="codigoVerificacion" 
+              [ngModel]="codigoVerificacion()" 
+              (ngModelChange)="codigoVerificacion.set($event)" 
+              placeholder="000000" 
+              maxlength="6" 
+              autocomplete="one-time-code"
+              required 
+              class="form-control input-otp"
+              autofocus
+            />
+          </div>
+
+          <p class="otp-help-text">
+            Revisa la bandeja de entrada o spam de tu correo institucional UTP. Válido por 10 minutos.
+          </p>
+
+          <button 
+            type="submit" 
+            class="btn-submit btn-verify" 
+            [disabled]="cargando() || codigoVerificacion().length !== 6">
+            @if (!cargando()) {
+              <span>Verificar y Registrar</span>
+            } @else {
+              <span class="spinner-text">
+                <span class="inline-spinner"></span> Validando código...
+              </span>
+            }
+          </button>
+
+          <div class="resend-container">
+            <button 
+              type="button" 
+              class="btn-resend" 
+              (click)="reenviarCodigo()" 
+              [disabled]="segundosRestantes() > 0 || enviandoCodigo()">
+              @if (segundosRestantes() > 0) {
+                <span>Reenviar código en {{ segundosRestantes() }}s</span>
+              } @else if (segundosRestantes() === 0 && !enviandoCodigo()) {
+                <span>Reenviar código ahora</span>
+              } @else {
+                <span>Reenviando...</span>
+              }
+            </button>
+          </div>
+
+          <p class="login-redirect">
+            <a (click)="regresarAPaso1()" style="cursor: pointer; color: #64748B; font-size: 0.85rem;">
+              ← Volver al paso anterior
+            </a>
+          </p>
+        </form>
+      </div>
+    }
 
     <!-- PASO 3: CONFIRMACIÓN DE ÉXITO -->
-    <div class="registro-success-view" *ngIf="pasoActual() === 'EXITO'">
-      <div class="success-icon-badge">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-
-      <h3>¡Cuenta Creada Exitosamente!</h3>
-      <p class="success-subtitle">
-        Tu cuenta institucional para <strong>{{ obtenerCorreoNormalizado() }}</strong> ha sido validada y se encuentra activa.
-      </p>
-
-      <div class="success-email-card">
-        <span class="email-value">{{ obtenerCorreoNormalizado() }}</span>
-        <span class="status-chip">✓ Verificado</span>
-      </div>
-
-      <div class="success-checklist">
-        <div class="check-item">
-          <span class="check-bullet">✓</span>
-          <span>Identidad estudiantil UTP confirmada</span>
+    @if (pasoActual() === 'EXITO') {
+      <div class="registro-success-view">
+        <div class="success-icon-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
         </div>
-        <div class="check-item">
-          <span class="check-bullet">✓</span>
-          <span>Acceso al catálogo y publicaciones</span>
+
+        <h3>¡Cuenta Creada Exitosamente!</h3>
+        <p class="success-subtitle">
+          Tu cuenta institucional para <strong>{{ obtenerCorreoNormalizado() }}</strong> ha sido validada y se encuentra activa.
+        </p>
+
+        <div class="success-email-card">
+          <span class="email-value">{{ obtenerCorreoNormalizado() }}</span>
+          <span class="status-chip">✓ Verificado</span>
         </div>
-        <div class="check-item">
-          <span class="check-bullet">✓</span>
-          <span>Pagos integrados con Yape habilitados</span>
+
+        <div class="success-checklist">
+          <div class="check-item">
+            <span class="check-bullet">✓</span>
+            <span>Identidad estudiantil UTP confirmada</span>
+          </div>
+          <div class="check-item">
+            <span class="check-bullet">✓</span>
+            <span>Acceso al catálogo y publicaciones</span>
+          </div>
+          <div class="check-item">
+            <span class="check-bullet">✓</span>
+            <span>Pagos integrados con Yape habilitados</span>
+          </div>
         </div>
+
+        <button type="button" class="btn-submit btn-go-login" (click)="irALogin()">
+          Iniciar Sesión
+        </button>
+
+        @if (contadorRedireccion() > 0) {
+          <p class="auto-redirect-note">
+            Redirigiendo automáticamente en {{ contadorRedireccion() }}s...
+          </p>
+        }
       </div>
-
-      <button type="button" class="btn-submit btn-go-login" (click)="irALogin()">
-        Iniciar Sesión
-      </button>
-
-      <p class="auto-redirect-note" *ngIf="contadorRedireccion() > 0">
-        Redirigiendo automáticamente en {{ contadorRedireccion() }}s...
-      </p>
-    </div>
+    }
 
   </div>
 </div>

@@ -1,3 +1,8 @@
+// Variables SASS para el módulo de Explorar (Requisito Unidad 3 - Semana 11)
+$sombra-tarjeta: 0 2px 8px rgba(0, 0, 0, 0.08);
+$color-primario: #0056D2;
+$borde-suave: #E2E8F0;
+
 .explorar-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -10,12 +15,12 @@
   display: flex;
   justify-content: flex-start;
   gap: 8px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid $borde-suave;
   margin-bottom: 20px;
   background: #FFFFFF;
   padding: 6px 10px;
   border-radius: 10px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid $borde-suave;
 }
 
 .tab-btn {
@@ -44,12 +49,12 @@
   }
 
   &.active {
-    color: #0056D2;
+    color: $color-primario;
     background: #EFF6FF;
     font-weight: 600;
 
     svg {
-      color: #0056D2;
+      color: $color-primario;
     }
   }
 }
@@ -59,33 +64,34 @@
 }
 
 .search-box {
+  position: relative;
   display: flex;
   align-items: center;
-  background-color: #FFFFFF;
-  border: 1px solid #CBD5E1;
-  border-radius: 10px;
-  padding: 10px 14px;
-  transition: border-color 0.15s, box-shadow 0.15s;
-
-  &:focus-within {
-    border-color: #0056D2;
-    box-shadow: 0 0 0 3px rgba(0, 86, 210, 0.12);
-  }
+  width: 100%;
 }
 
 .search-icon {
+  position: absolute;
+  left: 14px;
   color: #94A3B8;
-  margin-right: 10px;
-  flex-shrink: 0;
+  pointer-events: none;
 }
 
 .search-input {
-  border: none;
-  background: transparent;
-  flex: 1;
-  outline: none;
+  width: 100%;
+  padding: 12px 42px 12px 42px;
+  background: #FFFFFF;
+  border: 1px solid $borde-suave;
+  border-radius: 10px;
   font-size: 0.95rem;
-  color: #0F172A;
+  color: #1E293B;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    border-color: $color-primario;
+    box-shadow: 0 0 0 3px rgba(0, 86, 210, 0.12);
+  }
 
   &::placeholder {
     color: #94A3B8;
@@ -93,15 +99,24 @@
 }
 
 .clear-btn {
-  background: none;
+  position: absolute;
+  right: 12px;
+  background: #E2E8F0;
   border: none;
-  font-size: 0.9rem;
-  color: #94A3B8;
+  color: #64748B;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  transition: background-color 0.15s;
 
   &:hover {
+    background: #CBD5E1;
     color: #0F172A;
   }
 }
@@ -109,49 +124,50 @@
 .category-filter {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 24px;
 }
 
 .filter-label {
-  font-size: 0.85rem;
-  color: #64748B;
+  font-size: 0.875rem;
   font-weight: 500;
+  color: #64748B;
 }
 
 .category-select {
-  border: 1px solid #E2E8F0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid $borde-suave;
   background: #FFFFFF;
   font-size: 0.875rem;
-  font-weight: 600;
-  color: #0056D2;
-  padding: 6px 12px;
-  border-radius: 6px;
+  color: #1E293B;
   outline: none;
   cursor: pointer;
+  font-weight: 500;
 
   &:focus {
-    border-color: #0056D2;
+    border-color: $color-primario;
   }
 }
 
 .loading-state-explorar {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 60px 0;
+  gap: 12px;
+  padding: 60px 20px;
   color: #64748B;
   font-size: 0.95rem;
+}
 
-  .inline-spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #E2E8F0;
-    border-top-color: #0056D2;
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-  }
+.inline-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #E2E8F0;
+  border-top-color: $color-primario;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
@@ -160,54 +176,53 @@
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 18px;
-  padding-bottom: 32px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
 }
 
 .empty-state-card {
   grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  padding: 48px 24px;
+  padding: 60px 20px;
   background: #FFFFFF;
   border-radius: 12px;
-  border: 1px solid #E2E8F0;
+  border: 1px dashed $borde-suave;
 
   .empty-icon {
     margin-bottom: 12px;
   }
 
   h3 {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: #0F172A;
-    margin: 0 0 6px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 6px;
   }
 
   p {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     color: #64748B;
-    margin: 0 0 16px 0;
+    max-width: 360px;
+    margin-bottom: 18px;
   }
+}
 
-  .btn-reset-filters {
-    background: #0056D2;
-    color: #FFFFFF;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.875rem;
-    transition: background-color 0.15s;
+.btn-reset-filters {
+  padding: 8px 16px;
+  background: #F1F5F9;
+  border: 1px solid $borde-suave;
+  border-radius: 8px;
+  color: #334155;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
 
-    &:hover {
-      background-color: #0046a8;
-    }
+  &:hover {
+    background: #E2E8F0;
+    color: #0F172A;
   }
 }
