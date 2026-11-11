@@ -70,6 +70,26 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
     color: $color-primario;
     font-weight: 600;
   }
+
+  &.admin-pill {
+    color: #dc2626;
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    font-weight: 600;
+    border-radius: 9999px;
+    padding: 6px 14px;
+
+    &:hover {
+      background-color: #fecaca;
+      color: #b91c1c;
+    }
+
+    &.active {
+      background-color: #dc2626;
+      color: white;
+      border-color: #dc2626;
+    }
+  }
 }
 
 .auth-btn {

@@ -38,6 +38,10 @@ public class UsuarioService {
         return repository.findById(id).orElse(null);
     }
 
+    public boolean existePorCorreo(String correo) {
+        return repository.findByCorreoIgnoreCase(correo).isPresent();
+    }
+
     @Transactional
     public Usuario guardarUsuario(Usuario u) {
         u.setPassword(passwordEncoder.encode(u.getPassword()));

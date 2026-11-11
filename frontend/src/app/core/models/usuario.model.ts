@@ -5,6 +5,8 @@ export interface Usuario {
   password?: string;
   rol?: string;
   avatar?: string;
+  telefono?: string;
+  campus?: string;
   carrera?: string;
   ciclo?: string;
   reputacion?: number;

@@ -9,6 +9,12 @@
     <a class="nav-item desktop-only" routerLink="/publicar" routerLinkActive="active">Publicar</a>
     <a class="nav-item desktop-only" routerLink="/mensajes" routerLinkActive="active">Mensajes</a>
     
+    @if (authService.isLoggedIn() && authService.isAdmin()) {
+      <a class="nav-item admin-pill" routerLink="/admin" routerLinkActive="active" title="Panel de Administración">
+        🛡️ Panel Admin
+      </a>
+    }
+
     @if (!authService.isLoggedIn()) {
       <a class="auth-btn login-link" routerLink="/login">Iniciar Sesión</a>
       <a class="auth-btn register-link" routerLink="/registro">Registrarse</a>
