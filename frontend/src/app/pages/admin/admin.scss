@@ -2,74 +2,72 @@
 $color-primario: #0d6efd;
 $color-peligro: #dc3545;
 $color-fondo-suave: #f8f9fa;
-$color-borde: #dee2e6;
-$sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.06);
-$radio-tarjeta: 12px;
+$color-borde: #e9ecef;
+$sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.05);
+$radio-tarjeta: 10px;
 
 .admin-container {
-  max-width: 1300px;
+  max-width: 1200px;
   min-height: calc(100vh - 140px);
 
   .admin-header {
     .custom-pills {
       background: $color-fondo-suave;
-      padding: 4px;
-      border-radius: 10px;
-      gap: 4px;
+      padding: 3px;
+      border-radius: 8px;
+      gap: 3px;
 
       .nav-link {
         color: #495057;
         font-weight: 500;
-        font-size: 0.9rem;
-        padding: 8px 16px;
-        border-radius: 8px;
-        transition: all 0.2s ease-in-out;
+        font-size: 0.875rem;
+        padding: 6px 14px;
+        border-radius: 6px;
+        transition: all 0.15s ease-in-out;
 
         &:hover {
           color: $color-peligro;
-          background-color: rgba($color-peligro, 0.05);
+          background-color: rgba($color-peligro, 0.04);
         }
 
         &.active {
           background-color: $color-peligro;
           color: #ffffff;
-          box-shadow: 0 2px 6px rgba($color-peligro, 0.35);
         }
       }
     }
   }
 
-  // Estilos del patrón Master-Detail
+  // Estilos del Master-Detail
   .master-detail-layout {
     .master-card, .detail-card {
       border-radius: $radio-tarjeta;
       box-shadow: $sombra-suave;
+      border: 1px solid $color-borde;
       height: 100%;
     }
 
     .master-list-body {
-      max-height: 580px;
+      max-height: 540px;
       overflow-y: auto;
     }
 
     .user-list-group {
       .user-item {
         border-left: 3px solid transparent;
-        transition: all 0.15s ease-in-out;
+        transition: background-color 0.15s ease;
 
         &:hover {
           background-color: $color-fondo-suave;
-          border-left-color: $color-peligro;
         }
 
         &.active {
           background-color: #fff5f5;
           border-left-color: $color-peligro;
-          color: inherit;
 
           .user-name {
             color: $color-peligro;
-            font-weight: 700;
+            font-weight: 600;
           }
         }
       }
@@ -77,8 +75,8 @@ $radio-tarjeta: 12px;
 
     .detail-card {
       .avatar-circle {
-        width: 58px;
-        height: 58px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         background-color: #fee2e2;
         color: $color-peligro;
@@ -86,28 +84,27 @@ $radio-tarjeta: 12px;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 1.5rem;
+        font-size: 1.25rem;
       }
     }
   }
 
-  // Tabla de moderación
+  // Tabla de publicaciones
   .table-responsive {
     .table {
       thead th {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        font-size: 0.8rem;
         color: #6c757d;
-        padding-top: 12px;
-        padding-bottom: 12px;
+        font-weight: 600;
+        padding-top: 10px;
+        padding-bottom: 10px;
       }
 
       tbody tr {
         transition: background-color 0.15s ease;
 
         &:hover {
-          background-color: rgba($color-peligro, 0.02);
+          background-color: rgba(0, 0, 0, 0.015);
         }
       }
     }
