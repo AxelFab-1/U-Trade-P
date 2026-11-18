@@ -13,7 +13,11 @@ public class Producto {
     private String nombre;
     private Double precio;
     private String categoria;
+
+    @Column(length = 1000)
     private String descripcion;
+
+    @Column(length = 1000)
     private String foto;
     
     private Boolean disponible = true;

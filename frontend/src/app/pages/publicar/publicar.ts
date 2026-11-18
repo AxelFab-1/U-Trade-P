@@ -31,10 +31,9 @@ export class Publicar implements OnInit {
   readonly fotoUrl = signal<string>('');
   readonly productoCreadoId = signal<number | null>(null);
 
-  // 'UNICO' (1 sola unidad) o 'STOCK' (múltiples unidades con contador)
   readonly tipoInventario = signal<'UNICO' | 'STOCK'>('UNICO');
 
-  // Formulario Reactivo con FormBuilder y Validators (Requisito Unidad 3 - Semana 13)
+  // Formulario Reactivo con FormBuilder y Validators 
   readonly publicarForm: FormGroup = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
     categoria: ['', [Validators.required]],
