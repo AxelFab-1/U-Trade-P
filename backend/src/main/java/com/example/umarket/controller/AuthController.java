@@ -2,6 +2,7 @@ package com.example.umarket.controller;
 
 import com.example.umarket.repository.UsuarioRepository;
 import com.example.umarket.security.JwtService;
+import com.example.umarket.service.CodigoVerificacionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,13 +19,16 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final CodigoVerificacionService codigoVerificacionService;
     private final UsuarioRepository usuarioRepository;
 
     public AuthController(AuthenticationManager authenticationManager, 
                           JwtService jwtService,
+                          CodigoVerificacionService codigoVerificacionService,
                           UsuarioRepository usuarioRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.codigoVerificacionService = codigoVerificacionService;
         this.usuarioRepository = usuarioRepository;
     }
 
@@ -43,6 +47,17 @@ public class AuthController {
         String token = jwtService.generarToken(correoNormalizado, rol);
 
         return ResponseEntity.ok(Map.of("token", token));
+    }
+
+    @PostMapping("/enviar-codigo-verificacion")
+    public ResponseEntity<Map<String, Object>> enviarCodigoVerificacion(@RequestBody EnviarCodigoRequest req) {
+        String correoNormalizado = req.correo() != null ? req.correo().trim().toLowerCase() : "";
+        String nombreNormalizado = req.nombre() != null ? req.nombre().trim() : "";
+        codigoVerificacionService.generarYEnviarCodigo(correoNormalizado, nombreNormalizado);
+        return ResponseEntity.ok(Map.of(
+                "exitoso", true,
+                "mensaje", "Código de verificación enviado a tu correo institucional " + correoNormalizado
+        ));
     }
 
     @GetMapping("/perfil")
@@ -113,4 +128,5 @@ public class AuthController {
 }
 
 record LoginRequest(String correo, String password) {}
+record EnviarCodigoRequest(String correo, String nombre) {}
 record ActualizarPerfilRequest(String nombre, String telefono, String campus, String carrera) {}
