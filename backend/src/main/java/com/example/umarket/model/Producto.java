@@ -17,6 +17,7 @@ public class Producto {
     private String foto;
     
     private Boolean disponible = true;
+    private Integer stock = 1;
 
     @ManyToOne
     @JoinColumn(name = "vendedor_id")
@@ -37,6 +38,18 @@ public class Producto {
         this.foto = foto;
         this.vendedor = vendedor;
         this.disponible = true; 
+        this.stock = "Comida".equalsIgnoreCase(categoria) ? 10 : 1;
+    }
+
+    public Producto(String nombre, Double precio, String categoria, String descripcion, String foto, Usuario vendedor, Integer stock) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.categoria = categoria;
+        this.descripcion = descripcion;
+        this.foto = foto;
+        this.vendedor = vendedor;
+        this.disponible = true; 
+        this.stock = (stock != null && stock > 0) ? stock : ("Comida".equalsIgnoreCase(categoria) ? 10 : 1);
     }
 
     // Getters y Setters
@@ -60,6 +73,14 @@ public class Producto {
     
     public Boolean getDisponible() { return disponible; }
     public void setDisponible(Boolean disponible) { this.disponible = disponible; }
+
+    public Integer getStock() { 
+        if (stock == null) {
+            return "Comida".equalsIgnoreCase(categoria) ? 10 : 1;
+        }
+        return stock; 
+    }
+    public void setStock(Integer stock) { this.stock = stock; }
     
     public Usuario getVendedor() { return vendedor; }
     public void setVendedor(Usuario vendedor) { this.vendedor = vendedor; }
