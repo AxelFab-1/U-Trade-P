@@ -8,6 +8,7 @@ export interface Producto {
   descripcion: string;
   foto: string;
   disponible?: boolean;
+  stock?: number;
   condicion?: 'Nuevo' | 'Como nuevo' | 'Buen estado';
   universidad?: string;
   rating?: number;
