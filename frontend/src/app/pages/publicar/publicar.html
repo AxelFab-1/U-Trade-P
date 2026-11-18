@@ -5,239 +5,266 @@
     </div>
 
     <!-- ESTADO: CARGANDO VERIFICACIÓN DE PERFIL -->
-    <div *ngIf="cargandoPerfil()" class="perfil-loading-state">
-      <span class="inline-spinner"></span>
-      <span>Verificando estado de tu perfil...</span>
-    </div>
+    @if (cargandoPerfil()) {
+      <div class="perfil-loading-state">
+        <span class="inline-spinner"></span>
+        <span>Verificando estado de tu perfil...</span>
+      </div>
+    }
 
     <!-- ESTADO: PERFIL INCOMPLETO (BLOQUEO PROFESIONAL) -->
-    <div *ngIf="!cargandoPerfil() && !perfilCompleto()" class="perfil-incompleto-card">
-      <div class="incompleto-badge">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-      </div>
+    @if (!cargandoPerfil() && !perfilCompleto()) {
+      <div class="perfil-incompleto-card">
+        <div class="incompleto-badge">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
 
-      <div class="incompleto-content">
-        <h2 class="incompleto-title">Completa tus datos en tu perfil</h2>
-        <p class="incompleto-desc">
-          Para garantizar compras seguras y coordinar entregas entre compañeros en campus, debes registrar tus datos antes de publicar productos o servicios.
-        </p>
+        <div class="incompleto-content">
+          <h2 class="incompleto-title">Completa tus datos en tu perfil</h2>
+          <p class="incompleto-desc">
+            Para garantizar compras seguras y coordinar entregas entre compañeros en campus, debes registrar tus datos antes de publicar productos o servicios.
+          </p>
 
-        <div class="incompleto-checklist">
-          <span class="checklist-title">Datos obligatorios pendientes:</span>
-          <ul class="checklist-items">
-            <li *ngFor="let item of datosFaltantes()" class="checklist-item">
+          <div class="incompleto-checklist">
+            <span class="checklist-title">Datos obligatorios pendientes:</span>
+            <ul class="checklist-items">
+              @for (item of datosFaltantes(); track item) {
+                <li class="checklist-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                  <span>{{ item }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+
+          <div class="incompleto-actions">
+            <a routerLink="/perfil" [queryParams]="{ tab: 'datos', origen: 'publicar' }" class="btn-ir-perfil">
+              Completar mi Perfil
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
               </svg>
-              <span>{{ item }}</span>
-            </li>
-          </ul>
-        </div>
-
-        <div class="incompleto-actions">
-          <a routerLink="/perfil" [queryParams]="{ tab: 'datos', origen: 'publicar' }" class="btn-ir-perfil">
-            Completar mi Perfil
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
+    }
 
     <!-- CONTENIDO SI EL PERFIL ESTÁ COMPLETO -->
-    <ng-container *ngIf="!cargandoPerfil() && perfilCompleto()">
+    @if (!cargandoPerfil() && perfilCompleto()) {
       <!-- Banner de Éxito con Acciones Directas -->
-      <div *ngIf="publicacionExitosa()" class="success-card">
-        <div class="success-icon">✓</div>
-        <div class="success-text">
-          <h3>Publicación Registrada</h3>
+      @if (publicacionExitosa()) {
+        <div class="success-card">
+          <div class="success-icon">✓</div>
+          <div class="success-text">
+            <h3>Publicación Registrada</h3>
+          </div>
+          <div class="success-actions">
+            <button type="button" class="btn-view-pub" (click)="irAPublicacion()">
+              Ver Publicación
+            </button>
+            <button type="button" class="btn-new-pub" (click)="nuevaPublicacion()">
+              Publicar Otro
+            </button>
+          </div>
         </div>
-        <div class="success-actions">
-          <button type="button" class="btn-view-pub" (click)="irAPublicacion()">
-            Ver Publicación
-          </button>
-          <button type="button" class="btn-new-pub" (click)="nuevaPublicacion()">
-            Publicar Otro
-          </button>
-        </div>
-      </div>
+      }
 
       <!-- Banner de Error -->
-      <div *ngIf="errorPublicacion()" class="alert-error-box">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-        <span>{{ errorPublicacion() }}</span>
-      </div>
-
-      <!-- Formulario Principal -->
-      <form [formGroup]="publicarForm" (ngSubmit)="onSubmit()" class="form-publish" novalidate *ngIf="!publicacionExitosa()">
-        
-        <!-- Título -->
-        <div class="form-group">
-          <label for="nombre" class="form-label">Título *</label>
-          <input
-            type="text"
-            id="nombre"
-            formControlName="nombre"
-            class="form-control"
-            [class.is-invalid]="isFieldInvalid('nombre')"
-            placeholder="Ej. Calculadora Casio FX-991"
-          />
-          <span *ngIf="isFieldInvalid('nombre')" class="field-error">
-            El título es obligatorio (mínimo 3 caracteres).
-          </span>
+      @if (errorPublicacion()) {
+        <div class="alert-error-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ errorPublicacion() }}</span>
         </div>
+      }
 
-        <!-- Fila: Categoría y Precio -->
-        <div class="form-row">
-          <div class="form-group col-half">
-            <label for="categoria" class="form-label">Categoría *</label>
-            <select
-              id="categoria"
-              formControlName="categoria"
-              class="form-control form-select"
-              [class.is-invalid]="isFieldInvalid('categoria')"
-            >
-              <option value="" disabled>Seleccionar</option>
-              <option value="Producto">Producto</option>
-              <option value="Comida">Comida</option>
-              <option value="Servicios">Servicios</option>
-            </select>
-            <span *ngIf="isFieldInvalid('categoria')" class="field-error">
-              Selecciona una categoría.
-            </span>
-          </div>
-
-          <div class="form-group col-half">
-            <label for="precio" class="form-label">Precio (S/) *</label>
-            <div class="input-prefix-box">
-              <span class="currency-prefix">S/</span>
-              <input
-                type="number"
-                id="precio"
-                formControlName="precio"
-                class="form-control input-with-prefix"
-                [class.is-invalid]="isFieldInvalid('precio')"
-                placeholder="0.00"
-                min="0.5"
-                step="0.5"
-              />
-            </div>
-            <span *ngIf="isFieldInvalid('precio')" class="field-error">
-              Ingresa un precio mayor a 0.
-            </span>
-          </div>
-        </div>
-
-        <!-- SECCIÓN: TIPO DE VENTA / STOCK -->
-        <div class="form-group">
-          <label class="form-label">Tipo de venta *</label>
+      <!-- Formulario Reactivo Principal (Requisito Unidad 3 - Semana 13) -->
+      @if (!publicacionExitosa()) {
+        <form [formGroup]="publicarForm" (ngSubmit)="onSubmit()" class="form-publish" novalidate>
           
-          <div class="inventory-selector-grid">
-            <div 
-              class="inventory-card" 
-              [class.selected]="tipoInventario() === 'UNICO'"
-              (click)="setTipoInventario('UNICO')">
-              <div class="card-radio">
-                <span class="radio-circle" [class.checked]="tipoInventario() === 'UNICO'"></span>
-              </div>
-              <div class="card-content">
-                <span class="card-title">Artículo único</span>
-                <span class="card-desc">1 unidad disponible</span>
-              </div>
-            </div>
-
-            <div 
-              class="inventory-card" 
-              [class.selected]="tipoInventario() === 'STOCK'"
-              (click)="setTipoInventario('STOCK')">
-              <div class="card-radio">
-                <span class="radio-circle" [class.checked]="tipoInventario() === 'STOCK'"></span>
-              </div>
-              <div class="card-content">
-                <span class="card-title">Múltiples unidades</span>
-                <span class="card-desc">Venta por stock</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Campo dinámico de cantidad de stock -->
-          <div class="stock-input-panel" *ngIf="tipoInventario() === 'STOCK'">
-            <label for="stock" class="stock-label">Stock disponible:</label>
-            <div class="stock-controls">
-              <button type="button" class="btn-stock-adjust" (click)="ajustarStock(-1)">-</button>
-              <input 
-                type="number" 
-                id="stock" 
-                formControlName="stock" 
-                class="stock-number-input" 
-                min="1" 
-                max="999"
-              />
-              <button type="button" class="btn-stock-adjust" (click)="ajustarStock(1)">+</button>
-              <span class="units-label">unidades</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Descripción -->
-        <div class="form-group">
-          <label for="descripcion" class="form-label">Descripción *</label>
-          <textarea
-            id="descripcion"
-            formControlName="descripcion"
-            class="form-control form-textarea"
-            [class.is-invalid]="isFieldInvalid('descripcion')"
-            rows="3"
-            placeholder="Detalles del producto o servicio y lugar de entrega..."
-          ></textarea>
-          <span *ngIf="isFieldInvalid('descripcion')" class="field-error">
-            La descripción es obligatoria (mínimo 10 caracteres).
-          </span>
-        </div>
-
-        <!-- Imagen -->
-        <div class="form-group">
-          <label for="foto" class="form-label">Imagen (URL)</label>
-          <div class="image-input-row">
+          <!-- Título -->
+          <div class="form-group">
+            <label for="nombre" class="form-label">Título *</label>
             <input
               type="text"
-              id="foto"
-              formControlName="foto"
-              #fotoInput
-              (input)="onFotoInput(fotoInput.value)"
+              id="nombre"
+              formControlName="nombre"
               class="form-control"
-              placeholder="https://ejemplo.com/imagen.jpg (opcional)"
+              [class.is-invalid]="publicarForm.get('nombre')?.invalid && publicarForm.get('nombre')?.touched"
+              placeholder="Ej. Calculadora Casio FX-991"
             />
+            @if (publicarForm.get('nombre')?.invalid && publicarForm.get('nombre')?.touched) {
+              <span class="field-error">
+                El título es obligatorio (mínimo 3 caracteres).
+              </span>
+            }
+          </div>
 
-            <div class="image-preview-thumb" *ngIf="fotoUrl()">
-              <img [src]="fotoUrl()" alt="Vista previa" (error)="fotoUrl.set('')">
+          <!-- Fila: Categoría y Precio -->
+          <div class="form-row">
+            <div class="form-group col-half">
+              <label for="categoria" class="form-label">Categoría *</label>
+              <select
+                id="categoria"
+                formControlName="categoria"
+                class="form-control form-select"
+                [class.is-invalid]="publicarForm.get('categoria')?.invalid && publicarForm.get('categoria')?.touched"
+              >
+                <option value="" disabled>Seleccionar</option>
+                <option value="Producto">Producto</option>
+                <option value="Comida">Comida</option>
+                <option value="Servicios">Servicios</option>
+              </select>
+              @if (publicarForm.get('categoria')?.invalid && publicarForm.get('categoria')?.touched) {
+                <span class="field-error">
+                  Selecciona una categoría.
+                </span>
+              }
+            </div>
+
+            <div class="form-group col-half">
+              <label for="precio" class="form-label">Precio (S/) *</label>
+              <div class="input-prefix-box">
+                <span class="currency-prefix">S/</span>
+                <input
+                  type="number"
+                  id="precio"
+                  formControlName="precio"
+                  class="form-control input-with-prefix"
+                  [class.is-invalid]="publicarForm.get('precio')?.invalid && publicarForm.get('precio')?.touched"
+                  placeholder="0.00"
+                  min="0.5"
+                  step="0.5"
+                />
+              </div>
+              @if (publicarForm.get('precio')?.invalid && publicarForm.get('precio')?.touched) {
+                <span class="field-error">
+                  Ingresa un precio mayor a 0.
+                </span>
+              }
             </div>
           </div>
-        </div>
 
-        <!-- Botón de Envío -->
-        <div class="form-actions">
-          <button type="submit" class="btn-submit" [disabled]="guardando()">
-            <span *ngIf="!guardando()">Publicar Producto</span>
-            <span *ngIf="guardando()" class="spinner-inline">
-              <span class="dot-spinner"></span> Publicando...
-            </span>
-          </button>
-        </div>
+          <!-- SECCIÓN: TIPO DE VENTA / STOCK -->
+          <div class="form-group">
+            <label class="form-label">Tipo de venta *</label>
+            
+            <div class="inventory-selector-grid">
+              <div 
+                class="inventory-card" 
+                [class.selected]="tipoInventario() === 'UNICO'"
+                (click)="setTipoInventario('UNICO')">
+                <div class="card-radio">
+                  <span class="radio-circle" [class.checked]="tipoInventario() === 'UNICO'"></span>
+                </div>
+                <div class="card-content">
+                  <span class="card-title">Artículo único</span>
+                  <span class="card-desc">1 unidad disponible</span>
+                </div>
+              </div>
 
-      </form>
-    </ng-container>
+              <div 
+                class="inventory-card" 
+                [class.selected]="tipoInventario() === 'STOCK'"
+                (click)="setTipoInventario('STOCK')">
+                <div class="card-radio">
+                  <span class="radio-circle" [class.checked]="tipoInventario() === 'STOCK'"></span>
+                </div>
+                <div class="card-content">
+                  <span class="card-title">Múltiples unidades</span>
+                  <span class="card-desc">Venta por stock</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Campo dinámico de cantidad de stock -->
+            @if (tipoInventario() === 'STOCK') {
+              <div class="stock-input-panel">
+                <label for="stock" class="stock-label">Stock disponible:</label>
+                <div class="stock-controls">
+                  <button type="button" class="btn-stock-adjust" (click)="ajustarStock(-1)">-</button>
+                  <input 
+                    type="number" 
+                    id="stock" 
+                    formControlName="stock" 
+                    class="stock-number-input" 
+                    min="1" 
+                    max="999"
+                  />
+                  <button type="button" class="btn-stock-adjust" (click)="ajustarStock(1)">+</button>
+                  <span class="units-label">unidades</span>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group">
+            <label for="descripcion" class="form-label">Descripción *</label>
+            <textarea
+              id="descripcion"
+              formControlName="descripcion"
+              class="form-control form-textarea"
+              [class.is-invalid]="publicarForm.get('descripcion')?.invalid && publicarForm.get('descripcion')?.touched"
+              rows="3"
+              placeholder="Detalles del producto o servicio y lugar de entrega..."
+            ></textarea>
+            @if (publicarForm.get('descripcion')?.invalid && publicarForm.get('descripcion')?.touched) {
+              <span class="field-error">
+                La descripción es obligatoria (mínimo 10 caracteres).
+              </span>
+            }
+          </div>
+
+          <!-- Imagen -->
+          <div class="form-group">
+            <label for="foto" class="form-label">Imagen (URL)</label>
+            <div class="image-input-row">
+              <input
+                type="text"
+                id="foto"
+                formControlName="foto"
+                #fotoInput
+                (input)="onFotoInput(fotoInput.value)"
+                class="form-control"
+                placeholder="https://ejemplo.com/imagen.jpg (opcional)"
+              />
+
+              @if (fotoUrl()) {
+                <div class="image-preview-thumb">
+                  <img [src]="fotoUrl()" alt="Vista previa" (error)="fotoUrl.set('')">
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Botón de Envío: Bloqueado con [disabled]="publicarForm.invalid" (Requisito Semana 13) -->
+          <div class="form-actions">
+            <button type="submit" class="btn-submit" [disabled]="publicarForm.invalid || guardando()">
+              @if (!guardando()) {
+                <span>Publicar Producto</span>
+              } @else {
+                <span class="spinner-inline">
+                  <span class="dot-spinner"></span> Publicando...
+                </span>
+              }
+            </button>
+          </div>
+
+        </form>
+      }
+    }
   </div>
 </section>

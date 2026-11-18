@@ -1,0 +1,157 @@
+// Variables SASS para el componente Footer
+$footer-bg: #FFFFFF;
+$footer-border: #E5E7EB;
+$footer-text: #6B7280;
+$footer-heading: #1F2937;
+$color-primario: #0056D2;
+
+.app-footer {
+  background-color: $footer-bg;
+  border-top: 1px solid $footer-border;
+  margin-top: auto;
+  padding: 40px 24px 20px;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 32px;
+}
+
+.footer-brand {
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.15rem;
+    color: $footer-heading;
+    margin-bottom: 8px;
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    background-color: $color-primario;
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+
+  .footer-desc {
+    color: $footer-text;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    max-width: 320px;
+  }
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .footer-heading {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: $footer-heading;
+    margin-bottom: 4px;
+  }
+
+  a, span {
+    color: $footer-text;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  a:hover {
+    color: $color-primario;
+  }
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 32px auto 0;
+  padding-top: 16px;
+  border-top: 1px solid $footer-border;
+  text-align: center;
+
+  p {
+    color: #9CA3AF;
+    font-size: 0.8rem;
+  }
+}
+
+// Mobile Bottom Navigation
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: white;
+  border-top: 1px solid $footer-border;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+  padding: 0 12px;
+}
+
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #6B7280;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: color 0.2s;
+
+  &.active, &:hover {
+    color: $color-primario;
+  }
+}
+
+.nav-fab {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: $color-primario;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 86, 210, 0.3);
+  transform: translateY(-8px);
+  text-decoration: none;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-10px);
+  }
+}
+
+.desktop-only {
+  display: none;
+}
+
+.mobile-only {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  .desktop-only {
+    display: block;
+  }
+  .mobile-only {
+    display: none;
+  }
+}

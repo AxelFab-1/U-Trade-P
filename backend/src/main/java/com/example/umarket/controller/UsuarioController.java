@@ -93,6 +93,34 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioActualizado);
     }
 
+    @PostMapping("/admin")
+    public ResponseEntity<?> crearAdmin(@RequestBody Usuario req) {
+        if (req.getNombre() == null || req.getNombre().trim().length() < 3 || req.getNombre().trim().length() > 60) {
+            return ResponseEntity.badRequest().body("Error: El nombre completo debe tener entre 3 y 60 caracteres.");
+        }
+
+        if (req.getCorreo() == null || !req.getCorreo().trim().contains("@") || !req.getCorreo().trim().contains(".")) {
+            return ResponseEntity.badRequest().body("Error: Ingresa un correo electrónico válido.");
+        }
+
+        if (req.getPassword() == null || req.getPassword().trim().length() < 6) {
+            return ResponseEntity.badRequest().body("Error: La contraseña debe tener al menos 6 caracteres.");
+        }
+
+        if (service.existePorCorreo(req.getCorreo().trim().toLowerCase())) {
+            return ResponseEntity.badRequest().body("Error: Ya existe un usuario registrado con este correo.");
+        }
+
+        Usuario nuevoAdmin = new Usuario();
+        nuevoAdmin.setNombre(req.getNombre().trim());
+        nuevoAdmin.setCorreo(req.getCorreo().trim().toLowerCase());
+        nuevoAdmin.setPassword(req.getPassword());
+        nuevoAdmin.setRol("ADMIN");
+
+        Usuario creado = service.guardarUsuario(nuevoAdmin);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+    }
+
     @DeleteMapping("/{id:[0-9]+}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         if (service.eliminarUsuario(id)) {

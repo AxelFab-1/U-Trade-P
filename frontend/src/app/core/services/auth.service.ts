@@ -16,6 +16,8 @@ export class AuthService {
 
   readonly isLoggedIn = signal<boolean>(this.isAuthenticated());
   readonly currentUserEmail = signal<string | null>(this.getCorreoUsuario());
+  readonly userRole = signal<string | null>(this.getRolUsuario());
+  readonly isAdmin = signal<boolean>(this.getRolUsuario() === 'ADMIN');
 
   constructor(private http: HttpClient) {}
 
@@ -33,6 +35,9 @@ export class AuthService {
     localStorage.setItem(this.tokenKey, token);
     this.isLoggedIn.set(true);
     this.currentUserEmail.set(this.getCorreoUsuario());
+    const rol = this.getRolUsuario();
+    this.userRole.set(rol);
+    this.isAdmin.set(rol === 'ADMIN');
   }
 
   getToken(): string | null {
@@ -43,6 +48,8 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     this.isLoggedIn.set(false);
     this.currentUserEmail.set(null);
+    this.userRole.set(null);
+    this.isAdmin.set(false);
   }
 
   isAuthenticated(): boolean {
@@ -64,6 +71,18 @@ export class AuthService {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.sub || null;
+    } catch {
+      return null;
+    }
+  }
+
+  getRolUsuario(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.rol || null;
     } catch {
       return null;
     }

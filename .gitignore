@@ -1,3 +1,11 @@
+### Variables de entorno locales (NUNCA subir a Git) ###
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+backend/src/main/resources/application-local.properties
+
 ### Spring Boot / Backend ###
 backend/HELP.md
 backend/target/

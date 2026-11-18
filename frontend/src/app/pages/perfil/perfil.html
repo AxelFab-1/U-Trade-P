@@ -32,32 +32,40 @@
             <span>{{ estudiante().correo }}</span>
           </div>
 
-          <!-- Etiquetas informativas (solo se muestran si tienen valor definido) -->
-          <div class="meta-tags-row" *ngIf="estudiante().campus || estudiante().carrera || estudiante().telefono">
-            <span class="meta-tag" *ngIf="estudiante().campus">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              {{ estudiante().campus }}
-            </span>
+          <!-- Etiquetas informativas -->
+          @if (estudiante().campus || estudiante().carrera || estudiante().telefono) {
+            <div class="meta-tags-row">
+              @if (estudiante().campus) {
+                <span class="meta-tag">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  {{ estudiante().campus }}
+                </span>
+              }
 
-            <span class="meta-tag" *ngIf="estudiante().carrera">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-              </svg>
-              {{ estudiante().carrera }}
-            </span>
+              @if (estudiante().carrera) {
+                <span class="meta-tag">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                  </svg>
+                  {{ estudiante().carrera }}
+                </span>
+              }
 
-            <span class="meta-tag" *ngIf="estudiante().telefono">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-              </svg>
-              {{ estudiante().telefono }}
-            </span>
-          </div>
+              @if (estudiante().telefono) {
+                <span class="meta-tag">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                  </svg>
+                  {{ estudiante().telefono }}
+                </span>
+              }
+            </div>
+          }
         </div>
 
         <!-- Estadísticas compactas -->
@@ -105,7 +113,9 @@
           <path d="M16 10a4 4 0 0 1-8 0"></path>
         </svg>
         <span>Mis Compras</span>
-        <span class="badge-count" *ngIf="misCompras().length > 0">{{ misCompras().length }}</span>
+        @if (misCompras().length > 0) {
+          <span class="badge-count">{{ misCompras().length }}</span>
+        }
       </button>
 
       <button 
@@ -118,7 +128,9 @@
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
         </svg>
         <span>Mis Ventas</span>
-        <span class="badge-count" *ngIf="misVentas().length > 0">{{ misVentas().length }}</span>
+        @if (misVentas().length > 0) {
+          <span class="badge-count">{{ misVentas().length }}</span>
+        }
       </button>
 
       <button 
@@ -132,561 +144,614 @@
           <line x1="12" y1="22.08" x2="12" y2="12"></line>
         </svg>
         <span>Publicaciones</span>
-        <span class="badge-count" *ngIf="misPublicaciones().length > 0">{{ misPublicaciones().length }}</span>
+        @if (misPublicaciones().length > 0) {
+          <span class="badge-count">{{ misPublicaciones().length }}</span>
+        }
       </button>
     </nav>
 
     <!-- PESTAÑA 1: FORMULARIO DE DATOS PERSONALES -->
-    <div class="tab-pane" *ngIf="tabActiva() === 'datos'">
-      <div class="pane-header">
-        <h2>Información de Perfil</h2>
-        <button 
-          *ngIf="!modoEdicion()" 
-          type="button" 
-          class="btn-edit-header" 
-          (click)="activarEdicion()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-          <span>Editar</span>
-        </button>
-      </div>
-
-      <!-- Banner de advertencia si viene redirigido desde Publicar -->
-      <div *ngIf="vieneDePublicar()" class="alert-info-banner">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-        <div class="alert-info-content">
-          <strong>Completa tu información para publicar</strong>
-          <span>Para publicar en el catálogo, es necesario registrar tu número de teléfono, campus y carrera profesional.</span>
-        </div>
-        <button *ngIf="!modoEdicion()" type="button" class="btn-banner-action" (click)="activarEdicion()">
-          Editar Datos
-        </button>
-      </div>
-
-      <!-- Banner de confirmación de guardado -->
-      <div *ngIf="guardadoExitoso()" class="alert-success-banner">
-        <div class="alert-success-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          <span>Tus datos han sido actualizados exitosamente.</span>
-        </div>
-        <a *ngIf="vieneDePublicar()" routerLink="/publicar" class="btn-banner-action">
-          Continuar a Publicar →
-        </a>
-      </div>
-
-      <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="form-clean" novalidate>
-        <div class="form-grid">
-          <div class="form-field">
-            <label for="nombre">Nombre Completo *</label>
-            <input
-              type="text"
-              id="nombre"
-              formControlName="nombre"
-              class="field-input"
-              [class.is-invalid]="isFieldInvalid('nombre')"
-              placeholder="Ej. Juan Pérez"
-            />
-            <span *ngIf="isFieldInvalid('nombre')" class="field-error-text">
-              El nombre es obligatorio (mínimo 3 caracteres).
-            </span>
-          </div>
-
-          <div class="form-field">
-            <label for="correo">Correo Institucional UTP</label>
-            <input
-              type="email"
-              id="correo"
-              formControlName="correo"
-              class="field-input field-disabled"
-            />
-          </div>
-
-          <div class="form-field">
-            <label for="telefono">Teléfono Celular *</label>
-            <input
-              type="tel"
-              id="telefono"
-              formControlName="telefono"
-              class="field-input"
-              [class.is-invalid]="isFieldInvalid('telefono')"
-              placeholder="Ej. 987654321"
-              maxlength="9"
-            />
-            <span *ngIf="isFieldInvalid('telefono')" class="field-error-text">
-              Ingresa un celular válido de 9 dígitos.
-            </span>
-          </div>
-
-          <div class="form-field">
-            <label for="campus">Campus UTP *</label>
-            <select id="campus" formControlName="campus" class="field-input field-select" [class.is-invalid]="isFieldInvalid('campus')">
-              <option value="">Selecciona tu campus</option>
-              <option value="Campus Lima Centro">Campus Lima Centro</option>
-              <option value="Campus Lima Norte">Campus Lima Norte</option>
-              <option value="Campus San Juan de Lurigancho">Campus San Juan de Lurigancho</option>
-              <option value="Campus Ate">Campus Ate</option>
-              <option value="Campus Lima Sur">Campus Lima Sur</option>
-              <option value="Campus Arequipa">Campus Arequipa</option>
-              <option value="Campus Chiclayo">Campus Chiclayo</option>
-              <option value="Campus Huancayo">Campus Huancayo</option>
-            </select>
-            <span *ngIf="isFieldInvalid('campus')" class="field-error-text">
-              Selecciona tu campus UTP.
-            </span>
-          </div>
-
-          <div class="form-field full-col">
-            <label for="carrera">Carrera Profesional *</label>
-            <select id="carrera" formControlName="carrera" class="field-input field-select" [class.is-invalid]="isFieldInvalid('carrera')">
-              <option value="">Selecciona tu carrera</option>
-              <option value="Ingeniería de Sistemas e Informática">Ingeniería de Sistemas e Informática</option>
-              <option value="Ingeniería de Software">Ingeniería de Software</option>
-              <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-              <option value="Administración y Negocios">Administración y Negocios</option>
-              <option value="Derecho">Derecho</option>
-              <option value="Psicología">Psicología</option>
-              <option value="Comunicaciones">Comunicaciones</option>
-              <option value="Contabilidad">Contabilidad</option>
-            </select>
-            <span *ngIf="isFieldInvalid('carrera')" class="field-error-text">
-              Selecciona tu carrera profesional.
-            </span>
-          </div>
-
-          <div class="form-field full-col">
-            <label for="bio">Presentación Breve</label>
-            <textarea
-              id="bio"
-              formControlName="bio"
-              class="field-input field-textarea"
-              rows="3"
-              placeholder="Escribe una breve presentación o detalles de entrega..."
-            ></textarea>
-          </div>
-        </div>
-
-        <div class="form-submit-row">
-          <button 
-            *ngIf="!modoEdicion()" 
-            type="button" 
-            class="btn-edit-main" 
-            (click)="activarEdicion()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-            </svg>
-            <span>Editar Datos</span>
-          </button>
-
-          <ng-container *ngIf="modoEdicion()">
-            <button type="button" class="btn-cancel-edit" (click)="cancelarEdicion()">
-              Cancelar
-            </button>
-            <button type="submit" class="btn-save">
-              Guardar Cambios
-            </button>
-          </ng-container>
-        </div>
-      </form>
-    </div>
-
-    <!-- PESTAÑA 2: MIS COMPRAS -->
-    <div class="tab-pane" *ngIf="tabActiva() === 'compras'">
-      <div class="pane-header">
-        <h2>Mis Compras</h2>
-      </div>
-
-      <div *ngIf="cargandoCompras()" class="loading-state">
-        <span class="inline-spinner"></span>
-        <span>Cargando compras...</span>
-      </div>
-
-      <div class="items-list" *ngIf="!cargandoCompras()">
-        <div *ngFor="let pedido of misCompras()" class="item-card">
-          <img [src]="pedido.producto.foto" [alt]="pedido.producto.nombre" class="item-thumb" />
-          <div class="item-body">
-            <div class="item-title-row">
-              <h4 class="item-name">{{ pedido.producto.nombre }}</h4>
-              <span class="tx-tag">{{ pedido.numeroTransaccion }}</span>
-            </div>
-            <div class="item-meta-row">
-              <span class="price-highlight">S/ {{ pedido.montoTotal }}</span>
-              <span class="meta-dot">•</span>
-              <span>{{ pedido.cantidad }} unid.</span>
-              <span class="meta-dot">•</span>
-              <span>Vendedor: {{ pedido.vendedor?.nombre || 'Estudiante UTP' }}</span>
-            </div>
-            <div class="item-sub-row">
-              <span>{{ pedido.fecha | date:'medium' }}</span>
-              <span class="badge-yape">Yape</span>
-            </div>
-          </div>
-          <div class="item-action">
-            <button type="button" class="btn-view-receipt" (click)="abrirComprobante(pedido, 'compra')">
-              Ver Voucher
-            </button>
-          </div>
-        </div>
-
-        <div *ngIf="misCompras().length === 0" class="empty-state">
-          <div class="empty-icon">🛍️</div>
-          <h3>Sin compras registradas</h3>
-          <p>Aún no has realizado compras a través de la plataforma.</p>
-          <a routerLink="/explorar" class="btn-action-primary">
-            Explorar Catálogo
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 3: MIS VENTAS -->
-    <div class="tab-pane" *ngIf="tabActiva() === 'ventas'">
-      <div class="pane-header">
-        <h2>Mis Ventas</h2>
-      </div>
-
-      <div *ngIf="cargandoVentas()" class="loading-state">
-        <span class="inline-spinner"></span>
-        <span>Cargando ventas...</span>
-      </div>
-
-      <div class="items-list" *ngIf="!cargandoVentas()">
-        <div *ngFor="let venta of misVentas()" class="item-card">
-          <img [src]="venta.producto.foto" [alt]="venta.producto.nombre" class="item-thumb" />
-          <div class="item-body">
-            <div class="item-title-row">
-              <h4 class="item-name">{{ venta.producto.nombre }}</h4>
-              <span class="tx-tag">{{ venta.numeroTransaccion }}</span>
-            </div>
-            <div class="item-meta-row">
-              <span class="price-highlight text-green">S/ {{ venta.montoTotal }}</span>
-              <span class="meta-dot">•</span>
-              <span>{{ venta.cantidad }} unid.</span>
-              <span class="meta-dot">•</span>
-              <span>Comprador: {{ venta.comprador.nombre }}</span>
-            </div>
-            <div class="item-sub-row">
-              <span>Celular: <strong>+51 {{ venta.celularComprador }}</strong></span>
-              <span class="meta-dot">•</span>
-              <span>{{ venta.fecha | date:'short' }}</span>
-            </div>
-          </div>
-          <div class="item-action">
-            <button type="button" class="btn-view-receipt" (click)="abrirComprobante(venta, 'venta')">
-              Ver Detalle
-            </button>
-          </div>
-        </div>
-
-        <div *ngIf="misVentas().length === 0" class="empty-state">
-          <div class="empty-icon">💰</div>
-          <h3>Sin ventas registradas</h3>
-          <p>Cuando otros estudiantes compren tus productos con Yape, aparecerán aquí.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 4: MIS PUBLICACIONES -->
-    <div class="tab-pane" *ngIf="tabActiva() === 'publicaciones'">
-      <div class="pane-header">
-        <h2>Mis Publicaciones</h2>
-      </div>
-
-      <div *ngIf="cargandoPublicaciones()" class="loading-state">
-        <span class="inline-spinner"></span>
-        <span>Cargando publicaciones...</span>
-      </div>
-
-      <div class="items-list" *ngIf="!cargandoPublicaciones()">
-        <div *ngFor="let item of misPublicaciones()" class="item-card">
-          <img [src]="item.foto" [alt]="item.nombre" class="item-thumb" />
-          <div class="item-body">
-            <div class="item-title-row">
-              <h4 class="item-name">{{ item.nombre }}</h4>
-              <span class="status-badge" [ngClass]="obtenerEstadoBadge(item).clase">
-                {{ obtenerEstadoBadge(item).texto }}
-              </span>
-            </div>
-            <div class="item-meta-row">
-              <span class="price-highlight">S/ {{ item.precio }}</span>
-              <span class="meta-dot">•</span>
-              <span>Categoría: {{ item.categoria }}</span>
-              <span class="stock-pill" [class.stock-zero]="estaAgotado(item)" *ngIf="item.stock !== undefined">
-                Stock: {{ item.stock }} unid.
-              </span>
-            </div>
-          </div>
-          <div class="item-actions-group">
-            <!-- Botón Pausar / Activar (solo disponible si la publicación tiene stock) -->
+    @if (tabActiva() === 'datos') {
+      <div class="tab-pane">
+        <div class="pane-header">
+          <h2>Información de Perfil</h2>
+          @if (!modoEdicion()) {
             <button 
-              *ngIf="!estaAgotado(item)"
               type="button" 
-              class="btn-pub-action btn-pub-toggle" 
-              [class.is-paused]="estaPausado(item)"
-              (click)="toggleDisponibilidad(item)" 
-              [title]="estaPausado(item) ? 'Reactivar venta en campus' : 'Pausar compras temporalmente (en clase / fuera de campus)'">
-              <svg *ngIf="!estaPausado(item)" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="10" y1="15" x2="10" y2="9"></line>
-                <line x1="14" y1="15" x2="14" y2="9"></line>
-              </svg>
-              <svg *ngIf="estaPausado(item)" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-              </svg>
-              <span>{{ estaPausado(item) ? 'Activar' : 'Pausar' }}</span>
-            </button>
-
-            <!-- Si está agotado, botón directo para Reponer Stock -->
-            <button 
-              *ngIf="estaAgotado(item)"
-              type="button" 
-              class="btn-pub-action btn-pub-reponer" 
-              (click)="abrirEditarPublicacion(item)" 
-              title="Reponer unidades de stock">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 5v14M5 12h14"></path>
-              </svg>
-              <span>Reponer</span>
-            </button>
-
-            <a [routerLink]="['/producto', item.id]" class="btn-pub-action btn-pub-view" title="Ver publicación completa">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-              <span>Ver</span>
-            </a>
-
-            <button type="button" class="btn-pub-action btn-pub-edit" (click)="abrirEditarPublicacion(item)" title="Editar publicación">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              class="btn-edit-header" 
+              (click)="activarEdicion()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </svg>
               <span>Editar</span>
             </button>
+          }
+        </div>
 
-            <button type="button" class="btn-pub-action btn-pub-delete" (click)="$event.stopPropagation(); eliminarPublicacion(item.id!)" title="Eliminar publicación">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-            </button>
+        <!-- Banner de advertencia si viene redirigido desde Publicar -->
+        @if (vieneDePublicar()) {
+          <div class="alert-info-banner">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <div class="alert-info-content">
+              <strong>Completa tu información para publicar</strong>
+              <span>Para publicar en el catálogo, es necesario registrar tu número de teléfono, campus y carrera profesional.</span>
+            </div>
+            @if (!modoEdicion()) {
+              <button type="button" class="btn-banner-action" (click)="activarEdicion()">
+                Editar Datos
+              </button>
+            }
           </div>
+        }
+
+        <!-- Banner de confirmación de guardado -->
+        @if (guardadoExitoso()) {
+          <div class="alert-success-banner">
+            <div class="alert-success-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Tus datos han sido actualizados exitosamente.</span>
+            </div>
+            @if (vieneDePublicar()) {
+              <a routerLink="/publicar" class="btn-banner-action">
+                Continuar a Publicar →
+              </a>
+            }
+          </div>
+        }
+
+        <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="form-clean" novalidate>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="nombre">Nombre Completo *</label>
+              <input
+                type="text"
+                id="nombre"
+                formControlName="nombre"
+                class="field-input"
+                [class.is-invalid]="perfilForm.get('nombre')?.invalid && perfilForm.get('nombre')?.touched"
+                placeholder="Ej. Juan Pérez"
+              />
+              @if (perfilForm.get('nombre')?.invalid && perfilForm.get('nombre')?.touched) {
+                <span class="field-error-text">
+                  El nombre es obligatorio (mínimo 3 caracteres).
+                </span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label for="correo">Correo Institucional UTP</label>
+              <input
+                type="email"
+                id="correo"
+                formControlName="correo"
+                class="field-input field-disabled"
+              />
+            </div>
+
+            <div class="form-field">
+              <label for="telefono">Teléfono Celular *</label>
+              <input
+                type="tel"
+                id="telefono"
+                formControlName="telefono"
+                class="field-input"
+                [class.is-invalid]="perfilForm.get('telefono')?.invalid && perfilForm.get('telefono')?.touched"
+                placeholder="Ej. 987654321"
+                maxlength="9"
+              />
+              @if (perfilForm.get('telefono')?.invalid && perfilForm.get('telefono')?.touched) {
+                <span class="field-error-text">
+                  Ingresa un celular válido de 9 dígitos.
+                </span>
+              }
+            </div>
+
+            <div class="form-field">
+              <label for="campus">Campus UTP *</label>
+              <select id="campus" formControlName="campus" class="field-input field-select" [class.is-invalid]="perfilForm.get('campus')?.invalid && perfilForm.get('campus')?.touched">
+                <option value="">Selecciona tu campus</option>
+                <option value="Campus Lima Centro">Campus Lima Centro</option>
+                <option value="Campus Lima Norte">Campus Lima Norte</option>
+                <option value="Campus San Juan de Lurigancho">Campus San Juan de Lurigancho</option>
+                <option value="Campus Ate">Campus Ate</option>
+                <option value="Campus Lima Sur">Campus Lima Sur</option>
+                <option value="Campus Arequipa">Campus Arequipa</option>
+                <option value="Campus Chiclayo">Campus Chiclayo</option>
+                <option value="Campus Huancayo">Campus Huancayo</option>
+              </select>
+              @if (perfilForm.get('campus')?.invalid && perfilForm.get('campus')?.touched) {
+                <span class="field-error-text">
+                  Selecciona tu campus UTP.
+                </span>
+              }
+            </div>
+
+            <div class="form-field full-col">
+              <label for="carrera">Carrera Profesional *</label>
+              <select id="carrera" formControlName="carrera" class="field-input field-select" [class.is-invalid]="perfilForm.get('carrera')?.invalid && perfilForm.get('carrera')?.touched">
+                <option value="">Selecciona tu carrera</option>
+                <option value="Ingeniería de Sistemas e Informática">Ingeniería de Sistemas e Informática</option>
+                <option value="Ingeniería de Software">Ingeniería de Software</option>
+                <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                <option value="Administración y Negocios">Administración y Negocios</option>
+                <option value="Derecho">Derecho</option>
+                <option value="Psicología">Psicología</option>
+                <option value="Comunicaciones">Comunicaciones</option>
+                <option value="Contabilidad">Contabilidad</option>
+              </select>
+              @if (perfilForm.get('carrera')?.invalid && perfilForm.get('carrera')?.touched) {
+                <span class="field-error-text">
+                  Selecciona tu carrera profesional.
+                </span>
+              }
+            </div>
+
+            <div class="form-field full-col">
+              <label for="bio">Presentación Breve</label>
+              <textarea
+                id="bio"
+                formControlName="bio"
+                class="field-input field-textarea"
+                rows="3"
+                placeholder="Escribe una breve presentación o detalles de entrega..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-submit-row">
+            @if (!modoEdicion()) {
+              <button 
+                type="button" 
+                class="btn-edit-main" 
+                (click)="activarEdicion()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                <span>Editar Datos</span>
+              </button>
+            } @else {
+              <button type="button" class="btn-cancel-edit" (click)="cancelarEdicion()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn-save" [disabled]="perfilForm.invalid">
+                Guardar Cambios
+              </button>
+            }
+          </div>
+        </form>
+      </div>
+    }
+
+    <!-- PESTAÑA 2: MIS COMPRAS -->
+    @if (tabActiva() === 'compras') {
+      <div class="tab-pane">
+        <div class="pane-header">
+          <h2>Mis Compras</h2>
         </div>
 
-        <div *ngIf="misPublicaciones().length === 0" class="empty-state">
-          <div class="empty-icon">📢</div>
-          <h3>Sin publicaciones activas</h3>
-          <p>Aún no tienes publicaciones en el mercado universitario.</p>
-          <a routerLink="/publicar" class="btn-action-primary">
-            Publicar un Producto
-          </a>
-        </div>
+        @if (cargandoCompras()) {
+          <div class="loading-state">
+            <span class="inline-spinner"></span>
+            <span>Cargando compras...</span>
+          </div>
+        } @else {
+          <div class="items-list">
+            @for (pedido of misCompras(); track pedido.id) {
+              <div class="item-card">
+                <img [src]="pedido.producto.foto" [alt]="pedido.producto.nombre" class="item-thumb" />
+                <div class="item-body">
+                  <div class="item-title-row">
+                    <h4 class="item-name">{{ pedido.producto.nombre }}</h4>
+                    <span class="tx-tag">{{ pedido.numeroTransaccion }}</span>
+                  </div>
+                  <div class="item-meta-row">
+                    <span class="price-highlight">S/ {{ pedido.montoTotal }}</span>
+                    <span class="meta-dot">•</span>
+                    <span>{{ pedido.cantidad }} unid.</span>
+                    <span class="meta-dot">•</span>
+                    <span>Vendedor: {{ pedido.vendedor?.nombre || 'Cuenta suspendida / dada de baja' }}</span>
+                  </div>
+                  <div class="item-sub-row">
+                    <span>{{ pedido.fecha | date:'medium' }}</span>
+                    <span class="badge-yape">Yape</span>
+                  </div>
+                </div>
+                <div class="item-action">
+                  <button type="button" class="btn-view-receipt" (click)="abrirComprobante(pedido, 'compra')">
+                    Ver Voucher
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-state">
+                <div class="empty-icon">🛍️</div>
+                <h3>Sin compras registradas</h3>
+                <p>Aún no has realizado compras a través de la plataforma.</p>
+                <a routerLink="/explorar" class="btn-action-primary">
+                  Explorar Catálogo
+                </a>
+              </div>
+            }
+          </div>
+        }
       </div>
-    </div>
+    }
+
+    <!-- PESTAÑA 3: MIS VENTAS -->
+    @if (tabActiva() === 'ventas') {
+      <div class="tab-pane">
+        <div class="pane-header">
+          <h2>Mis Ventas</h2>
+        </div>
+
+        @if (cargandoVentas()) {
+          <div class="loading-state">
+            <span class="inline-spinner"></span>
+            <span>Cargando ventas...</span>
+          </div>
+        } @else {
+          <div class="items-list">
+            @for (venta of misVentas(); track venta.id) {
+              <div class="item-card">
+                <img [src]="venta.producto.foto" [alt]="venta.producto.nombre" class="item-thumb" />
+                <div class="item-body">
+                  <div class="item-title-row">
+                    <h4 class="item-name">{{ venta.producto.nombre }}</h4>
+                    <span class="tx-tag">{{ venta.numeroTransaccion }}</span>
+                  </div>
+                  <div class="item-meta-row">
+                    <span class="price-highlight text-green">S/ {{ venta.montoTotal }}</span>
+                    <span class="meta-dot">•</span>
+                    <span>{{ venta.cantidad }} unid.</span>
+                    <span class="meta-dot">•</span>
+                    <span>Comprador: {{ venta.comprador.nombre }}</span>
+                  </div>
+                  <div class="item-sub-row">
+                    <span>Celular: <strong>+51 {{ venta.celularComprador }}</strong></span>
+                    <span class="meta-dot">•</span>
+                    <span>{{ venta.fecha | date:'short' }}</span>
+                  </div>
+                </div>
+                <div class="item-action">
+                  <button type="button" class="btn-view-receipt" (click)="abrirComprobante(venta, 'venta')">
+                    Ver Detalle
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-state">
+                <div class="empty-icon">💰</div>
+                <h3>Sin ventas registradas</h3>
+                <p>Cuando otros estudiantes compren tus productos con Yape, aparecerán aquí.</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- PESTAÑA 4: MIS PUBLICACIONES -->
+    @if (tabActiva() === 'publicaciones') {
+      <div class="tab-pane">
+        <div class="pane-header">
+          <h2>Mis Publicaciones</h2>
+        </div>
+
+        @if (cargandoPublicaciones()) {
+          <div class="loading-state">
+            <span class="inline-spinner"></span>
+            <span>Cargando publicaciones...</span>
+          </div>
+        } @else {
+          <div class="items-list">
+            @for (item of misPublicaciones(); track item.id) {
+              <div class="item-card">
+                <img [src]="item.foto" [alt]="item.nombre" class="item-thumb" />
+                <div class="item-body">
+                  <div class="item-title-row">
+                    <h4 class="item-name">{{ item.nombre }}</h4>
+                    <span class="status-badge" [ngClass]="obtenerEstadoBadge(item).clase">
+                      {{ obtenerEstadoBadge(item).texto }}
+                    </span>
+                  </div>
+                  <div class="item-meta-row">
+                    <span class="price-highlight">S/ {{ item.precio }}</span>
+                    <span class="meta-dot">•</span>
+                    <span>Categoría: {{ item.categoria }}</span>
+                    @if (item.stock !== undefined) {
+                      <span class="stock-pill" [class.stock-zero]="estaAgotado(item)">
+                        Stock: {{ item.stock }} unid.
+                      </span>
+                    }
+                  </div>
+                </div>
+                <div class="item-actions-group">
+                  <!-- Botón Pausar / Activar -->
+                  @if (!estaAgotado(item)) {
+                    <button 
+                      type="button" 
+                      class="btn-pub-action btn-pub-toggle" 
+                      [class.is-paused]="estaPausado(item)"
+                      (click)="toggleDisponibilidad(item)" 
+                      [title]="estaPausado(item) ? 'Reactivar venta en campus' : 'Pausar compras temporalmente'">
+                      @if (!estaPausado(item)) {
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="10" y1="15" x2="10" y2="9"></line>
+                          <line x1="14" y1="15" x2="14" y2="9"></line>
+                        </svg>
+                      } @else {
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                      }
+                      <span>{{ estaPausado(item) ? 'Activar' : 'Pausar' }}</span>
+                    </button>
+                  } @else {
+                    <button 
+                      type="button" 
+                      class="btn-pub-action btn-pub-reponer" 
+                      (click)="abrirEditarPublicacion(item)" 
+                      title="Reponer unidades de stock">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"></path>
+                      </svg>
+                      <span>Reponer</span>
+                    </button>
+                  }
+
+                  <a [routerLink]="['/producto', item.id]" class="btn-pub-action btn-pub-view" title="Ver publicación completa">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>Ver</span>
+                  </a>
+
+                  <button type="button" class="btn-pub-action btn-pub-edit" (click)="abrirEditarPublicacion(item)" title="Editar publicación">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    <span>Editar</span>
+                  </button>
+
+                  <button type="button" class="btn-pub-action btn-pub-delete" (click)="$event.stopPropagation(); eliminarPublicacion(item.id!)" title="Eliminar publicación">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-state">
+                <div class="empty-icon">📢</div>
+                <h3>Sin publicaciones activas</h3>
+                <p>Aún no tienes publicaciones en el mercado universitario.</p>
+                <a routerLink="/publicar" class="btn-action-primary">
+                  Publicar un Producto
+                </a>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
 
   </div>
 </section>
 
 <!-- MODAL DE COMPROBANTE DIGITAL -->
-<div class="modal-backdrop" *ngIf="pedidoSeleccionado() as p" (click)="cerrarComprobante()">
-  <div class="receipt-card" (click)="$event.stopPropagation()">
-    <div class="receipt-header">
-      <div class="receipt-brand">
-        <span class="yape-tag">Yape</span>
-        <span class="receipt-tag">{{ esVentaModal() ? 'Detalle de Venta' : 'Comprobante de Pago' }}</span>
-      </div>
-      <button class="btn-close" (click)="cerrarComprobante()" title="Cerrar">✕</button>
-    </div>
-
-    <div class="receipt-body">
-      <div class="check-circle">✓</div>
-      <h3 class="tx-status">{{ esVentaModal() ? 'Venta Confirmada' : 'Pago Confirmado' }}</h3>
-      <p class="tx-id">{{ p.numeroTransaccion }}</p>
-
-      <div class="receipt-details">
-        <div class="receipt-row">
-          <span class="rl">Producto:</span>
-          <span class="rv font-semibold">{{ p.producto.nombre }}</span>
+@if (pedidoSeleccionado(); as p) {
+  <div class="modal-backdrop" (click)="cerrarComprobante()">
+    <div class="receipt-card" (click)="$event.stopPropagation()">
+      <div class="receipt-header">
+        <div class="receipt-brand">
+          <span class="yape-tag">Yape</span>
+          <span class="receipt-tag">{{ esVentaModal() ? 'Detalle de Venta' : 'Comprobante de Pago' }}</span>
         </div>
-        <div class="receipt-row">
-          <span class="rl">Cantidad:</span>
-          <span class="rv">{{ p.cantidad }} unid.</span>
-        </div>
-        <div class="receipt-row">
-          <span class="rl">Monto Pagado:</span>
-          <span class="rv amount-val">S/ {{ p.montoTotal }}</span>
-        </div>
-        <div class="receipt-row">
-          <span class="rl">Vendedor:</span>
-          <span class="rv">{{ p.vendedor?.nombre || 'Estudiante UTP' }}</span>
-        </div>
-        <div class="receipt-row">
-          <span class="rl">Comprador:</span>
-          <span class="rv">{{ p.comprador.nombre }}</span>
-        </div>
-        <div class="receipt-row">
-          <span class="rl">Celular:</span>
-          <span class="rv">+51 {{ p.celularComprador }}</span>
-        </div>
-        <div class="receipt-row">
-          <span class="rl">Fecha:</span>
-          <span class="rv">{{ p.fecha | date:'medium' }}</span>
-        </div>
+        <button class="btn-close" (click)="cerrarComprobante()" title="Cerrar">✕</button>
       </div>
 
-      <div class="receipt-notice" [class.receipt-notice-seller]="esVentaModal()">
-        {{ esVentaModal() ? 'Verifica este comprobante en la entrega.' : 'Muestra este comprobante en la entrega.' }}
-      </div>
+      <div class="receipt-body">
+        <div class="check-circle">✓</div>
+        <h3 class="tx-status">{{ esVentaModal() ? 'Venta Confirmada' : 'Pago Confirmado' }}</h3>
+        <p class="tx-id">{{ p.numeroTransaccion }}</p>
 
-      <button type="button" class="btn-done" (click)="cerrarComprobante()">
-        Aceptar
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL DE EDICIÓN DE PUBLICACIÓN -->
-<div class="modal-backdrop" *ngIf="publicacionEnEdicion() as pub" (click)="cerrarEditarPublicacion()">
-  <div class="edit-modal-card" (click)="$event.stopPropagation()">
-    <div class="edit-modal-header">
-      <div class="edit-modal-title">
-        <h3>Editar Publicación</h3>
-      </div>
-      <button type="button" class="btn-close" (click)="cerrarEditarPublicacion()" title="Cerrar">✕</button>
-    </div>
-
-    <!-- Banner de error si falla la actualización -->
-    <div *ngIf="errorEdicion()" class="edit-error-banner">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="8" x2="12" y2="12"></line>
-        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-      </svg>
-      <span>{{ errorEdicion() }}</span>
-    </div>
-
-    <form [formGroup]="editForm" (ngSubmit)="guardarEdicionPublicacion()" class="edit-form-content" novalidate>
-      <div class="edit-fields-grid">
-        <!-- Título -->
-        <div class="modal-field full-width">
-          <label for="edit-nombre">Título *</label>
-          <input
-            type="text"
-            id="edit-nombre"
-            formControlName="nombre"
-            class="modal-input"
-            [class.is-invalid]="isEditFieldInvalid('nombre')"
-            placeholder="Título del producto"
-          />
-        </div>
-
-        <!-- Categoría -->
-        <div class="modal-field">
-          <label for="edit-categoria">Categoría *</label>
-          <select id="edit-categoria" formControlName="categoria" class="modal-input modal-select">
-            <option value="Producto">Producto</option>
-            <option value="Comida">Comida</option>
-            <option value="Servicios">Servicios</option>
-          </select>
-        </div>
-
-        <!-- Precio -->
-        <div class="modal-field">
-          <label for="edit-precio">Precio (S/) *</label>
-          <div class="price-input-box">
-            <span class="currency-tag">S/</span>
-            <input
-              type="number"
-              id="edit-precio"
-              formControlName="precio"
-              class="modal-input has-currency"
-              [class.is-invalid]="isEditFieldInvalid('precio')"
-              placeholder="0.00"
-              step="0.5"
-              min="0.1"
-            />
+        <div class="receipt-details">
+          <div class="receipt-row">
+            <span class="rl">Producto:</span>
+            <span class="rv font-semibold">{{ p.producto.nombre }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="rl">Cantidad:</span>
+            <span class="rv">{{ p.cantidad }} unid.</span>
+          </div>
+          <div class="receipt-row">
+            <span class="rl">Monto Pagado:</span>
+            <span class="rv amount-val">S/ {{ p.montoTotal }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="rl">Vendedor:</span>
+            <span class="rv">{{ p.vendedor?.nombre || 'Cuenta suspendida / dada de baja' }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="rl">Comprador:</span>
+            <span class="rv">{{ p.comprador.nombre }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="rl">Celular:</span>
+            <span class="rv">+51 {{ p.celularComprador }}</span>
+          </div>
+          <div class="receipt-row">
+            <span class="rl">Fecha:</span>
+            <span class="rv">{{ p.fecha | date:'medium' }}</span>
           </div>
         </div>
 
-        <!-- Stock -->
-        <div class="modal-field">
-          <label for="edit-stock">Stock disponible *</label>
-          <input
-            type="number"
-            id="edit-stock"
-            formControlName="stock"
-            class="modal-input"
-            [class.is-invalid]="isEditFieldInvalid('stock')"
-            min="0"
-          />
+        <div class="receipt-notice" [class.receipt-notice-seller]="esVentaModal()">
+          {{ esVentaModal() ? 'Verifica este comprobante en la entrega.' : 'Muestra este comprobante en la entrega.' }}
         </div>
 
-        <!-- Estado / Disponibilidad -->
-        <div class="modal-field">
-          <label for="edit-disponible">Disponibilidad de Entrega *</label>
-          <select id="edit-disponible" formControlName="disponible" class="modal-input modal-select">
-            <option [ngValue]="true">Activo (Disponible en campus)</option>
-            <option [ngValue]="false">Pausado (En clase / fuera de campus)</option>
-          </select>
-        </div>
+        <button type="button" class="btn-done" (click)="cerrarComprobante()">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+}
 
-        <!-- Descripción -->
-        <div class="modal-field full-width">
-          <label for="edit-descripcion">Descripción *</label>
-          <textarea
-            id="edit-descripcion"
-            formControlName="descripcion"
-            rows="3"
-            class="modal-input modal-textarea"
-            [class.is-invalid]="isEditFieldInvalid('descripcion')"
-            placeholder="Detalles del producto o condiciones de entrega"
-          ></textarea>
+<!-- MODAL DE EDICIÓN DE PUBLICACIÓN -->
+@if (publicacionEnEdicion(); as pub) {
+  <div class="modal-backdrop" (click)="cerrarEditarPublicacion()">
+    <div class="edit-modal-card" (click)="$event.stopPropagation()">
+      <div class="edit-modal-header">
+        <div class="edit-modal-title">
+          <h3>Editar Publicación</h3>
         </div>
+        <button type="button" class="btn-close" (click)="cerrarEditarPublicacion()" title="Cerrar">✕</button>
+      </div>
 
-        <!-- Imagen URL -->
-        <div class="modal-field full-width">
-          <label for="edit-foto">URL de Imagen</label>
-          <div class="photo-input-preview-row">
+      <!-- Banner de error si falla la actualización -->
+      @if (errorEdicion()) {
+        <div class="edit-error-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ errorEdicion() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="editForm" (ngSubmit)="guardarEdicionPublicacion()" class="edit-form-content" novalidate>
+        <div class="edit-fields-grid">
+          <!-- Título -->
+          <div class="modal-field full-width">
+            <label for="edit-nombre">Título *</label>
             <input
               type="text"
-              id="edit-foto"
-              formControlName="foto"
+              id="edit-nombre"
+              formControlName="nombre"
               class="modal-input"
-              placeholder="https://ejemplo.com/imagen.jpg"
+              [class.is-invalid]="editForm.get('nombre')?.invalid && editForm.get('nombre')?.touched"
+              placeholder="Título del producto"
             />
-            <div class="modal-photo-thumb" *ngIf="editForm.get('foto')?.value">
-              <img [src]="editForm.get('foto')?.value" alt="Preview" />
+          </div>
+
+          <!-- Categoría -->
+          <div class="modal-field">
+            <label for="edit-categoria">Categoría *</label>
+            <select id="edit-categoria" formControlName="categoria" class="modal-input modal-select">
+              <option value="Producto">Producto</option>
+              <option value="Comida">Comida</option>
+              <option value="Servicios">Servicios</option>
+            </select>
+          </div>
+
+          <!-- Precio -->
+          <div class="modal-field">
+            <label for="edit-precio">Precio (S/) *</label>
+            <div class="price-input-box">
+              <span class="currency-tag">S/</span>
+              <input
+                type="number"
+                id="edit-precio"
+                formControlName="precio"
+                class="modal-input has-currency"
+                [class.is-invalid]="editForm.get('precio')?.invalid && editForm.get('precio')?.touched"
+                placeholder="0.00"
+                step="0.5"
+                min="0.1"
+              />
+            </div>
+          </div>
+
+          <!-- Stock -->
+          <div class="modal-field">
+            <label for="edit-stock">Stock disponible *</label>
+            <input
+              type="number"
+              id="edit-stock"
+              formControlName="stock"
+              class="modal-input"
+              [class.is-invalid]="editForm.get('stock')?.invalid && editForm.get('stock')?.touched"
+              min="0"
+            />
+          </div>
+
+          <!-- Estado / Disponibilidad -->
+          <div class="modal-field">
+            <label for="edit-disponible">Disponibilidad de Entrega *</label>
+            <select id="edit-disponible" formControlName="disponible" class="modal-input modal-select">
+              <option [ngValue]="true">Activo (Disponible en campus)</option>
+              <option [ngValue]="false">Pausado (En clase / fuera de campus)</option>
+            </select>
+          </div>
+
+          <!-- Descripción -->
+          <div class="modal-field full-width">
+            <label for="edit-descripcion">Descripción *</label>
+            <textarea
+              id="edit-descripcion"
+              formControlName="descripcion"
+              rows="3"
+              class="modal-input modal-textarea"
+              [class.is-invalid]="editForm.get('descripcion')?.invalid && editForm.get('descripcion')?.touched"
+              placeholder="Detalles del producto o condiciones de entrega"
+            ></textarea>
+          </div>
+
+          <!-- Imagen URL -->
+          <div class="modal-field full-width">
+            <label for="edit-foto">URL de Imagen</label>
+            <div class="photo-input-preview-row">
+              <input
+                type="text"
+                id="edit-foto"
+                formControlName="foto"
+                class="modal-input"
+                placeholder="https://ejemplo.com/imagen.jpg"
+              />
+              @if (editForm.get('foto')?.value) {
+                <div class="modal-photo-thumb">
+                  <img [src]="editForm.get('foto')?.value" alt="Preview" />
+                </div>
+              }
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="edit-modal-footer">
-        <a [routerLink]="['/producto', pub.id]" (click)="cerrarEditarPublicacion()" class="btn-link-preview">
-          Ver como Comprador →
-        </a>
+        <div class="edit-modal-footer">
+          <a [routerLink]="['/producto', pub.id]" (click)="cerrarEditarPublicacion()" class="btn-link-preview">
+            Ver como Comprador →
+          </a>
 
-        <div class="footer-btn-actions">
-          <button type="button" class="btn-cancel" (click)="cerrarEditarPublicacion()">
-            Cancelar
-          </button>
-          <button type="submit" class="btn-save-edit" [disabled]="guardandoEdicion()">
-            <span *ngIf="!guardandoEdicion()">Guardar Cambios</span>
-            <span *ngIf="guardandoEdicion()" class="spinner-saving">
-              Guardando...
-            </span>
-          </button>
+          <div class="footer-btn-actions">
+            <button type="button" class="btn-cancel" (click)="cerrarEditarPublicacion()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-save-edit" [disabled]="guardandoEdicion() || editForm.invalid">
+              @if (!guardandoEdicion()) {
+                <span>Guardar Cambios</span>
+              } @else {
+                <span class="spinner-saving">
+                  Guardando...
+                </span>
+              }
+            </button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
+}
