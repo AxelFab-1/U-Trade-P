@@ -6,10 +6,11 @@ $footer-heading: #1F2937;
 $color-primario: #0056D2;
 
 .app-footer {
-  background-color: $footer-bg;
-  border-top: 1px solid $footer-border;
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-color);
   margin-top: auto;
   padding: 40px 24px 20px;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .footer-container {
@@ -95,13 +96,14 @@ $color-primario: #0056D2;
   left: 0;
   right: 0;
   height: 60px;
-  background-color: white;
-  border-top: 1px solid $footer-border;
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-around;
   align-items: center;
   z-index: 100;
   padding: 0 12px;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .nav-btn {

@@ -55,16 +55,104 @@
   --border-color: #334155;
   --border-focus: #38BDF8;
 
-  --bg-app: #0F172A;
+  --bg-app: #0B1120;
   --bg-card: #1E293B;
   --bg-muted: #334155;
 
   --primary-light: rgba(56, 189, 248, 0.15);
   --primary-focus: rgba(56, 189, 248, 0.25);
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
-  --shadow-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.6), 0 2px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -2px rgba(0, 0, 0, 0.5);
+
+  background-color: var(--bg-app) !important;
+  color: var(--text-primary);
+
+  body {
+    background-color: var(--bg-app) !important;
+    color: var(--text-primary);
+  }
+
+  .app-layout {
+    background-color: var(--bg-app) !important;
+    color: var(--text-primary);
+  }
+
+  .explorar-container,
+  .detalle-container,
+  .perfil-view-container,
+  .admin-view-container,
+  .mensajes-view-container,
+  .publicar-container,
+  .form-view-container {
+    background-color: transparent !important;
+    color: var(--text-primary);
+  }
+
+  .tabs-container,
+  .perfil-card,
+  .form-card,
+  .mensajes-card,
+  .publicar-card,
+  .detalle-card,
+  .receipt-card,
+  .yape-modal-card,
+  .edit-modal-card,
+  .item-card,
+  .seller-card,
+  .empty-state-card {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary);
+  }
+
+  .search-input,
+  .category-select,
+  .form-control,
+  .field-input,
+  .modal-input {
+    background-color: #0F172A !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+
+    &::placeholder {
+      color: var(--text-muted) !important;
+    }
+  }
+
+  .seller-name,
+  .item-name,
+  .product-title,
+  .profile-name,
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary) !important;
+  }
+
+  .tab-btn {
+    color: var(--text-secondary);
+    &:hover {
+      background-color: var(--bg-muted) !important;
+      color: var(--text-primary) !important;
+    }
+  }
+
+  .app-footer,
+  .bottom-nav {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+  }
+
+  .footer-heading,
+  .footer-logo {
+    color: var(--text-primary) !important;
+  }
+
+  .footer-desc,
+  .footer-links a,
+  .footer-links span {
+    color: var(--text-secondary) !important;
+  }
 }
 
 /* Reset y configuraciones base */

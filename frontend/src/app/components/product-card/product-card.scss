@@ -105,8 +105,20 @@ $borde-tarjeta: #E5E7EB;
 
 .product-time-tag {
   font-size: 0.7rem;
-  color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
+  color: #1D4ED8;
+  background-color: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+}
+
+[data-theme='dark'] .product-time-tag {
+  color: #93C5FD !important;
+  background-color: #1E3A8A !important;
+  border-color: #3B82F6 !important;
 }
 
 .product-name {

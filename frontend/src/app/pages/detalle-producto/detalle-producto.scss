@@ -99,9 +99,25 @@
   }
 
   .date-text {
-    color: #9CA3AF;
-    font-weight: 500;
+    color: #1D4ED8;
+    background-color: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
     margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  [data-theme='dark'] & .date-text,
+  [data-theme='dark'] .date-text {
+    color: #93C5FD !important;
+    background-color: #1E3A8A !important;
+    border-color: #3B82F6 !important;
   }
 }
 
