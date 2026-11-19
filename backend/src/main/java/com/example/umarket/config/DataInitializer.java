@@ -31,8 +31,19 @@ public class DataInitializer implements CommandLineRunner {
         if (usuarioRepository.count() == 0) {
             Usuario admin = new Usuario("Administrador UTP", "admin@utp.edu.pe", passwordEncoder.encode("admin123"), "ADMIN");
             Usuario carlos = new Usuario("Carlos Curo", "carlos@utp.edu.pe", passwordEncoder.encode("utp2024"), "ESTUDIANTE");
+            carlos.setTelefono("987654321");
+            carlos.setCampus("Campus Lima Centro");
+            carlos.setCarrera("Ingeniería de Sistemas e Informática");
+
             Usuario fabian = new Usuario("Fabian Z. A.", "fabian@utp.edu.pe", passwordEncoder.encode("utp2024"), "ESTUDIANTE");
+            fabian.setTelefono("912345678");
+            fabian.setCampus("Campus San Juan de Lurigancho");
+            fabian.setCarrera("Ingeniería de Software");
+
             Usuario camila = new Usuario("Camila Torres", "camila@utp.edu.pe", passwordEncoder.encode("utp2024"), "ESTUDIANTE");
+            camila.setTelefono("998877665");
+            camila.setCampus("Campus Ate");
+            camila.setCarrera("Administración y Negocios");
 
             usuarioRepository.saveAll(List.of(admin, carlos, fabian, camila));
         }
@@ -111,5 +122,39 @@ public class DataInitializer implements CommandLineRunner {
 
             productoRepository.saveAll(productos);
         }
+
+        // Sincronizar usuarios base en caso existan sin teléfono (retrocompatibilidad)
+        usuarioRepository.findAll().forEach(u -> {
+            boolean modificado = false;
+            if (u.getTelefono() == null || u.getTelefono().trim().isEmpty()) {
+                if ("carlos@utp.edu.pe".equalsIgnoreCase(u.getCorreo())) {
+                    u.setTelefono("987654321");
+                    u.setCampus("Campus Lima Centro");
+                    u.setCarrera("Ingeniería de Sistemas e Informática");
+                    modificado = true;
+                } else if ("fabian@utp.edu.pe".equalsIgnoreCase(u.getCorreo())) {
+                    u.setTelefono("912345678");
+                    u.setCampus("Campus San Juan de Lurigancho");
+                    u.setCarrera("Ingeniería de Software");
+                    modificado = true;
+                } else if ("camila@utp.edu.pe".equalsIgnoreCase(u.getCorreo())) {
+                    u.setTelefono("998877665");
+                    u.setCampus("Campus Ate");
+                    u.setCarrera("Administración y Negocios");
+                    modificado = true;
+                }
+            }
+            if (modificado) {
+                usuarioRepository.save(u);
+            }
+        });
+
+        // Sincronizar fecha de publicación en productos existentes si fuera nula
+        productoRepository.findAll().forEach(p -> {
+            if (p.getFechaPublicacion() == null) {
+                p.setFechaPublicacion(java.time.LocalDateTime.now().minusHours(2));
+                productoRepository.save(p);
+            }
+        });
     }
 }

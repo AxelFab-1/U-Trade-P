@@ -602,9 +602,14 @@
           {{ esVentaModal() ? 'Verifica este comprobante en la entrega.' : 'Muestra este comprobante en la entrega.' }}
         </div>
 
-        <button type="button" class="btn-done" (click)="cerrarComprobante()">
-          Aceptar
-        </button>
+        <div class="receipt-actions-group" style="display: flex; gap: 10px; margin-top: 14px;">
+          <button type="button" class="btn-print-receipt" (click)="imprimirComprobanteModal()" style="flex: 1; background-color: var(--primary-color); color: #fff; border: none; padding: 10px 14px; border-radius: 9999px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            📄 Descargar / Imprimir
+          </button>
+          <button type="button" class="btn-done" (click)="cerrarComprobante()" style="flex: 1; margin: 0;">
+            Aceptar
+          </button>
+        </div>
       </div>
     </div>
   </div>

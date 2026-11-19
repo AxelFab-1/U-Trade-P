@@ -7,6 +7,8 @@ import { PedidoService } from '../../core/services/pedido.service';
 import { Producto } from '../../core/models/producto.model';
 import { PagoYapeResponse } from '../../core/models/pedido.model';
 import { AuthService } from '../../core/services/auth.service';
+import { formatearTiempoRelativo } from '../../core/utils/tiempo-relativo.util';
+import { imprimirComprobante } from '../../core/utils/comprobante-printer.util';
 
 @Component({
   selector: 'app-detalle-producto',
@@ -39,6 +41,7 @@ export class DetalleProducto implements OnInit {
   readonly errorYape = signal<string>('');
   readonly voucherExitoso = signal<PagoYapeResponse | null>(null);
 
+  readonly tiempoPublicacion = computed(() => formatearTiempoRelativo(this.producto()?.fechaPublicacion));
   readonly esComida = computed(() => this.producto()?.categoria === 'Comida');
   
   readonly esMiProducto = computed(() => {
@@ -244,8 +247,39 @@ export class DetalleProducto implements OnInit {
   contactarWhatsApp() {
     const prod = this.producto();
     if (!prod) return;
-    const mensaje = encodeURIComponent(`Hola! Vi tu publicación de "${prod.nombre}" en U-Market y me gustaría coordinar la entrega.`);
-    window.open(`https://wa.me/51987654321?text=${mensaje}`, '_blank');
+
+    const vendedor = prod.vendedor;
+    const tel = vendedor?.telefono?.trim();
+
+    if (!tel) {
+      this.errorCompra.set(`El vendedor no ha registrado un número de celular. Puedes contactarlo a su correo institucional: ${vendedor?.correo || 'correo UTP'}`);
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const telLimpio = tel.replace(/\D/g, '');
+    const celularFinal = telLimpio.startsWith('51') ? telLimpio : `51${telLimpio}`;
+    const nombreVendedor = vendedor?.nombre ? `Hola ${vendedor.nombre}! ` : 'Hola! ';
+    const mensaje = encodeURIComponent(`${nombreVendedor}Vi tu publicación de "${prod.nombre}" en U-Market UTP y me gustaría coordinar la entrega en campus.`);
+    window.open(`https://wa.me/${celularFinal}?text=${mensaje}`, '_blank');
+  }
+
+  imprimirVoucher() {
+    const v = this.voucherExitoso();
+    const prod = this.producto();
+    if (!v || !prod) return;
+
+    imprimirComprobante({
+      numeroTransaccion: v.numeroTransaccion,
+      productoNombre: v.nombreProducto,
+      cantidad: v.cantidad,
+      montoTotal: v.montoTotal,
+      vendedorNombre: prod.vendedor?.nombre || 'Estudiante UTP',
+      compradorNombre: this.authService.getNombreUsuario() || 'Estudiante UTP',
+      celularComprador: this.celularYape(),
+      fecha: new Date(),
+      metodoPago: 'Yape'
+    });
   }
 
   contactarChat() {
