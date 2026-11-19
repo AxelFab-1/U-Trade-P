@@ -2,6 +2,11 @@
 
 Plataforma web full-stack para compra, venta y moderación de productos, comida y servicios dentro de la comunidad universitaria UTP.
 
+### 🌐 Enlaces en Producción
+- 🖥️ **Frontend en vivo (Vercel):** [https://umarket-delta.vercel.app](https://umarket-delta.vercel.app)
+- 🚀 **Backend API en vivo (Render):** [https://umarket-api.onrender.com](https://umarket-api.onrender.com)
+- 🩺 **Health Check:** [https://umarket-api.onrender.com/api/health](https://umarket-api.onrender.com/api/health)
+
 ## Stack Tecnológico
 
 - **Frontend:** Angular 21 (Standalone Components, Signals, Control Flow `@if`/`@for`, Reactive Forms, SASS, Bootstrap 5.3)
@@ -54,6 +59,7 @@ Aplicación disponible en: `http://localhost:4200`
 | `CORS_ALLOWED_ORIGINS` | Orígenes autorizados separados por coma | `http://localhost:4200` |
 | `MAIL_HOST` / `MAIL_PORT` | Servidor y puerto SMTP | `smtp.gmail.com` / `587` |
 | `MAIL_USERNAME` / `MAIL_PASSWORD` | Credenciales SMTP para envío de códigos OTP | *(definir en `.env`)* |
+| `BREVO_API_KEY` | Clave API de Brevo para envío HTTPS de correos OTP en Render | *(definir en Render)* |
 
 ---
 

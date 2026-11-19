@@ -9,6 +9,7 @@ import { Pedido } from '../../core/models/pedido.model';
 import { AuthService } from '../../core/services/auth.service';
 import { PedidoService } from '../../core/services/pedido.service';
 import { ProductoService } from '../../core/services/producto.service';
+import { imprimirComprobante } from '../../core/utils/comprobante-printer.util';
 
 export interface PerfilEstudiante {
   nombre: string;
@@ -289,6 +290,23 @@ export class Perfil implements OnInit {
     if (this.tabActiva() === 'ventas') return true;
     const correoAuth = this.authService.getCorreoUsuario();
     return !!correoAuth && sel.vendedor?.correo?.toLowerCase() === correoAuth.toLowerCase();
+  }
+
+  imprimirComprobanteModal(): void {
+    const p = this.pedidoSeleccionado();
+    if (!p) return;
+
+    imprimirComprobante({
+      numeroTransaccion: p.numeroTransaccion,
+      productoNombre: p.producto.nombre,
+      cantidad: p.cantidad,
+      montoTotal: p.montoTotal,
+      vendedorNombre: p.vendedor?.nombre || 'Estudiante UTP',
+      compradorNombre: p.comprador?.nombre || 'Estudiante UTP',
+      celularComprador: p.celularComprador,
+      fecha: p.fecha,
+      metodoPago: p.metodoPago || 'Yape'
+    });
   }
 
   // DELETE mediante ProductoService (Requisito Unidad 3 - Semana 14)

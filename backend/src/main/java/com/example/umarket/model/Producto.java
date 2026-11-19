@@ -1,6 +1,7 @@
 package com.example.umarket.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "productos")
@@ -23,6 +24,9 @@ public class Producto {
     private Boolean disponible = true;
     private Integer stock = 1;
 
+    @Column(name = "fecha_publicacion")
+    private LocalDateTime fechaPublicacion = LocalDateTime.now();
+
     @ManyToOne
     @JoinColumn(name = "vendedor_id")
     private Usuario vendedor;
@@ -32,6 +36,7 @@ public class Producto {
     private Usuario comprador;
 
     public Producto() {
+        this.fechaPublicacion = LocalDateTime.now();
     }
 
     public Producto(String nombre, Double precio, String categoria, String descripcion, String foto, Usuario vendedor) {
@@ -43,6 +48,7 @@ public class Producto {
         this.vendedor = vendedor;
         this.disponible = true; 
         this.stock = "Comida".equalsIgnoreCase(categoria) ? 10 : 1;
+        this.fechaPublicacion = LocalDateTime.now();
     }
 
     public Producto(String nombre, Double precio, String categoria, String descripcion, String foto, Usuario vendedor, Integer stock) {
@@ -54,6 +60,7 @@ public class Producto {
         this.vendedor = vendedor;
         this.disponible = true; 
         this.stock = (stock != null && stock > 0) ? stock : ("Comida".equalsIgnoreCase(categoria) ? 10 : 1);
+        this.fechaPublicacion = LocalDateTime.now();
     }
 
     // Getters y Setters
@@ -91,4 +98,14 @@ public class Producto {
     
     public Usuario getComprador() { return comprador; }
     public void setComprador(Usuario comprador) { this.comprador = comprador; }
+
+    public LocalDateTime getFechaPublicacion() {
+        if (fechaPublicacion == null) {
+            return LocalDateTime.now();
+        }
+        return fechaPublicacion;
+    }
+    public void setFechaPublicacion(LocalDateTime fechaPublicacion) {
+        this.fechaPublicacion = fechaPublicacion;
+    }
 }

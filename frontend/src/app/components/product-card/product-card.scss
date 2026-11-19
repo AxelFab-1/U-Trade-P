@@ -9,19 +9,19 @@ $borde-tarjeta: #E5E7EB;
 .product-card {
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: $radio-tarjeta;
   overflow: hidden;
-  box-shadow: $sombra;
-  border: 1px solid $borde-tarjeta;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
   cursor: pointer;
   outline: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 
   // Anidación SASS con &:hover (Requisito Semana 11)
   &:hover {
     transform: translateY(-3px);
-    box-shadow: $sombra-hover;
+    box-shadow: var(--shadow-hover);
 
     .btn-ver-detalle {
       background-color: $color-primario;
@@ -34,7 +34,7 @@ $borde-tarjeta: #E5E7EB;
   position: relative;
   width: 100%;
   padding-top: 100%; /* 1:1 aspect ratio */
-  background-color: #F3F4F6;
+  background-color: var(--bg-muted);
   overflow: hidden;
 }
 
@@ -91,19 +91,28 @@ $borde-tarjeta: #E5E7EB;
 }
 
 .product-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 4px;
 }
 
 .product-price {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
+}
+
+.product-time-tag {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .product-name {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #4B5563;
+  color: var(--text-secondary);
   margin: 0 0 8px 0;
   line-height: 1.3;
   display: -webkit-box;
@@ -119,14 +128,14 @@ $borde-tarjeta: #E5E7EB;
   align-items: center;
   margin-top: auto;
   padding-top: 8px;
-  border-top: 1px solid #F3F4F6;
+  border-top: 1px solid var(--border-color);
   font-size: 0.75rem;
-  color: #9CA3AF;
+  color: var(--text-muted);
 }
 
 .product-uni {
   font-weight: 600;
-  color: #6B7280;
+  color: var(--text-secondary);
 }
 
 .product-rating {

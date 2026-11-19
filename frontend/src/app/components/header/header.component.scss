@@ -10,12 +10,13 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
   justify-content: space-between;
   align-items: center;
   padding: 12px 24px;
-  background-color: $header-bg;
-  border-bottom: 1px solid $border-color;
-  box-shadow: $sombra-header;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
   z-index: 10;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .logo {
@@ -24,7 +25,7 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
   gap: 8px;
   font-weight: 700;
   font-size: 1.2rem;
-  color: #1F2937;
+  color: var(--text-primary);
   text-decoration: none;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -122,22 +123,50 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
 }
 
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  color: #F59E0B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--bg-muted);
+    transform: scale(1.08);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+  }
+
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &:active svg {
+    transform: rotate(30deg);
+  }
+}
+
 .profile-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  background-color: #F3F4F6;
-  border: 1px solid $border-color;
+  background-color: var(--bg-muted);
+  border: 1px solid var(--border-color);
   padding: 8px 14px;
   border-radius: 9999px;
   font-weight: 600;
   cursor: pointer;
-  color: #374151;
+  color: var(--text-primary);
   font-size: 0.875rem;
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #E5E7EB;
+    background-color: var(--border-color);
   }
 }
 
@@ -148,9 +177,9 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid $border-color;
-  background-color: white;
-  color: #6B7280;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
 

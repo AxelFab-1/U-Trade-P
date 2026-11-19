@@ -20,20 +20,18 @@
           <div class="product-header">
             <span class="condition-text">{{ prod.categoria }}</span>
             
-            <!-- Badges según categoría y stock -->
-            @if (!tieneStockMultiple()) {
-              <span class="status-badge" [ngClass]="!estaAgotado() ? 'badge-disponible' : 'badge-vendido'">
-                {{ !estaAgotado() ? 'Disponible' : 'Vendido' }}
-              </span>
+            <!-- Badges según estado, categoría y stock -->
+            @if (estaPausado()) {
+              <span class="status-badge badge-paused">Pausado (En clase)</span>
+            } @else if (estaAgotado()) {
+              <span class="status-badge badge-vendido">Agotado / Vendido</span>
+            } @else if (tieneStockMultiple()) {
+              <span class="status-badge badge-stock">Stock: {{ stockDisponible() }} unid.</span>
             } @else {
-              <span class="status-badge" [ngClass]="!estaAgotado() ? 'badge-stock' : 'badge-vendido'">
-                {{ !estaAgotado() ? ('Stock: ' + stockDisponible() + ' unid.') : 'Agotado' }}
-              </span>
+              <span class="status-badge badge-disponible">Disponible en campus</span>
             }
 
-            @if (prod.fechaPublicacion) {
-              <span class="date-text">{{ prod.fechaPublicacion }}</span>
-            }
+            <span class="date-text">{{ tiempoPublicacion() }}</span>
           </div>
           
           <h1 class="product-title">{{ prod.nombre }}</h1>
@@ -47,6 +45,12 @@
               <div class="seller-info">
                 <p class="seller-name">{{ prod.vendedor.nombre }}</p>
                 <p class="seller-major">Estudiante UTP {{ prod.vendedor.carrera ? '• ' + prod.vendedor.carrera : '' }}</p>
+                @if (prod.vendedor.campus) {
+                  <p class="seller-campus">📍 {{ prod.vendedor.campus }}</p>
+                }
+                @if (prod.vendedor.telefono) {
+                  <p class="seller-phone">📱 WhatsApp: +51 {{ prod.vendedor.telefono }}</p>
+                }
               </div>
               @if (prod.vendedor.reputacion) {
                 <div class="seller-rating">
@@ -295,6 +299,9 @@
             </p>
 
             <div class="voucher-actions">
+              <button type="button" class="btn-print-voucher" (click)="imprimirVoucher()" style="background-color: var(--primary-color); color: #fff; border: none; padding: 10px 16px; border-radius: 9999px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                📄 Imprimir / Guardar Comprobante
+              </button>
               <button type="button" class="btn-view-purchases" (click)="irAPerfilCompras()">
                 Ver en Mis Compras
               </button>
