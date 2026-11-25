@@ -10,6 +10,9 @@ backend/src/main/resources/application-local.properties
 backend/HELP.md
 backend/target/
 backend/data/
+data/
+**/data/
+*.mv.db
 backend/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

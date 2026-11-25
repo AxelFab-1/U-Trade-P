@@ -1,45 +1,14 @@
-import { Component, OnInit, signal, computed, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subject, Subscription, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { ProductoService } from '../../core/services/producto.service';
 import { Producto } from '../../core/models/producto.model';
 import { ProductCard } from '../../components/product-card/product-card';
 
-export interface FiltroOpcion {
-  label: string;
-  value: string;
-  keywords: string[];
-}
-
-export const FILTROS_POR_TAB: Record<string, FiltroOpcion[]> = {
-  Producto: [
-    { label: 'Todas las categorías', value: 'TODAS', keywords: [] },
-    { label: 'Laptops y Computación', value: 'LAPTOP', keywords: ['laptop', 'macbook', 'computadora', 'notebook', 'pc', 'teclado', 'mouse', 'pantalla'] },
-    { label: 'Cargadores y Cables', value: 'CARGADOR', keywords: ['cargador', 'cable', 'usb', 'adaptador', 'power delivery', 'tipo c', 'lightning'] },
-    { label: 'Mochilas y Accesorios', value: 'MOCHILA', keywords: ['mochila', 'maletín', 'maletin', 'funda', 'estuche', 'billetera'] },
-    { label: 'Libros y Cuadernos', value: 'LIBROS', keywords: ['libro', 'cuaderno', 'copias', 'formulario', 'separata', 'apuntes'] },
-    { label: 'Calculadoras y Útiles', value: 'UTILES', keywords: ['calculadora', 'casio', 'regla', 'escalímetro', 'escalimetro', 'lapicero'] },
-    { label: 'Condición: Nuevo', value: 'NUEVO', keywords: ['nuevo', 'sellado'] },
-    { label: 'Condición: Como nuevo', value: 'COMO_NUEVO', keywords: ['como nuevo', 'seminuevo', 'semi nuevo', 'impecables'] }
-  ],
-  Comida: [
-    { label: 'Todos los alimentos', value: 'TODAS', keywords: [] },
-    { label: 'Bebidas y Cafetería', value: 'BEBIDAS', keywords: ['café', 'cafe', 'cold brew', 'bebida', 'jugo', 'te', 'té', 'agua', 'refresco'] },
-    { label: 'Snacks y Postres', value: 'POSTRES', keywords: ['brownie', 'galleta', 'snack', 'queque', 'torta', 'alfajor', 'muffin', 'dulce'] },
-    { label: 'Desayunos y Sandwiches', value: 'DESAYUNO', keywords: ['sandwich', 'sánguche', 'pan', 'tostada', 'empanada', 'desayuno', 'croissant'] },
-    { label: 'Almuerzos y Menú', value: 'ALMUERZOS', keywords: ['almuerzo', 'menú', 'menu', 'arroz', 'pollo', 'comida', 'plato'] },
-    { label: 'Saludables / Fit', value: 'FIT', keywords: ['proteico', 'proteicos', 'fit', 'fitness', 'proteina', 'proteína', 'avena', 'fruta', 'ensalada', 'fudgy'] }
-  ],
-  Servicios: [
-    { label: 'Todos los servicios', value: 'TODAS', keywords: [] },
-    { label: 'Asesorías y Clases', value: 'ASESORIAS', keywords: ['asesoría', 'asesoria', 'clases', 'tutoría', 'tutoria', 'cálculo', 'calculo', 'física', 'fisica', 'matemática', 'química', 'estadística'] },
-    { label: 'Impresiones 3D y Planos', value: '3D_PLANOS', keywords: ['3d', 'impresión', 'impresion', 'plano', 'autocad', 'stl', 'maqueta', 'filamento', 'pla'] },
-    { label: 'Programación y Software', value: 'SOFTWARE', keywords: ['programación', 'programacion', 'software', 'código', 'codigo', 'web', 'app', 'python', 'java', 'frontend', 'backend'] },
-    { label: 'Diseño Gráfico y Edición', value: 'DISENO', keywords: ['diseño', 'diseno', 'logo', 'photoshop', 'illustrator', 'edición', 'edicion', 'video', 'render'] },
-    { label: 'Soporte Técnico y Reparación', value: 'SOPORTE', keywords: ['soporte', 'reparación', 'reparacion', 'mantenimiento', 'formateo', 'limpieza', 'técnico'] }
-  ]
-};
+export type TipoOrden = 'recientes' | 'precio_asc' | 'precio_desc';
 
 @Component({
   selector: 'app-explorar',
@@ -48,24 +17,45 @@ export const FILTROS_POR_TAB: Record<string, FiltroOpcion[]> = {
   templateUrl: './explorar.html',
   styleUrl: './explorar.scss',
 })
-export class Explorar implements OnInit {
+export class Explorar implements OnInit, OnDestroy {
   private readonly productoService = inject(ProductoService);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
 
   readonly activeTab = signal<string>('Producto');
   readonly searchTerm = signal<string>('');
-  readonly categoriaSeleccionada = signal<string>('TODAS');
-  readonly todosLosProductos = signal<Producto[]>([]);
+  readonly ordenSeleccionado = signal<TipoOrden>('recientes');
   readonly productosFiltrados = signal<Producto[]>([]);
   readonly cargando = signal<boolean>(true);
 
-  // Lista dinámica de opciones según la pestaña activa
-  readonly filtrosDisponibles = computed<FiltroOpcion[]>(() => {
-    return FILTROS_POR_TAB[this.activeTab()] || FILTROS_POR_TAB['Producto'];
+  // Lista ordenada de productos sin mutar el array original
+  readonly productosOrdenados = computed<Producto[]>(() => {
+    const lista = [...this.productosFiltrados()];
+    const orden = this.ordenSeleccionado();
+
+    switch (orden) {
+      case 'precio_asc':
+        return lista.sort((a, b) => (a.precio ?? 0) - (b.precio ?? 0));
+      case 'precio_desc':
+        return lista.sort((a, b) => (b.precio ?? 0) - (a.precio ?? 0));
+      case 'recientes':
+      default:
+        return lista.sort((a, b) => {
+          const fechaA = a.fechaPublicacion ? new Date(a.fechaPublicacion).getTime() : 0;
+          const fechaB = b.fechaPublicacion ? new Date(b.fechaPublicacion).getTime() : 0;
+          if (fechaB !== fechaA) {
+            return fechaB - fechaA;
+          }
+          return (b.id ?? 0) - (a.id ?? 0);
+        });
+    }
   });
 
-  // Placeholder descriptivo para la barra de búsqueda
+  // Stream reactivo de búsqueda en tiempo real (termino + pestaña)
+  private readonly searchSubject = new Subject<{ term: string; tab: string }>();
+  private searchSub?: Subscription;
+
+  // Placeholder descriptivo dinámico según la pestaña activa
   readonly placeholderBusqueda = computed<string>(() => {
     switch (this.activeTab()) {
       case 'Comida':
@@ -78,89 +68,63 @@ export class Explorar implements OnInit {
   });
 
   ngOnInit() {
-    this.cargarProductos();
-  }
-
-  // Suscripción básica a Observable y actualización de Signals (Zoneless)
-  cargarProductos() {
-    this.cargando.set(true);
-    this.productoService.getProductos().subscribe({
+    this.searchSub = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged((prev, curr) => prev.term === curr.term && prev.tab === curr.tab),
+      switchMap(({ term, tab }) => {
+        this.cargando.set(true);
+        this.cdr.markForCheck();
+        return this.productoService.buscarProductos(term, tab).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe({
       next: (productos) => {
-        this.todosLosProductos.set(productos || []);
+        this.productosFiltrados.set(productos || []);
         this.cargando.set(false);
-        this.filtrarProductos();
         this.cdr.markForCheck();
       },
       error: () => {
+        this.productosFiltrados.set([]);
         this.cargando.set(false);
-        this.todosLosProductos.set([]);
-        this.filtrarProductos();
         this.cdr.markForCheck();
       }
     });
+
+    // Carga inicial al ingresar a la pantalla
+    this.searchSubject.next({ term: '', tab: this.activeTab() });
   }
 
-  // Comunicación Padre-Hijo: Manejo del @Output() emitido por la tarjeta
+  ngOnDestroy() {
+    this.searchSub?.unsubscribe();
+  }
+
+  // Navegación a detalle de publicación
   irADetalle(id: number): void {
     this.router.navigate(['/producto', id]);
   }
 
+  // Cambio de pestaña superior (Productos | Comida | Servicios)
   setActiveTab(tab: string) {
     this.activeTab.set(tab);
-    this.categoriaSeleccionada.set('TODAS');
-    this.filtrarProductos();
+    this.searchTerm.set('');
+    this.searchSubject.next({ term: '', tab });
   }
 
+  // Entrada de texto en tiempo real con debounce
   onSearchChange(term: string) {
     this.searchTerm.set(term);
-    this.filtrarProductos();
+    this.searchSubject.next({ term, tab: this.activeTab() });
   }
 
-  onCategoriaChange(cat: string) {
-    this.categoriaSeleccionada.set(cat);
-    this.filtrarProductos();
+  // Cambio de criterio de ordenamiento
+  onOrdenChange(orden: TipoOrden) {
+    this.ordenSeleccionado.set(orden);
   }
 
-  filtrarProductos() {
-    const term = this.searchTerm().trim().toLowerCase();
-    const tab = this.activeTab();
-    const valorFiltro = this.categoriaSeleccionada();
-
-    const opcionesTab = this.filtrosDisponibles();
-    const filtroActivo = opcionesTab.find(f => f.value === valorFiltro);
-
-    const filtrados = this.todosLosProductos().filter(p => {
-      const noEstaVendido = (p.stock === undefined || p.stock === null || p.stock > 0) && !p.comprador;
-      if (!noEstaVendido) return false;
-
-      const coincideTab = !tab || p.categoria === tab;
-      if (!coincideTab) return false;
-
-      const coincideTerm = !term ||
-        Boolean(p.nombre && p.nombre.toLowerCase().includes(term)) ||
-        Boolean(p.descripcion && p.descripcion.toLowerCase().includes(term));
-      if (!coincideTerm) return false;
-
-      if (filtroActivo && filtroActivo.keywords.length > 0) {
-        const match = filtroActivo.keywords.some(k => {
-          const kw = k.toLowerCase();
-          return (p.nombre && p.nombre.toLowerCase().includes(kw)) ||
-                 (p.descripcion && p.descripcion.toLowerCase().includes(kw)) ||
-                 (p.condicion && p.condicion.toLowerCase().includes(kw));
-        });
-        if (!match) return false;
-      }
-
-      return true;
-    });
-
-    this.productosFiltrados.set(filtrados);
-    this.cdr.markForCheck();
-  }
-
+  // Restablecer búsqueda
   limpiarFiltros() {
     this.searchTerm.set('');
-    this.categoriaSeleccionada.set('TODAS');
-    this.filtrarProductos();
+    this.searchSubject.next({ term: '', tab: this.activeTab() });
   }
 }

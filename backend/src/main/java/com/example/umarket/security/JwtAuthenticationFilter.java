@@ -1,5 +1,6 @@
 package com.example.umarket.security;
 
+import com.example.umarket.repository.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,9 +18,11 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UsuarioRepository usuarioRepository;
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UsuarioRepository usuarioRepository) {
         this.jwtService = jwtService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -36,10 +39,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String correo = jwtService.extraerCorreo(token);
                 String rol = jwtService.extraerRol(token);
 
-                var autoridades = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
-                
-                var auth = new UsernamePasswordAuthenticationToken(correo, null, autoridades);
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                // Revocación inmediata: validar existencia en BD antes de autorizar la sesión
+                if (correo != null && usuarioRepository.findByCorreoIgnoreCase(correo.trim()).isPresent()) {
+                    var autoridades = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
+                    
+                    var auth = new UsernamePasswordAuthenticationToken(correo, null, autoridades);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             }
         }
         

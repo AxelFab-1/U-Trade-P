@@ -1,7 +1,10 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Producto } from '../../core/models/producto.model';
 import { formatearTiempoRelativo } from '../../core/utils/tiempo-relativo.util';
+import { FavoritoService } from '../../core/services/favorito.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-product-card',
@@ -11,6 +14,10 @@ import { formatearTiempoRelativo } from '../../core/utils/tiempo-relativo.util';
   styleUrl: './product-card.scss'
 })
 export class ProductCard {
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  readonly favoritoService = inject(FavoritoService);
+
   // Comunicación Padre -> Hijo (Requisito Semana 12)
   @Input() producto!: Producto;
 
@@ -19,6 +26,23 @@ export class ProductCard {
 
   get tiempoRelativo(): string {
     return formatearTiempoRelativo(this.producto?.fechaPublicacion);
+  }
+
+  get esFavorito(): boolean {
+    return this.favoritoService.esFavorito(this.producto?.id);
+  }
+
+  onToggleFavorito(): void {
+    if (!this.producto || !this.producto.id) return;
+
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.favoritoService.toggleFavorito(this.producto.id).subscribe({
+      error: (err) => console.error('Error al alternar favorito:', err)
+    });
   }
 
   onVerDetalle(): void {

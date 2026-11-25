@@ -2,21 +2,34 @@
   <!-- Pestañas Superiores -->
   <div class="tabs-container">
     <button class="tab-btn" [class.active]="activeTab() === 'Producto'" (click)="setActiveTab('Producto')">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/></svg>
-      Productos
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      <span>Productos</span>
     </button>
     <button class="tab-btn" [class.active]="activeTab() === 'Comida'" (click)="setActiveTab('Comida')">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.5 6.027a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm2.5-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm-6.5-3h1v6h-1v-6z"/><path d="M12.027 8.5H8v6h4.027c2.552 0 4.473-2.656 4.473-5.5S14.579 3 12.027 3c-1.394 0-2.63.486-3.527 1.306A4.985 4.985 0 0 0 5 3C2.245 3 0 5.462 0 8.5S2.245 14 5 14c1.115 0 2.146-.388 2.96-1.034.86 1.353 2.176 2.034 4.067 2.034V14.5zM8 4.043c.895-.694 1.954-1.043 3.027-1.043 1.93 0 3.473 2.03 3.473 4.5S12.957 12 11.027 12H8V4.043z"/></svg>
-      Comida
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+        <line x1="6" y1="1" x2="6" y2="4"></line>
+        <line x1="10" y1="1" x2="10" y2="4"></line>
+        <line x1="14" y1="1" x2="14" y2="4"></line>
+      </svg>
+      <span>Comida</span>
     </button>
     <button class="tab-btn" [class.active]="activeTab() === 'Servicios'" (click)="setActiveTab('Servicios')">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/><path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/></svg>
-      Servicios
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+      </svg>
+      <span>Servicios</span>
     </button>
   </div>
 
-  <!-- Barra de búsqueda y Filtros -->
-  <div class="search-container">
+  <!-- Barra de búsqueda y Ordenamiento -->
+  <div class="search-sort-container">
     <div class="search-box">
       <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -32,32 +45,44 @@
           (click)="limpiarFiltros()" 
           class="clear-btn" 
           title="Limpiar búsqueda">
-          ✕
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       }
     </div>
-  </div>
 
-  <!-- Filtro de Categoría -->
-  <div class="category-filter">
-    <span class="filter-label">Categoría:</span>
-    <select class="category-select" [ngModel]="categoriaSeleccionada()" (ngModelChange)="onCategoriaChange($event)">
-      @for (opcion of filtrosDisponibles(); track opcion.value) {
-        <option [value]="opcion.value">{{ opcion.label }}</option>
-      }
-    </select>
+    <!-- Selector Ordenar Por -->
+    <div class="sort-box">
+      <label for="orden-select" class="sort-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h18M3 8h12M3 12h8m0 0l4 4m0 0l4-4m-4 4V4" />
+        </svg>
+        <span>Ordenar:</span>
+      </label>
+      <select 
+        id="orden-select"
+        class="sort-select" 
+        [ngModel]="ordenSeleccionado()" 
+        (ngModelChange)="onOrdenChange($event)">
+        <option value="recientes">Más recientes</option>
+        <option value="precio_asc">Precio: menor a mayor</option>
+        <option value="precio_desc">Precio: mayor a menor</option>
+      </select>
+    </div>
   </div>
 
   <!-- Estado de carga -->
   @if (cargando()) {
     <div class="loading-state-explorar">
       <span class="inline-spinner"></span>
-      <span>Cargando catálogo desde la base de datos...</span>
+      <span>Buscando en tiempo real en la base de datos...</span>
     </div>
   } @else {
     <!-- Grid de Productos (Comunicación Padre-Hijo con @Input y @Output) -->
     <div class="products-grid">
-      @for (prod of productosFiltrados(); track prod.id) {
+      @for (prod of productosOrdenados(); track prod.id) {
         <app-product-card 
           [producto]="prod"
           (verDetalle)="irADetalle($event)">
@@ -71,13 +96,13 @@
           </svg>
           <h3>Sin resultados</h3>
           <p>
-            {{ searchTerm() ? 'No encontramos coincidencias para "' + searchTerm() + '".' : 'No hay publicaciones en esta categoría.' }}
+            {{ searchTerm() ? 'No encontramos publicaciones para "' + searchTerm() + '" en esta categoría.' : 'No hay publicaciones disponibles en esta sección.' }}
           </p>
-          @if (searchTerm() || categoriaSeleccionada() !== 'TODAS') {
+          @if (searchTerm()) {
             <button 
               (click)="limpiarFiltros()"
               class="btn-reset-filters">
-              Restablecer filtros
+              Limpiar búsqueda
             </button>
           }
         </div>

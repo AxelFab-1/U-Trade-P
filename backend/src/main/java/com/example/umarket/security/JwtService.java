@@ -18,7 +18,7 @@ public class JwtService {
 
     public JwtService(
             @Value("${jwt.secret:clave-secreta-utrade-desarrollo-web-2026-256b}") String secreto,
-            @Value("${jwt.expiration-ms:3600000}") long expiracionMs) {
+            @Value("${jwt.expiration-ms:86400000}") long expiracionMs) {
         this.secreto = secreto;
         this.expiracionMs = expiracionMs;
     }

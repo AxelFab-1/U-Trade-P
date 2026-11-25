@@ -32,7 +32,6 @@ public class Usuario {
         this.rol = rol;
     }
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNombre() { return nombre; }

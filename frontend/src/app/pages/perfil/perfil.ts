@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -9,7 +9,10 @@ import { Pedido } from '../../core/models/pedido.model';
 import { AuthService } from '../../core/services/auth.service';
 import { PedidoService } from '../../core/services/pedido.service';
 import { ProductoService } from '../../core/services/producto.service';
+import { FavoritoService } from '../../core/services/favorito.service';
 import { imprimirComprobante } from '../../core/utils/comprobante-printer.util';
+import { coordinarEntregaWhatsApp } from '../../core/utils/whatsapp.util';
+import { ProductCard } from '../../components/product-card/product-card';
 
 export interface PerfilEstudiante {
   nombre: string;
@@ -23,7 +26,7 @@ export interface PerfilEstudiante {
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ProductCard],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
@@ -31,11 +34,13 @@ export class Perfil implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly pedidoService = inject(PedidoService);
   private readonly productoService = inject(ProductoService);
+  readonly favoritoService = inject(FavoritoService);
 
-  readonly tabActiva = signal<'datos' | 'compras' | 'ventas' | 'publicaciones'>('datos');
+  readonly tabActiva = signal<'datos' | 'compras' | 'ventas' | 'publicaciones' | 'guardados'>('datos');
   readonly vieneDePublicar = signal<boolean>(false);
 
   readonly estudiante = signal<PerfilEstudiante>({
@@ -53,6 +58,10 @@ export class Perfil implements OnInit {
   // Publicaciones
   readonly misPublicaciones = signal<Producto[]>([]);
   readonly cargandoPublicaciones = signal(false);
+
+  // Favoritos / Guardados
+  readonly misFavoritos = signal<Producto[]>([]);
+  readonly cargandoFavoritos = signal(false);
 
   // Compras y Ventas Yape
   readonly misCompras = signal<Pedido[]>([]);
@@ -96,9 +105,10 @@ export class Perfil implements OnInit {
     this.cargarMisPublicaciones();
     this.cargarMisCompras();
     this.cargarMisVentas();
+    this.cargarMisFavoritos();
 
     const tabParam = this.route.snapshot.queryParamMap.get('tab');
-    if (tabParam === 'compras' || tabParam === 'ventas' || tabParam === 'publicaciones') {
+    if (tabParam === 'compras' || tabParam === 'ventas' || tabParam === 'publicaciones' || tabParam === 'guardados') {
       this.tabActiva.set(tabParam);
     }
 
@@ -106,6 +116,15 @@ export class Perfil implements OnInit {
     if (origenParam === 'publicar') {
       this.vieneDePublicar.set(true);
     }
+
+    // Mantener la lista de guardados actualizada en tiempo real si el usuario quita alguno
+    this.favoritoService.favoritoCambio$.subscribe(cambio => {
+      if (!cambio.favorito) {
+        this.misFavoritos.update(lista => lista.filter(p => p.id !== cambio.productoId));
+      } else {
+        this.cargarMisFavoritos();
+      }
+    });
   }
 
   activarEdicion(): void {
@@ -138,7 +157,7 @@ export class Perfil implements OnInit {
     this.desactivarEdicion();
   }
 
-  setTab(tab: 'datos' | 'compras' | 'ventas' | 'publicaciones') {
+  setTab(tab: 'datos' | 'compras' | 'ventas' | 'publicaciones' | 'guardados') {
     if (this.tabActiva() === 'datos' && tab !== 'datos' && this.modoEdicion()) {
       this.cancelarEdicion();
     }
@@ -146,6 +165,7 @@ export class Perfil implements OnInit {
     if (tab === 'compras') this.cargarMisCompras();
     if (tab === 'ventas') this.cargarMisVentas();
     if (tab === 'publicaciones') this.cargarMisPublicaciones();
+    if (tab === 'guardados') this.cargarMisFavoritos();
   }
 
   obtenerIniciales(): string {
@@ -274,6 +294,26 @@ export class Perfil implements OnInit {
     });
   }
 
+  cargarMisFavoritos() {
+    this.cargandoFavoritos.set(true);
+    this.favoritoService.getProductosFavoritos().subscribe({
+      next: (prods) => {
+        this.misFavoritos.set(prods || []);
+        this.cargandoFavoritos.set(false);
+      },
+      error: () => {
+        this.misFavoritos.set([]);
+        this.cargandoFavoritos.set(false);
+      }
+    });
+  }
+
+  irADetalle(id: number): void {
+    if (id) {
+      this.router.navigate(['/producto', id]);
+    }
+  }
+
   abrirComprobante(pedido: Pedido, tipo: 'compra' | 'venta') {
     this.tipoComprobante.set(tipo);
     this.pedidoSeleccionado.set(pedido);
@@ -307,6 +347,23 @@ export class Perfil implements OnInit {
       fecha: p.fecha,
       metodoPago: p.metodoPago || 'Yape'
     });
+  }
+
+  coordinarEntregaPedido(pedido: Pedido): void {
+    if (!pedido || !pedido.vendedor?.telefono) return;
+    coordinarEntregaWhatsApp({
+      vendedorTelefono: pedido.vendedor.telefono,
+      vendedorNombre: pedido.vendedor.nombre,
+      monto: pedido.montoTotal,
+      numeroOperacion: pedido.numeroTransaccion,
+      nombreProducto: pedido.producto.nombre
+    });
+  }
+
+  coordinarEntregaModal(): void {
+    const p = this.pedidoSeleccionado();
+    if (!p) return;
+    this.coordinarEntregaPedido(p);
   }
 
   // DELETE mediante ProductoService (Requisito Unidad 3 - Semana 14)

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController 
 @RequestMapping("/api/productos") 
@@ -20,9 +22,56 @@ public class ProductoController {
     private final ProductoService service;
     private final UsuarioRepository usuarioRepository;
     
+    public static final Set<String> CATEGORIAS_VALIDAS = Set.of("Producto", "Comida", "Servicios");
+
     public ProductoController(ProductoService service, UsuarioRepository usuarioRepository) {
         this.service = service;
         this.usuarioRepository = usuarioRepository;
+    }
+
+    private String normalizarCategoria(String cat) {
+        if (cat == null) return null;
+        String trimmed = cat.trim();
+        for (String valid : CATEGORIAS_VALIDAS) {
+            if (valid.equalsIgnoreCase(trimmed)) {
+                return valid;
+            }
+        }
+        return null;
+    }
+
+    private void validarDatosProducto(Producto p, boolean esCreacion) {
+        if (p == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Los datos del producto son obligatorios.");
+        }
+        if (p.getNombre() == null || p.getNombre().trim().length() < 3) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El título del producto es obligatorio (mínimo 3 caracteres).");
+        }
+        if (p.getPrecio() == null || p.getPrecio() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El precio debe ser mayor a 0.");
+        }
+        String categoriaNormalizada = normalizarCategoria(p.getCategoria());
+        if (categoriaNormalizada == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La categoría es inválida. Debe ser: Producto, Comida o Servicios.");
+        }
+        p.setCategoria(categoriaNormalizada);
+
+        if (esCreacion) {
+            if (p.getStock() == null || p.getStock() < 1) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El stock inicial debe ser al menos 1 unidad.");
+            }
+        } else {
+            if (p.getStock() != null && p.getStock() < 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El stock no puede ser negativo.");
+            }
+        }
+
+        if (p.getFoto() != null && !p.getFoto().trim().isEmpty()) {
+            String fotoLower = p.getFoto().trim().toLowerCase();
+            if (!fotoLower.startsWith("http://") && !fotoLower.startsWith("https://")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La URL de la foto debe comenzar con http:// o https://");
+            }
+        }
     }
 
     @GetMapping
@@ -31,8 +80,10 @@ public class ProductoController {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<Producto>> buscarPorCategoria(@RequestParam String categoria) {
-        return ResponseEntity.ok(service.buscarPorCategoria(categoria));
+    public ResponseEntity<List<Producto>> buscar(
+            @RequestParam(required = false) String termino,
+            @RequestParam(required = false) String categoria) {
+        return ResponseEntity.ok(service.buscar(termino, categoria));
     }
     
     @GetMapping("/{id:[0-9]+}")
@@ -46,24 +97,16 @@ public class ProductoController {
 
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody Producto p) {
-        if (p.getNombre() == null || p.getNombre().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Error: El título del producto es obligatorio.");
-        }
-        if (p.getPrecio() == null || p.getPrecio() <= 0) {
-            return ResponseEntity.badRequest().body("Error: El precio debe ser mayor a 0.");
-        }
-        if (p.getCategoria() == null || p.getCategoria().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Error: La categoría es obligatoria.");
-        }
+        validarDatosProducto(p, true);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Debes iniciar sesión para publicar.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("mensaje", "Debes iniciar sesión para publicar."));
         }
 
         Usuario vendedor = usuarioRepository.findByCorreoIgnoreCase(auth.getName()).orElse(null);
         if (vendedor == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vendedor no encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", "Vendedor no encontrado."));
         }
 
         boolean perfilIncompleto = vendedor.getTelefono() == null || vendedor.getTelefono().trim().isEmpty()
@@ -72,7 +115,7 @@ public class ProductoController {
 
         if (perfilIncompleto) {
             return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
-                    .body("Debes completar tus datos en tu perfil (teléfono, campus y carrera) antes de publicar un producto.");
+                    .body(Map.of("mensaje", "Debes completar tus datos en tu perfil (teléfono, campus y carrera) antes de publicar un producto."));
         }
 
         p.setVendedor(vendedor);
@@ -82,15 +125,7 @@ public class ProductoController {
 
     @PutMapping("/{id:[0-9]+}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Producto p) {
-        if (p.getNombre() == null || p.getNombre().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Error: El nombre del producto es obligatorio.");
-        }
-        if (p.getPrecio() == null || p.getPrecio() <= 0) {
-            return ResponseEntity.badRequest().body("Error: El precio debe ser mayor a 0.");
-        }
-        if (p.getCategoria() == null || p.getCategoria().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Error: La categoría es obligatoria.");
-        }
+        validarDatosProducto(p, false);
 
         Producto actualizado = service.actualizarProducto(id, p);
         if (actualizado == null) {

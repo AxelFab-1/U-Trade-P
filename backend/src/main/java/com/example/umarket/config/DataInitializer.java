@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -27,7 +28,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Inicializar usuarios si no existen
         if (usuarioRepository.count() == 0) {
             Usuario admin = new Usuario("Administrador UTP", "admin@utp.edu.pe", passwordEncoder.encode("admin123"), "ADMIN");
             Usuario carlos = new Usuario("Carlos Curo", "carlos@utp.edu.pe", passwordEncoder.encode("utp2024"), "ESTUDIANTE");
@@ -48,14 +48,12 @@ public class DataInitializer implements CommandLineRunner {
             usuarioRepository.saveAll(List.of(admin, carlos, fabian, camila));
         }
 
-        // Inicializar productos del mercado universitario si no existen
         if (productoRepository.count() == 0) {
             Usuario carlos = usuarioRepository.findByCorreo("carlos@utp.edu.pe").orElse(null);
             Usuario fabian = usuarioRepository.findByCorreo("fabian@utp.edu.pe").orElse(null);
             Usuario camila = usuarioRepository.findByCorreo("camila@utp.edu.pe").orElse(null);
 
-            List<Producto> productos = List.of(
-                new Producto(
+            Producto p1 = new Producto(
                     "MacBook Air M1 (8GB RAM / 256GB)",
                     2100.0,
                     "Producto",
@@ -63,8 +61,10 @@ public class DataInitializer implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=500&q=80",
                     carlos,
                     1
-                ),
-                new Producto(
+            );
+            p1.setFechaPublicacion(LocalDateTime.now().minusMinutes(12));
+
+            Producto p2 = new Producto(
                     "Cargador Carga Rápida 65W USB-C",
                     75.0,
                     "Producto",
@@ -72,8 +72,10 @@ public class DataInitializer implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80",
                     carlos,
                     1
-                ),
-                new Producto(
+            );
+            p2.setFechaPublicacion(LocalDateTime.now().minusMinutes(45));
+
+            Producto p3 = new Producto(
                     "Mochila Antirrobo Impermeable 25L",
                     95.0,
                     "Producto",
@@ -81,8 +83,10 @@ public class DataInitializer implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80",
                     fabian,
                     1
-                ),
-                new Producto(
+            );
+            p3.setFechaPublicacion(LocalDateTime.now().minusHours(2));
+
+            Producto p4 = new Producto(
                     "Cold Brew Artesanal 500ml + Galleta",
                     12.0,
                     "Comida",
@@ -90,8 +94,10 @@ public class DataInitializer implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1517701550927-30cf4b1e5dc5?w=500&q=80",
                     camila,
                     8
-                ),
-                new Producto(
+            );
+            p4.setFechaPublicacion(LocalDateTime.now().minusHours(5));
+
+            Producto p5 = new Producto(
                     "Pack Brownies Proteicos Fudgy (x3)",
                     15.0,
                     "Comida",
@@ -99,8 +105,10 @@ public class DataInitializer implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80",
                     camila,
                     12
-                ),
-                new Producto(
+            );
+            p5.setFechaPublicacion(LocalDateTime.now().minusHours(8));
+
+            Producto p6 = new Producto(
                     "Impresión 3D de Maquetas y Planos STL",
                     25.0,
                     "Servicios",
@@ -108,8 +116,10 @@ public class DataInitializer implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500&q=80",
                     fabian,
                     1
-                ),
-                new Producto(
+            );
+            p6.setFechaPublicacion(LocalDateTime.now().minusDays(1));
+
+            Producto p7 = new Producto(
                     "Asesoría en Cálculo / Física I y II",
                     35.0,
                     "Servicios",
@@ -117,9 +127,10 @@ public class DataInitializer implements CommandLineRunner {
                     "https://images.unsplash.com/photo-1633613286991-611fe299c4be?w=500&q=80",
                     carlos,
                     1
-                )
             );
+            p7.setFechaPublicacion(LocalDateTime.now().minusDays(2));
 
+            List<Producto> productos = List.of(p1, p2, p3, p4, p5, p6, p7);
             productoRepository.saveAll(productos);
         }
 
@@ -149,10 +160,31 @@ public class DataInitializer implements CommandLineRunner {
             }
         });
 
-        // Sincronizar fecha de publicación en productos existentes si fuera nula
         productoRepository.findAll().forEach(p -> {
-            if (p.getFechaPublicacion() == null) {
-                p.setFechaPublicacion(java.time.LocalDateTime.now().minusHours(2));
+            String nombre = p.getNombre() != null ? p.getNombre() : "";
+            if (nombre.contains("MacBook")) {
+                p.setFechaPublicacion(LocalDateTime.now().minusMinutes(12));
+                productoRepository.save(p);
+            } else if (nombre.contains("Cargador")) {
+                p.setFechaPublicacion(LocalDateTime.now().minusMinutes(45));
+                productoRepository.save(p);
+            } else if (nombre.contains("Mochila")) {
+                p.setFechaPublicacion(LocalDateTime.now().minusHours(2));
+                productoRepository.save(p);
+            } else if (nombre.contains("Cold Brew")) {
+                p.setFechaPublicacion(LocalDateTime.now().minusHours(5));
+                productoRepository.save(p);
+            } else if (nombre.contains("Brownies")) {
+                p.setFechaPublicacion(LocalDateTime.now().minusHours(8));
+                productoRepository.save(p);
+            } else if (nombre.contains("Impresión 3D") || nombre.contains("Impresion 3D")) {
+                p.setFechaPublicacion(LocalDateTime.now().minusDays(1));
+                productoRepository.save(p);
+            } else if (nombre.contains("Cálculo") || nombre.contains("Calculo") || nombre.contains("Asesoría") || nombre.contains("Asesoria")) {
+                p.setFechaPublicacion(LocalDateTime.now().minusDays(2));
+                productoRepository.save(p);
+            } else if (p.getFechaPublicacion() == null) {
+                p.setFechaPublicacion(LocalDateTime.now().minusHours(3));
                 productoRepository.save(p);
             }
         });

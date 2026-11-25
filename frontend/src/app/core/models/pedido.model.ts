@@ -31,4 +31,6 @@ export interface PagoYapeResponse {
   cantidad: number;
   nombreProducto: string;
   fecha: string;
+  vendedorNombre?: string;
+  vendedorTelefono?: string;
 }

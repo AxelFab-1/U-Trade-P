@@ -47,18 +47,15 @@ public class EmailService {
         log.info("Vigencia:     10 minutos");
         log.info("==========================================================");
 
-        // 1. Producción (Render): Envío por API HTTPS de Brevo (puerto 443, nunca bloqueado)
         if (brevoApiKey != null && !brevoApiKey.trim().isEmpty()) {
             return enviarPorBrevoHttps(destinatario, nombreFinal, asunto, contenidoHtml, codigo);
         }
 
-        // 2. Modo sandbox si tampoco hay cuenta SMTP configurada
         if (remitente == null || remitente.trim().isEmpty()) {
             log.info("ℹ️ [MODO SANDBOX / ACADÉMICO]: No se ha configurado BREVO_API_KEY ni SMTP. Código impreso en consola.");
             return true;
         }
 
-        // 3. Desarrollo local: Envío directo por Gmail SMTP
         try {
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");

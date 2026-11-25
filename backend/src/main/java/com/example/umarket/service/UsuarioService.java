@@ -3,10 +3,15 @@ package com.example.umarket.service;
 import com.example.umarket.model.Pedido;
 import com.example.umarket.model.Producto;
 import com.example.umarket.model.Usuario;
+import com.example.umarket.repository.FavoritoRepository;
 import com.example.umarket.repository.PedidoRepository;
 import com.example.umarket.repository.ProductoRepository;
 import com.example.umarket.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +24,18 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final ProductoRepository productoRepository;
     private final PedidoRepository pedidoRepository;
+    private final FavoritoRepository favoritoRepository;
 
     public UsuarioService(UsuarioRepository repository, 
                           PasswordEncoder passwordEncoder,
                           ProductoRepository productoRepository,
-                          PedidoRepository pedidoRepository) {
+                          PedidoRepository pedidoRepository,
+                          FavoritoRepository favoritoRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.productoRepository = productoRepository;
         this.pedidoRepository = pedidoRepository;
+        this.favoritoRepository = favoritoRepository;
     }
 
     public List<Usuario> listarTodos() {
@@ -68,10 +76,18 @@ public class UsuarioService {
             return false;
         }
 
-        // 1. Eliminar compras realizadas por el usuario sancionado (su historial de compras)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            String correoAutenticado = auth.getName();
+            if (usuario.getCorreo() != null && usuario.getCorreo().equalsIgnoreCase(correoAutenticado)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes eliminar tu propia cuenta de administrador.");
+            }
+        }
+
+        favoritoRepository.deleteByUsuarioId(id);
+
         pedidoRepository.deleteByCompradorId(id);
 
-        // 2. Liberar compras de productos ajenos donde el sancionado figuraba como comprador
         List<Producto> productosComprados = productoRepository.findByCompradorId(id);
         for (Producto p : productosComprados) {
             p.setComprador(null);
@@ -79,33 +95,26 @@ public class UsuarioService {
             productoRepository.save(p);
         }
 
-        // 3. Proteger el historial de los compradores legítimos:
-        //    Si otros estudiantes le compraron productos a este vendedor sancionado,
-        //    conservamos el Pedido en "Mis Compras" pero desvinculamos la FK al vendedor sancionado.
         List<Pedido> ventasComoVendedor = pedidoRepository.findByVendedorId(id);
         for (Pedido pedido : ventasComoVendedor) {
             pedido.setVendedor(null);
             pedidoRepository.save(pedido);
         }
 
-        // 4. Gestionar las publicaciones del usuario sancionado:
         List<Producto> publicacionesUsuario = productoRepository.findByVendedorId(id);
         for (Producto p : publicacionesUsuario) {
+            favoritoRepository.deleteByProductoId(p.getId());
             boolean tieneVentasHistoricas = pedidoRepository.existsByProductoId(p.getId());
             if (tieneVentasHistoricas) {
-                // Si el producto fue comprado por un alumno, lo conservamos como histórico vendido
-                // (desvinculamos vendedor, stock en 0 y no disponible), para que el voucher mantenga foto y título.
                 p.setVendedor(null);
                 p.setDisponible(false);
                 p.setStock(0);
                 productoRepository.save(p);
             } else {
-                // Si nadie lo compró (publicación indebida sin ventas), se elimina definitivamente del catálogo
                 productoRepository.delete(p);
             }
         }
 
-        // 5. Con todas las claves foráneas resueltas y los pedidos de los compradores protegidos, eliminar al usuario
         repository.delete(usuario);
         return true;
     }

@@ -115,7 +115,11 @@ $color-primario: #0056D2;
   text-decoration: none;
   font-size: 0.75rem;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: transform 0.12s ease, color 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
 
   &.active, &:hover {
     color: $color-primario;
@@ -134,10 +138,14 @@ $color-primario: #0056D2;
   box-shadow: 0 4px 10px rgba(0, 86, 210, 0.3);
   transform: translateY(-8px);
   text-decoration: none;
-  transition: transform 0.2s;
+  transition: transform 0.15s ease, background-color 0.2s ease;
 
   &:hover {
     transform: translateY(-10px);
+  }
+
+  &:active {
+    transform: translateY(-8px) scale(0.95);
   }
 }
 

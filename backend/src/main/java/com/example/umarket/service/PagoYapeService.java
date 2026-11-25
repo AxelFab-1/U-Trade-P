@@ -25,13 +25,16 @@ public class PagoYapeService {
     private final ProductoRepository productoRepository;
     private final PedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final StockSseService stockSseService;
 
     public PagoYapeService(ProductoRepository productoRepository,
                            PedidoRepository pedidoRepository,
-                           UsuarioRepository usuarioRepository) {
+                           UsuarioRepository usuarioRepository,
+                           StockSseService stockSseService) {
         this.productoRepository = productoRepository;
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.stockSseService = stockSseService;
     }
 
     private Usuario obtenerUsuarioAutenticado() {
@@ -52,69 +55,65 @@ public class PagoYapeService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Datos de la compra incompletos.");
         }
 
-        // 1. Validación de número de celular peruano (9 dígitos iniciando con 9)
+        if (request.getCantidad() == null || request.getCantidad() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La cantidad a comprar debe ser mayor a 0.");
+        }
+        int cantidadComprar = request.getCantidad();
+
         String celular = request.getCelular() != null ? request.getCelular().trim() : "";
         if (!celular.matches("^9\\d{8}$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El número de celular debe tener 9 dígitos y empezar con 9.");
         }
 
-        // 2. Validación de código de aprobación OTP (6 dígitos)
         String codigo = request.getCodigoAprobacion() != null ? request.getCodigoAprobacion().trim() : "";
         if (!codigo.matches("^\\d{6}$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El código de aprobación de Yape debe tener 6 dígitos numéricos.");
         }
 
-        // Caso de prueba académica para simular excepción
         if ("000000".equals(codigo)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Código de aprobación expirado o inválido. Genera uno nuevo en tu app Yape.");
         }
 
-        // 3. Obtener Producto y validar disponibilidad
-        Producto producto = productoRepository.findById(request.getProductoId())
+        Producto producto = productoRepository.findByIdWithLock(request.getProductoId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La publicación no existe."));
 
-        if (producto.getDisponible() != null && !producto.getDisponible()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lo sentimos, esta publicación no está disponible o se encuentra pausada temporalmente por el vendedor.");
+        if ((producto.getDisponible() != null && !producto.getDisponible()) ||
+                (producto.getStock() != null && producto.getStock() <= 0)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Lo sentimos, esta publicación ya fue adquirida o se encuentra agotada.");
         }
 
-        if (producto.getVendedor() != null) {
-            boolean mismoId = producto.getVendedor().getId() != null && producto.getVendedor().getId().equals(comprador.getId());
-            boolean mismoCorreo = producto.getVendedor().getCorreo() != null && producto.getVendedor().getCorreo().equalsIgnoreCase(comprador.getCorreo());
-            if (mismoId || mismoCorreo) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes comprar tu propia publicación.");
-            }
+        if (producto.getVendedor() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La publicación no cuenta con un vendedor válido.");
         }
 
-        // 4. Lógica de stock según tipo de producto o stock configurado
+        boolean mismoId = producto.getVendedor().getId() != null && producto.getVendedor().getId().equals(comprador.getId());
+        boolean mismoCorreo = producto.getVendedor().getCorreo() != null && producto.getVendedor().getCorreo().equalsIgnoreCase(comprador.getCorreo());
+        if (mismoId || mismoCorreo) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes comprar tu propia publicación.");
+        }
+
         int stockActual = (producto.getStock() != null) ? producto.getStock() : 1;
-        boolean tieneStockMultiple = stockActual > 1 || "Comida".equalsIgnoreCase(producto.getCategoria());
-        int cantidadComprar = (request.getCantidad() != null && request.getCantidad() > 0) ? request.getCantidad() : 1;
+        if (cantidadComprar > stockActual) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, 
+                    "Stock insuficiente. Solo quedan " + stockActual + " unidades disponibles.");
+        }
 
-        if (tieneStockMultiple) {
-            if (cantidadComprar > stockActual) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                        "Stock insuficiente. Solo quedan " + stockActual + " unidades disponibles.");
-            }
-            int nuevoStock = stockActual - cantidadComprar;
-            producto.setStock(nuevoStock);
-            if (nuevoStock <= 0) {
-                producto.setDisponible(false);
-            }
-        } else {
-            // Producto único o servicio: venta unitaria
-            cantidadComprar = 1;
-            producto.setStock(0);
+        int nuevoStock = stockActual - cantidadComprar;
+        producto.setStock(nuevoStock);
+        if (nuevoStock <= 0) {
             producto.setDisponible(false);
             producto.setComprador(comprador);
         }
 
-        productoRepository.save(producto);
+        productoRepository.saveAndFlush(producto);
 
-        // 5. Generar código de transacción Yape Sandbox
+        if (producto.getPrecio() == null || producto.getPrecio() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El precio de la publicación no es válido.");
+        }
+        double montoTotal = Math.round(producto.getPrecio() * cantidadComprar * 100.0) / 100.0;
+
         String numeroTransaccion = "YAPE-TX-" + String.format("%06d", new Random().nextInt(1000000));
-        double montoTotal = producto.getPrecio() * cantidadComprar;
 
-        // 6. Registrar Pedido
         Pedido pedido = new Pedido(
                 producto,
                 comprador,
@@ -126,6 +125,12 @@ public class PagoYapeService {
         );
         pedidoRepository.save(pedido);
 
+        stockSseService.publicarCambio(producto.getId(), nuevoStock, producto.getDisponible());
+
+        Usuario vendedor = producto.getVendedor();
+        String vendedorNombre = vendedor != null ? vendedor.getNombre() : null;
+        String vendedorTelefono = vendedor != null ? vendedor.getTelefono() : null;
+
         return new PagoYapeResponse(
                 true,
                 "¡Pago procesado exitosamente por Yape!",
@@ -134,7 +139,9 @@ public class PagoYapeService {
                 montoTotal,
                 cantidadComprar,
                 producto.getNombre(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                vendedorNombre,
+                vendedorTelefono
         );
     }
 

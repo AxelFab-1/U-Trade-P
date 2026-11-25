@@ -3,6 +3,10 @@ package com.example.umarket.controller;
 import com.example.umarket.repository.UsuarioRepository;
 import com.example.umarket.security.JwtService;
 import com.example.umarket.service.CodigoVerificacionService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest req) {
+    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequest req) {
         String correoNormalizado = req.correo() != null ? req.correo().trim().toLowerCase() : "";
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(correoNormalizado, req.password())
@@ -87,7 +91,7 @@ public class AuthController {
     }
 
     @PutMapping("/perfil")
-    public ResponseEntity<?> actualizarPerfil(Authentication auth, @RequestBody ActualizarPerfilRequest req) {
+    public ResponseEntity<?> actualizarPerfil(Authentication auth, @Valid @RequestBody ActualizarPerfilRequest req) {
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -127,6 +131,27 @@ public class AuthController {
     }
 }
 
-record LoginRequest(String correo, String password) {}
+record LoginRequest(
+    @NotBlank(message = "El correo es obligatorio")
+    String correo,
+
+    @NotBlank(message = "La contraseña es obligatoria")
+    String password
+) {}
+
 record EnviarCodigoRequest(String correo, String nombre) {}
-record ActualizarPerfilRequest(String nombre, String telefono, String campus, String carrera) {}
+
+record ActualizarPerfilRequest(
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(min = 3, max = 60, message = "El nombre debe tener entre 3 y 60 caracteres")
+    String nombre,
+
+    @Pattern(regexp = "^$|^9\\d{8}$", message = "El celular debe tener 9 dígitos y empezar con 9")
+    String telefono,
+
+    @Size(max = 100, message = "El campus no debe exceder 100 caracteres")
+    String campus,
+
+    @Size(max = 100, message = "La carrera no debe exceder 100 caracteres")
+    String carrera
+) {}

@@ -25,7 +25,6 @@ public class CodigoVerificacionService {
         }
     }
 
-    // Memoria concurrente para almacenar códigos con TTL de 10 minutos
     private final Map<String, EntradaCodigo> codigosPorCorreo = new ConcurrentHashMap<>();
 
     public CodigoVerificacionService(EmailService emailService, UsuarioRepository usuarioRepository) {
@@ -49,19 +48,16 @@ public class CodigoVerificacionService {
                     "Solo se permiten correos institucionales válidos de la UTP (@utp.edu.pe).");
         }
 
-        // Validar que el correo no esté ya registrado
         if (usuarioRepository.findByCorreo(correoLimpio).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
                     "Este correo institucional ya está registrado en U-Market. Inicia sesión.");
         }
 
-        // Generar código numérico aleatorio de 6 dígitos
         String codigo = String.format("%06d", new Random().nextInt(1000000));
         long expiraEn = System.currentTimeMillis() + (10 * 60 * 1000); // 10 minutos
 
         codigosPorCorreo.put(correoLimpio, new EntradaCodigo(codigo, expiraEn));
 
-        // Enviar por correo SMTP oficial de Google
         emailService.enviarCodigoVerificacion(correoLimpio, nombre.trim(), codigo);
     }
 
@@ -78,15 +74,12 @@ public class CodigoVerificacionService {
             return false;
         }
 
-        // Verificar si expiró
         if (System.currentTimeMillis() > entrada.expiraEn) {
             codigosPorCorreo.remove(correoLimpio);
             return false;
         }
 
-        // Verificar coincidencia
         if (entrada.codigo.equals(codigoLimpio)) {
-            // Código de un solo uso
             codigosPorCorreo.remove(correoLimpio);
             return true;
         }

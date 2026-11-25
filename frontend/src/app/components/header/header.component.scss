@@ -79,6 +79,13 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
     font-weight: 600;
     border-radius: 9999px;
     padding: 6px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    svg {
+      color: currentColor;
+    }
 
     &:hover {
       background-color: #fecaca;
@@ -91,6 +98,10 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
       border-color: #dc2626;
     }
   }
+
+  &:active {
+    transform: scale(0.97);
+  }
 }
 
 .auth-btn {
@@ -99,7 +110,11 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
   font-weight: 600;
   padding: 8px 16px;
   border-radius: 9999px;
-  transition: all 0.2s;
+  transition: transform 0.12s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
 
   &.login-link {
     color: $color-primario;
@@ -163,10 +178,14 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   color: var(--text-primary);
   font-size: 0.875rem;
-  transition: background-color 0.2s;
+  transition: transform 0.12s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
     background-color: var(--border-color);
+  }
+
+  &:active {
+    transform: scale(0.97);
   }
 }
 
@@ -181,12 +200,16 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
   background-color: var(--bg-card);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.12s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 
   &:hover {
     background-color: #FEE2E2;
     color: #DC2626;
     border-color: #FCA5A5;
+  }
+
+  &:active {
+    transform: scale(0.97);
   }
 }
 

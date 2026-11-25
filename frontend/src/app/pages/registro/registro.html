@@ -11,7 +11,7 @@
       <div class="step-item" [class.active]="pasoActual() === 'DATOS'" [class.completed]="pasoActual() === 'CODIGO' || pasoActual() === 'EXITO'">
         <span class="step-number">
           @if (pasoActual() === 'CODIGO' || pasoActual() === 'EXITO') {
-            <span>✓</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
           } @else {
             <span>1</span>
           }
@@ -22,7 +22,7 @@
       <div class="step-item" [class.active]="pasoActual() === 'CODIGO'" [class.completed]="pasoActual() === 'EXITO'">
         <span class="step-number">
           @if (pasoActual() === 'EXITO') {
-            <span>✓</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
           } @else {
             <span>2</span>
           }
@@ -271,20 +271,29 @@
 
         <div class="success-email-card">
           <span class="email-value">{{ obtenerCorreoNormalizado() }}</span>
-          <span class="status-chip">✓ Verificado</span>
+          <span class="status-chip">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Verificado
+          </span>
         </div>
 
         <div class="success-checklist">
           <div class="check-item">
-            <span class="check-bullet">✓</span>
+            <span class="check-bullet">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
             <span>Identidad estudiantil UTP confirmada</span>
           </div>
           <div class="check-item">
-            <span class="check-bullet">✓</span>
+            <span class="check-bullet">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
             <span>Acceso al catálogo y publicaciones</span>
           </div>
           <div class="check-item">
-            <span class="check-bullet">✓</span>
+            <span class="check-bullet">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
             <span>Pagos integrados con Yape habilitados</span>
           </div>
         </div>

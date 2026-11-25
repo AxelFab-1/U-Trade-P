@@ -55,7 +55,7 @@ Aplicación disponible en: `http://localhost:4200`
 | `SHOW_SQL` | Mostrar consultas SQL en consola | `false` |
 | `H2_CONSOLE_ENABLED` | Habilitar consola H2 (`/h2-console`) | `false` |
 | `JWT_SECRET` | Clave secreta HMAC-SHA256 (mín. 32 caracteres) | clave local |
-| `JWT_EXPIRATION_MS` | Tiempo de expiración del token JWT en ms | `3600000` (1 hora) |
+| `JWT_EXPIRATION_MS` | Tiempo de expiración del token JWT en ms | `86400000` (24 horas) |
 | `CORS_ALLOWED_ORIGINS` | Orígenes autorizados separados por coma | `http://localhost:4200` |
 | `MAIL_HOST` / `MAIL_PORT` | Servidor y puerto SMTP | `smtp.gmail.com` / `587` |
 | `MAIL_USERNAME` / `MAIL_PASSWORD` | Credenciales SMTP para envío de códigos OTP | *(definir en `.env`)* |

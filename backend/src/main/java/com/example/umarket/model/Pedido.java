@@ -51,7 +51,6 @@ public class Pedido {
         this.fecha = LocalDateTime.now();
     }
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

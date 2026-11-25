@@ -11,6 +11,8 @@ public class PagoYapeResponse {
     private Integer cantidad;
     private String nombreProducto;
     private LocalDateTime fecha;
+    private String vendedorNombre;
+    private String vendedorTelefono;
 
     public PagoYapeResponse() {}
 
@@ -24,6 +26,21 @@ public class PagoYapeResponse {
         this.cantidad = cantidad;
         this.nombreProducto = nombreProducto;
         this.fecha = fecha;
+    }
+
+    public PagoYapeResponse(boolean exitoso, String mensaje, String numeroTransaccion, Long pedidoId, 
+                            Double montoTotal, Integer cantidad, String nombreProducto, LocalDateTime fecha,
+                            String vendedorNombre, String vendedorTelefono) {
+        this.exitoso = exitoso;
+        this.mensaje = mensaje;
+        this.numeroTransaccion = numeroTransaccion;
+        this.pedidoId = pedidoId;
+        this.montoTotal = montoTotal;
+        this.cantidad = cantidad;
+        this.nombreProducto = nombreProducto;
+        this.fecha = fecha;
+        this.vendedorNombre = vendedorNombre;
+        this.vendedorTelefono = vendedorTelefono;
     }
 
     public boolean isExitoso() { return exitoso; }
@@ -49,4 +66,10 @@ public class PagoYapeResponse {
 
     public LocalDateTime getFecha() { return fecha; }
     public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
+
+    public String getVendedorNombre() { return vendedorNombre; }
+    public void setVendedorNombre(String vendedorNombre) { this.vendedorNombre = vendedorNombre; }
+
+    public String getVendedorTelefono() { return vendedorTelefono; }
+    public void setVendedorTelefono(String vendedorTelefono) { this.vendedorTelefono = vendedorTelefono; }
 }

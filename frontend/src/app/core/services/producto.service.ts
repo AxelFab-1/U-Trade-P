@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Producto } from '../models/producto.model';
 import { environment } from '../../../environments/environment';
@@ -15,6 +15,18 @@ export class ProductoService {
   // 1. READ / LISTAR: Obtener todos los productos (Requisito Unidad 3 - Semana 14)
   getProductos(): Observable<Producto[]> {
     return this.http.get<Producto[]>(this.apiUrl);
+  }
+
+  // Búsqueda en tiempo real contra la base de datos con filtros
+  buscarProductos(termino?: string, categoria?: string): Observable<Producto[]> {
+    let params = new HttpParams();
+    if (termino && termino.trim()) {
+      params = params.set('termino', termino.trim());
+    }
+    if (categoria && categoria.trim() && categoria.trim().toUpperCase() !== 'TODAS') {
+      params = params.set('categoria', categoria.trim());
+    }
+    return this.http.get<Producto[]>(`${this.apiUrl}/buscar`, { params });
   }
 
   // 2. READ / DETALLE: Obtener un producto por ID (Requisito Unidad 3 - Semana 14)
