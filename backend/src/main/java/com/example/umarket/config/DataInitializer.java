@@ -160,31 +160,10 @@ public class DataInitializer implements CommandLineRunner {
             }
         });
 
+        // Asegurar retrocompatibilidad: si alguna publicación histórica tuviese fecha nula, asignarle fecha fija
         productoRepository.findAll().forEach(p -> {
-            String nombre = p.getNombre() != null ? p.getNombre() : "";
-            if (nombre.contains("MacBook")) {
-                p.setFechaPublicacion(LocalDateTime.now().minusMinutes(12));
-                productoRepository.save(p);
-            } else if (nombre.contains("Cargador")) {
-                p.setFechaPublicacion(LocalDateTime.now().minusMinutes(45));
-                productoRepository.save(p);
-            } else if (nombre.contains("Mochila")) {
-                p.setFechaPublicacion(LocalDateTime.now().minusHours(2));
-                productoRepository.save(p);
-            } else if (nombre.contains("Cold Brew")) {
-                p.setFechaPublicacion(LocalDateTime.now().minusHours(5));
-                productoRepository.save(p);
-            } else if (nombre.contains("Brownies")) {
-                p.setFechaPublicacion(LocalDateTime.now().minusHours(8));
-                productoRepository.save(p);
-            } else if (nombre.contains("Impresión 3D") || nombre.contains("Impresion 3D")) {
-                p.setFechaPublicacion(LocalDateTime.now().minusDays(1));
-                productoRepository.save(p);
-            } else if (nombre.contains("Cálculo") || nombre.contains("Calculo") || nombre.contains("Asesoría") || nombre.contains("Asesoria")) {
-                p.setFechaPublicacion(LocalDateTime.now().minusDays(2));
-                productoRepository.save(p);
-            } else if (p.getFechaPublicacion() == null) {
-                p.setFechaPublicacion(LocalDateTime.now().minusHours(3));
+            if (p.getFechaPublicacion() == null) {
+                p.setFechaPublicacion(LocalDateTime.now().minusDays(5));
                 productoRepository.save(p);
             }
         });

@@ -56,11 +56,21 @@
     padding: 8px 20px;
     border-radius: 9999px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+
+    @media (max-width: 640px) {
+      right: 14px;
+      padding: 6px 16px;
+      font-size: 1.15rem;
+    }
   }
 }
 
 .info-section {
   padding: 40px 24px 24px 24px;
+
+  @media (max-width: 640px) {
+    padding: 32px 14px 20px 14px;
+  }
 }
 
 .product-header {
@@ -72,6 +82,14 @@
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
+
+  @media (max-width: 640px) {
+    gap: 8px;
+
+    .date-text {
+      margin-left: 0;
+    }
+  }
 
   .condition-text {
     color: #0056D2;

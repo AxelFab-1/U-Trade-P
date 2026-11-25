@@ -32,6 +32,10 @@
   position: relative;
   gap: 16px;
 
+  @media (max-width: 640px) {
+    padding: 0 14px 16px;
+  }
+
   @media (min-width: 768px) {
     flex-direction: row;
     align-items: flex-end;
@@ -148,6 +152,28 @@
   padding: 8px 16px;
   align-self: flex-start;
   flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: space-around;
+    padding: 8px 4px;
+    align-self: stretch;
+
+    .stat-cell {
+      padding: 2px 4px;
+      flex: 1;
+
+      .stat-val {
+        font-size: 1.05rem;
+      }
+
+      .stat-lbl {
+        font-size: 0.65rem;
+        letter-spacing: 0;
+      }
+    }
+  }
 
   @media (min-width: 768px) {
     align-self: flex-end;
@@ -585,6 +611,49 @@
   border-radius: 10px;
   padding: 14px 16px;
   transition: border-color 0.15s, box-shadow 0.15s;
+
+  @media (max-width: 640px) {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px;
+
+    .item-body {
+      flex: 1;
+      min-width: calc(100% - 74px);
+    }
+
+    .item-action {
+      width: 100%;
+      justify-content: stretch;
+      gap: 8px;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid #F1F5F9;
+
+      .btn-whatsapp-card, .btn-view-receipt, .btn-delete {
+        flex: 1;
+        justify-content: center;
+        text-align: center;
+        padding: 8px 10px;
+      }
+    }
+
+    .item-actions-group {
+      width: 100%;
+      justify-content: stretch;
+      gap: 8px;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid #F1F5F9;
+
+      .btn-pub-action, .btn-delete {
+        flex: 1;
+        justify-content: center;
+        text-align: center;
+        padding: 8px 6px;
+      }
+    }
+  }
 
   &:hover {
     border-color: #CBD5E1;
@@ -1170,16 +1239,50 @@
       }
     }
 
-    .btn-print-receipt {
-      transition: transform 0.12s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+    .receipt-actions-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
 
-      &:hover {
-        opacity: 0.93;
-        transform: translateY(-1px);
+      .btn-print-receipt {
+        flex: 1;
+        background-color: var(--primary-color);
+        color: #fff;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: transform 0.12s ease, opacity 0.15s ease, box-shadow 0.2s ease;
+
+        &:hover {
+          opacity: 0.93;
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: scale(0.97);
+        }
       }
 
-      &:active {
-        transform: scale(0.97);
+      .btn-done {
+        flex: 1;
+        margin: 0;
+        width: auto;
+      }
+
+      @media (max-width: 420px) {
+        flex-direction: column;
+        gap: 8px;
+
+        .btn-print-receipt, .btn-done {
+          width: 100%;
+        }
       }
     }
 

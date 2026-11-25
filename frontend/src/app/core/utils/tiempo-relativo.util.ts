@@ -1,7 +1,20 @@
 export function formatearTiempoRelativo(fechaStr?: string | Date | null): string {
   if (!fechaStr) return 'Reciente';
 
-  const fecha = typeof fechaStr === 'string' ? new Date(fechaStr) : fechaStr;
+  let fecha: Date;
+  if (fechaStr instanceof Date) {
+    fecha = fechaStr;
+  } else if (typeof fechaStr === 'string') {
+    let str = fechaStr.trim();
+    // Normalizar cadenas ISO que provengan sin indicador de zona horaria (Render UTC)
+    if (str.includes('T') && !str.endsWith('Z') && !/[+-]\d{2}:?\d{2}$/.test(str)) {
+      str += 'Z';
+    }
+    fecha = new Date(str);
+  } else {
+    fecha = new Date(fechaStr);
+  }
+
   if (isNaN(fecha.getTime())) return 'Reciente';
 
   const ahora = new Date();

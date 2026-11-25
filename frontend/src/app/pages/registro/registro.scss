@@ -59,6 +59,19 @@
   margin-bottom: 24px;
   padding: 8px 0;
 
+  @media (max-width: 420px) {
+    gap: 4px;
+
+    .step-item {
+      gap: 4px;
+      font-size: 0.72rem;
+    }
+
+    .step-connector {
+      width: 14px;
+    }
+  }
+
   .step-item {
     display: flex;
     align-items: center;

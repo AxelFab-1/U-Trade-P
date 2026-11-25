@@ -41,8 +41,14 @@ export class Explorar implements OnInit, OnDestroy {
       case 'recientes':
       default:
         return lista.sort((a, b) => {
-          const fechaA = a.fechaPublicacion ? new Date(a.fechaPublicacion).getTime() : 0;
-          const fechaB = b.fechaPublicacion ? new Date(b.fechaPublicacion).getTime() : 0;
+          const parseTime = (f?: string) => {
+            if (!f) return 0;
+            let s = f.trim();
+            if (s.includes('T') && !s.endsWith('Z') && !/[+-]\d{2}:?\d{2}$/.test(s)) s += 'Z';
+            return new Date(s).getTime();
+          };
+          const fechaA = parseTime(a.fechaPublicacion);
+          const fechaB = parseTime(b.fechaPublicacion);
           if (fechaB !== fechaA) {
             return fechaB - fechaA;
           }

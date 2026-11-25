@@ -9,6 +9,10 @@ $borde-suave: #E2E8F0;
   padding: 20px 16px;
   background-color: transparent;
   min-height: calc(100vh - 120px);
+
+  @media (max-width: 640px) {
+    padding: 14px 10px;
+  }
 }
 
 .tabs-container {
@@ -21,6 +25,12 @@ $borde-suave: #E2E8F0;
   padding: 6px 10px;
   border-radius: 10px;
   border: 1px solid $borde-suave;
+
+  @media (max-width: 640px) {
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
 }
 
 .tab-btn {
@@ -38,6 +48,18 @@ $borde-suave: #E2E8F0;
   align-items: center;
   justify-content: center;
   gap: 8px;
+
+  @media (max-width: 640px) {
+    padding: 8px 4px;
+    gap: 5px;
+    font-size: 0.815rem;
+    white-space: nowrap;
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
 
   svg {
     color: currentColor;
@@ -233,6 +255,10 @@ $borde-suave: #E2E8F0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
+
+  @media (max-width: 640px) {
+    gap: 12px;
+  }
 }
 
 .empty-state-card {

@@ -99,9 +99,6 @@ public class Producto {
     public void setComprador(Usuario comprador) { this.comprador = comprador; }
 
     public LocalDateTime getFechaPublicacion() {
-        if (fechaPublicacion == null) {
-            return LocalDateTime.now();
-        }
         return fechaPublicacion;
     }
     public void setFechaPublicacion(LocalDateTime fechaPublicacion) {

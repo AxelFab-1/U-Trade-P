@@ -713,8 +713,8 @@
           </button>
         }
 
-        <div class="receipt-actions-group" style="display: flex; gap: 10px; margin-top: 14px;">
-          <button type="button" class="btn-print-receipt" (click)="imprimirComprobanteModal()" style="flex: 1; background-color: var(--primary-color); color: #fff; border: none; padding: 10px 14px; border-radius: 9999px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <div class="receipt-actions-group">
+          <button type="button" class="btn-print-receipt" (click)="imprimirComprobanteModal()">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="6 9 6 2 18 2 18 9"></polyline>
               <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
@@ -722,7 +722,7 @@
             </svg>
             <span>Descargar / Imprimir</span>
           </button>
-          <button type="button" class="btn-done" (click)="cerrarComprobante()" style="flex: 1; margin: 0;">
+          <button type="button" class="btn-done" (click)="cerrarComprobante()">
             Aceptar
           </button>
         </div>
