@@ -154,23 +154,31 @@
   flex-shrink: 0;
 
   @media (max-width: 640px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 12px;
     width: 100%;
     box-sizing: border-box;
-    justify-content: space-around;
-    padding: 8px 4px;
     align-self: stretch;
 
+    .stat-sep {
+      display: none;
+    }
+
     .stat-cell {
-      padding: 2px 4px;
-      flex: 1;
+      padding: 8px 12px;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
 
       .stat-val {
-        font-size: 1.05rem;
+        font-size: 1.25rem;
       }
 
       .stat-lbl {
-        font-size: 0.65rem;
-        letter-spacing: 0;
+        font-size: 0.725rem;
+        letter-spacing: 0.02em;
       }
     }
   }
@@ -222,10 +230,18 @@
   border-bottom: 1px solid #E2E8F0;
   background: #FFFFFF;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  @media (max-width: 640px) {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
 
   .tab-btn {
@@ -241,7 +257,16 @@
     color: #64748B;
     cursor: pointer;
     white-space: nowrap;
+    flex-shrink: 0;
     transition: transform 0.12s ease, color 0.15s ease, border-color 0.15s ease;
+
+    @media (max-width: 640px) {
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      gap: 6px;
+    }
 
     &:active {
       transform: scale(0.97);
