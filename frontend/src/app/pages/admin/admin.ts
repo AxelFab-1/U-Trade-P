@@ -6,6 +6,9 @@ import { ProductoService } from '../../core/services/producto.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Usuario } from '../../core/models/usuario.model';
 import { Producto } from '../../core/models/producto.model';
+import { Reporte } from '../../core/models/reporte.model';
+import { ReporteService } from '../../core/services/reporte.service';
+import { formatearTiempoRelativo } from '../../core/utils/tiempo-relativo.util';
 
 @Component({
   selector: 'app-admin',
@@ -17,11 +20,12 @@ import { Producto } from '../../core/models/producto.model';
 export class Admin implements OnInit {
   private readonly usuarioService = inject(UsuarioService);
   private readonly productoService = inject(ProductoService);
+  private readonly reporteService = inject(ReporteService);
   readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
 
-  // Pestaña activa ('usuarios' | 'productos' | 'nuevo-admin')
-  readonly pestanaActiva = signal<'usuarios' | 'productos' | 'nuevo-admin'>('usuarios');
+  // Pestaña activa ('usuarios' | 'productos' | 'reportes' | 'nuevo-admin')
+  readonly pestanaActiva = signal<'usuarios' | 'productos' | 'reportes' | 'nuevo-admin'>('usuarios');
 
   // Signals para Gestión de Usuarios
   readonly usuarios = signal<Usuario[]>([]);
@@ -34,6 +38,17 @@ export class Admin implements OnInit {
   readonly cargandoProductos = signal<boolean>(false);
   readonly filtroProducto = signal<string>('');
   readonly filtroUsuarioPublicaciones = signal<Usuario | null>(null);
+
+  // Signals para Moderación de Reportes
+  readonly reportes = signal<Reporte[]>([]);
+  readonly cargandoReportes = signal<boolean>(false);
+  readonly filtroReporteEstado = signal<'TODOS' | 'PENDIENTE' | 'REVISADO' | 'DESCARTADO'>('TODOS');
+
+  // Modal y controles de Suspensión de Usuarios
+  readonly modalSuspensionAbierto = signal<boolean>(false);
+  readonly diasSuspension = signal<number>(7);
+  readonly motivoSuspensionInput = signal<string>('Infracción a las normas de convivencia');
+  readonly guardandoSuspension = signal<boolean>(false);
 
   // Notificaciones y alertas
   readonly mensajeExito = signal<string>('');
@@ -87,12 +102,25 @@ export class Admin implements OnInit {
     );
   });
 
+  // Conteo de reportes pendientes
+  readonly reportesPendientesCount = computed(() => 
+    this.reportes().filter(r => r.estado === 'PENDIENTE').length
+  );
+
+  // Lista filtrada de reportes
+  readonly reportesFiltrados = computed(() => {
+    const estado = this.filtroReporteEstado();
+    if (estado === 'TODOS') return this.reportes();
+    return this.reportes().filter(r => r.estado === estado);
+  });
+
   ngOnInit(): void {
     this.cargarUsuarios();
     this.cargarProductos();
+    this.cargarReportes();
   }
 
-  cambiarPestana(pestana: 'usuarios' | 'productos' | 'nuevo-admin'): void {
+  cambiarPestana(pestana: 'usuarios' | 'productos' | 'reportes' | 'nuevo-admin'): void {
     this.pestanaActiva.set(pestana);
     this.limpiarMensajes();
   }
@@ -239,5 +267,120 @@ export class Admin implements OnInit {
         this.mensajeError.set(typeof msg === 'string' ? msg : 'Error al registrar administrador.');
       }
     });
+  }
+
+  // --- MODERACIÓN DE REPORTES ---
+  cargarReportes(): void {
+    this.cargandoReportes.set(true);
+    this.reporteService.listarReportes().subscribe({
+      next: (data) => {
+        this.reportes.set(data);
+        this.cargandoReportes.set(false);
+      },
+      error: () => {
+        this.cargandoReportes.set(false);
+      }
+    });
+  }
+
+  marcarReporteRevisado(r: Reporte): void {
+    this.reporteService.revisarReporte(r.id).subscribe({
+      next: (actualizado) => {
+        this.reportes.update(lista => lista.map(item => item.id === r.id ? actualizado : item));
+        this.mensajeExito.set(`Reporte #${r.id} marcado como revisado.`);
+      },
+      error: () => {
+        this.mensajeError.set('No se pudo actualizar el estado del reporte.');
+      }
+    });
+  }
+
+  descartarReporte(r: Reporte): void {
+    this.reporteService.descartarReporte(r.id).subscribe({
+      next: (actualizado) => {
+        this.reportes.update(lista => lista.map(item => item.id === r.id ? actualizado : item));
+        this.mensajeExito.set(`Reporte #${r.id} descartado.`);
+      },
+      error: () => {
+        this.mensajeError.set('No se pudo descartar el reporte.');
+      }
+    });
+  }
+
+  eliminarProductoDesdeReporte(r: Reporte): void {
+    if (!r.producto?.id) return;
+    const confirmacion = confirm(`¿Eliminar la publicación reportada "${r.producto.nombre}"?`);
+    if (!confirmacion) return;
+
+    this.limpiarMensajes();
+    this.productoService.eliminarProducto(r.producto.id).subscribe({
+      next: () => {
+        this.mensajeExito.set(`Publicación "${r.producto.nombre}" eliminada correctamente.`);
+        this.productos.update(lista => lista.filter(item => item.id !== r.producto.id));
+        this.cargarReportes();
+      },
+      error: () => {
+        this.mensajeError.set('No se pudo eliminar el producto reportado.');
+      }
+    });
+  }
+
+  formatearFechaRelativa(fecha?: string): string {
+    return formatearTiempoRelativo(fecha);
+  }
+
+  // --- SUSPENSIÓN TEMPORAL DE USUARIOS ---
+  abrirModalSuspension(): void {
+    this.diasSuspension.set(7);
+    this.motivoSuspensionInput.set('Infracción a las normas de convivencia');
+    this.modalSuspensionAbierto.set(true);
+  }
+
+  cerrarModalSuspension(): void {
+    this.modalSuspensionAbierto.set(false);
+  }
+
+  confirmarSuspension(): void {
+    const user = this.usuarioSeleccionado();
+    if (!user || !user.id) return;
+
+    this.guardandoSuspension.set(true);
+    this.usuarioService.suspender(user.id, this.diasSuspension(), this.motivoSuspensionInput()).subscribe({
+      next: (actualizado) => {
+        this.guardandoSuspension.set(false);
+        this.usuarioSeleccionado.set(actualizado);
+        this.usuarios.update(lista => lista.map(u => u.id === actualizado.id ? actualizado : u));
+        this.cerrarModalSuspension();
+        this.mensajeExito.set(`Usuario "${actualizado.nombre}" suspendido exitosamente.`);
+      },
+      error: (err) => {
+        this.guardandoSuspension.set(false);
+        const msg = err?.error?.message || err?.error || 'Error al suspender usuario.';
+        this.mensajeError.set(typeof msg === 'string' ? msg : 'Error al suspender usuario.');
+      }
+    });
+  }
+
+  reactivarUsuario(u: Usuario): void {
+    if (!u.id) return;
+    const confirmacion = confirm(`¿Reactivar la cuenta de "${u.nombre}" inmediatamente?`);
+    if (!confirmacion) return;
+
+    this.limpiarMensajes();
+    this.usuarioService.reactivar(u.id).subscribe({
+      next: (actualizado) => {
+        this.usuarioSeleccionado.set(actualizado);
+        this.usuarios.update(lista => lista.map(item => item.id === actualizado.id ? actualizado : item));
+        this.mensajeExito.set(`Cuenta de "${actualizado.nombre}" reactivada exitosamente.`);
+      },
+      error: () => {
+        this.mensajeError.set('No se pudo reactivar la cuenta del usuario.');
+      }
+    });
+  }
+
+  isUsuarioSuspendido(u?: Usuario | null): boolean {
+    if (!u || !u.suspendidoHasta) return false;
+    return new Date(u.suspendidoHasta).getTime() > Date.now();
   }
 }

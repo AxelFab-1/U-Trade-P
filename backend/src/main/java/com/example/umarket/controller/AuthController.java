@@ -37,11 +37,28 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequest req) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
         String correoNormalizado = req.correo() != null ? req.correo().trim().toLowerCase() : "";
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(correoNormalizado, req.password())
         );
+
+        // Validar si la cuenta está suspendida
+        var usuarioOpt = usuarioRepository.findByCorreoIgnoreCase(correoNormalizado);
+        if (usuarioOpt.isPresent() && usuarioOpt.get().isSuspendido()) {
+            var u = usuarioOpt.get();
+            java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            String fechaStr = u.getSuspendidoHasta().getYear() > 2090 
+                    ? "de forma indefinida" 
+                    : "hasta el " + u.getSuspendidoHasta().format(fmt);
+            String motivo = (u.getMotivoSuspension() != null && !u.getMotivoSuspension().isBlank())
+                    ? u.getMotivoSuspension()
+                    : "Infracción a las normas de la comunidad";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                    "error", "CUENTA_SUSPENDIDA",
+                    "mensaje", "Tu cuenta se encuentra suspendida " + fechaStr + ". Motivo: " + motivo
+            ));
+        }
 
         String rol = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

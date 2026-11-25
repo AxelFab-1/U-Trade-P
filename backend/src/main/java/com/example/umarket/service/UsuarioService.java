@@ -6,6 +6,7 @@ import com.example.umarket.model.Usuario;
 import com.example.umarket.repository.FavoritoRepository;
 import com.example.umarket.repository.PedidoRepository;
 import com.example.umarket.repository.ProductoRepository;
+import com.example.umarket.repository.ReporteRepository;
 import com.example.umarket.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,17 +26,20 @@ public class UsuarioService {
     private final ProductoRepository productoRepository;
     private final PedidoRepository pedidoRepository;
     private final FavoritoRepository favoritoRepository;
+    private final ReporteRepository reporteRepository;
 
     public UsuarioService(UsuarioRepository repository, 
                           PasswordEncoder passwordEncoder,
                           ProductoRepository productoRepository,
                           PedidoRepository pedidoRepository,
-                          FavoritoRepository favoritoRepository) {
+                          FavoritoRepository favoritoRepository,
+                          ReporteRepository reporteRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.productoRepository = productoRepository;
         this.pedidoRepository = pedidoRepository;
         this.favoritoRepository = favoritoRepository;
+        this.reporteRepository = reporteRepository;
     }
 
     public List<Usuario> listarTodos() {
@@ -85,6 +89,7 @@ public class UsuarioService {
         }
 
         favoritoRepository.deleteByUsuarioId(id);
+        reporteRepository.deleteByUsuarioDenuncianteId(id);
 
         pedidoRepository.deleteByCompradorId(id);
 
@@ -104,6 +109,7 @@ public class UsuarioService {
         List<Producto> publicacionesUsuario = productoRepository.findByVendedorId(id);
         for (Producto p : publicacionesUsuario) {
             favoritoRepository.deleteByProductoId(p.getId());
+            reporteRepository.deleteByProductoId(p.getId());
             boolean tieneVentasHistoricas = pedidoRepository.existsByProductoId(p.getId());
             if (tieneVentasHistoricas) {
                 p.setVendedor(null);
@@ -117,5 +123,42 @@ public class UsuarioService {
 
         repository.delete(usuario);
         return true;
+    }
+
+    @Transactional
+    public Usuario suspenderUsuario(Long id, Integer dias, String motivo) {
+        Usuario usuario = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            String correoAutenticado = auth.getName();
+            if (usuario.getCorreo() != null && usuario.getCorreo().equalsIgnoreCase(correoAutenticado)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes suspender tu propia cuenta de administrador.");
+            }
+        }
+
+        if (dias == null || dias <= 0) {
+            // Indefinido: 100 años
+            usuario.setSuspendidoHasta(java.time.LocalDateTime.now().plusYears(100));
+        } else if (dias == 1) {
+            // 24 horas exactas
+            usuario.setSuspendidoHasta(java.time.LocalDateTime.now().plusHours(24));
+        } else {
+            usuario.setSuspendidoHasta(java.time.LocalDateTime.now().plusDays(dias));
+        }
+
+        usuario.setMotivoSuspension(motivo != null && !motivo.isBlank() ? motivo.trim() : "Infracción a las normas de convivencia");
+        return repository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario reactivarUsuario(Long id) {
+        Usuario usuario = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+
+        usuario.setSuspendidoHasta(null);
+        usuario.setMotivoSuspension(null);
+        return repository.save(usuario);
     }
 }

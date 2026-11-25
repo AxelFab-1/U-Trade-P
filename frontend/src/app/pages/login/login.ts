@@ -77,8 +77,8 @@ export class Login implements OnInit {
       },
       error: (err) => {
         this.cargando.set(false);
-        const backendMsg = err?.error?.message || err?.error;
-        if (typeof backendMsg === 'string' && backendMsg.length < 100) {
+        const backendMsg = err?.error?.mensaje || err?.error?.message || err?.error;
+        if (typeof backendMsg === 'string' && backendMsg.length < 300) {
           this.errorMensaje.set(backendMsg);
         } else {
           this.errorMensaje.set('Credenciales inválidas. Verifica tu correo y contraseña.');

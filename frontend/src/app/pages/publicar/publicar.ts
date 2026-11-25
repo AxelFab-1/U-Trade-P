@@ -40,7 +40,8 @@ export class Publicar implements OnInit {
     precio: [null, [Validators.required, Validators.min(0.01)]],
     stock: [1, [Validators.required, Validators.min(1)]],
     descripcion: ['', [Validators.required, Validators.minLength(10)]],
-    foto: ['']
+    foto: [''],
+    declaracionPreventiva: [false, [Validators.requiredTrue]]
   });
 
   ngOnInit(): void {

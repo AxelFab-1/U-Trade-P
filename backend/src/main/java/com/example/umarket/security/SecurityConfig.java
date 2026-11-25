@@ -75,6 +75,9 @@ public class SecurityConfig {
 
                 .requestMatchers("/api/favoritos/**").hasAnyRole("ESTUDIANTE", "ADMIN")
 
+                .requestMatchers(HttpMethod.POST, "/api/reportes").hasAnyRole("ESTUDIANTE", "ADMIN")
+                .requestMatchers("/api/reportes/**").hasRole("ADMIN")
+
                 .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
                 .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

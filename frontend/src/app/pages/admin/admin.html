@@ -29,6 +29,15 @@
           <button 
             type="button" 
             class="nav-link" 
+            [class.active]="pestanaActiva() === 'reportes'" 
+            (click)="cambiarPestana('reportes')">
+            Reportes @if (reportesPendientesCount() > 0) { ({{ reportesPendientesCount() }}) }
+          </button>
+        </li>
+        <li class="nav-item">
+          <button 
+            type="button" 
+            class="nav-link" 
             [class.active]="pestanaActiva() === 'nuevo-admin'" 
             (click)="cambiarPestana('nuevo-admin')">
             Nuevo Admin
@@ -169,7 +178,18 @@
                   </div>
                   <div class="col-sm-6">
                     <span class="text-muted small d-block">Estado</span>
-                    <span class="fw-semibold text-success">Activo</span>
+                    @if (isUsuarioSuspendido(sel)) {
+                      <span class="badge bg-warning text-dark border border-warning">
+                        Suspendido hasta {{ sel.suspendidoHasta | date:'dd/MM/yyyy HH:mm' }}
+                      </span>
+                      @if (sel.motivoSuspension) {
+                        <div class="small text-danger mt-1 fst-italic">
+                          Motivo: {{ sel.motivoSuspension }}
+                        </div>
+                      }
+                    } @else {
+                      <span class="fw-semibold text-success">Activo</span>
+                    }
                   </div>
                 </div>
 
@@ -201,15 +221,34 @@
                   </button>
                 </div>
 
-                <!-- Botón de acción -->
-                <div class="pt-4 mt-3 border-top d-flex align-items-center justify-content-between">
-                  <button 
-                    type="button" 
-                    class="btn btn-outline-danger btn-sm px-3"
-                    [disabled]="sel.correo.toLowerCase() === authService.currentUserEmail()?.toLowerCase()"
-                    (click)="eliminarUsuario(sel)">
-                    Eliminar Usuario
-                  </button>
+                <!-- Botones de acción -->
+                <div class="pt-4 mt-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    @if (isUsuarioSuspendido(sel)) {
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-success btn-sm px-3"
+                        (click)="reactivarUsuario(sel)">
+                        Reactivar Cuenta
+                      </button>
+                    } @else {
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-warning text-dark btn-sm px-3"
+                        [disabled]="sel.correo.toLowerCase() === authService.currentUserEmail()?.toLowerCase()"
+                        (click)="abrirModalSuspension()">
+                        Suspender Cuenta
+                      </button>
+                    }
+
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-danger btn-sm px-3"
+                      [disabled]="sel.correo.toLowerCase() === authService.currentUserEmail()?.toLowerCase()"
+                      (click)="eliminarUsuario(sel)">
+                      Eliminar Usuario
+                    </button>
+                  </div>
 
                   @if (sel.correo.toLowerCase() === authService.currentUserEmail()?.toLowerCase()) {
                     <span class="small text-muted fst-italic">
@@ -389,7 +428,231 @@
   }
 
   <!-- ========================================== -->
-  <!-- PESTAÑA 3: NUEVO ADMINISTRADOR -->
+  <!-- PESTAÑA 3: REPORTES Y MODERACIÓN -->
+  <!-- ========================================== -->
+  @if (pestanaActiva() === 'reportes') {
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white py-3 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <h2 class="h6 mb-0 fw-bold">Reportes de Publicaciones</h2>
+          <span class="badge bg-danger">{{ reportesPendientesCount() }} pendiente(s)</span>
+        </div>
+
+        <!-- Filtro por Estado -->
+        <div class="btn-group btn-group-sm" role="group">
+          <button 
+            type="button" 
+            class="btn btn-outline-secondary" 
+            [class.active]="filtroReporteEstado() === 'TODOS'"
+            (click)="filtroReporteEstado.set('TODOS')">
+            Todos ({{ reportes().length }})
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-outline-danger" 
+            [class.active]="filtroReporteEstado() === 'PENDIENTE'"
+            (click)="filtroReporteEstado.set('PENDIENTE')">
+            Pendientes ({{ reportesPendientesCount() }})
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-outline-success" 
+            [class.active]="filtroReporteEstado() === 'REVISADO'"
+            (click)="filtroReporteEstado.set('REVISADO')">
+            Revisados
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+        @if (cargandoReportes()) {
+          <div class="text-center py-4">
+            <div class="spinner-border text-danger spinner-border-sm" role="status"></div>
+            <p class="text-muted small mt-2 mb-0">Cargando reportes...</p>
+          </div>
+        } @else if (reportesFiltrados().length === 0) {
+          <div class="text-center py-4 text-muted">
+            <p class="small mb-0">No hay reportes en esta categoría.</p>
+          </div>
+        } @else {
+          <!-- Vista Escritorio: Tabla tradicional (>= 768px) -->
+          <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" style="width: 50px;">ID</th>
+                  <th scope="col">Publicación</th>
+                  <th scope="col">Motivo y Detalle</th>
+                  <th scope="col">Denunciante</th>
+                  <th scope="col">Vendedor</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col" class="text-end">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of reportesFiltrados(); track r.id) {
+                  <tr>
+                    <td class="text-muted fw-semibold small">#{{ r.id }}</td>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <img 
+                          [src]="r.producto?.foto || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=100&q=80'" 
+                          [alt]="r.producto?.nombre" 
+                          class="rounded"
+                          style="width: 40px; height: 40px; object-fit: cover;">
+                        <div>
+                          <div class="fw-semibold text-dark text-truncate" style="max-width: 180px;">{{ r.producto?.nombre || 'Publicación eliminada' }}</div>
+                          <span class="text-muted small">S/ {{ r.producto?.precio | number:'1.2-2' }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ r.motivo }}</span>
+                      @if (r.detalle) {
+                        <div class="small text-muted mt-1 fst-italic" style="max-width: 250px;">"{{ r.detalle }}"</div>
+                      }
+                      <div class="small text-muted" style="font-size: 0.72rem;">{{ formatearFechaRelativa(r.fechaCreacion) }}</div>
+                    </td>
+                    <td>
+                      <div class="small fw-semibold text-dark">{{ r.usuarioDenunciante?.nombre }}</div>
+                      <div class="small text-muted">{{ r.usuarioDenunciante?.correo }}</div>
+                    </td>
+                    <td>
+                      <div class="small fw-semibold text-dark">{{ r.producto?.vendedor?.nombre || 'N/A' }}</div>
+                      <div class="small text-muted">{{ r.producto?.vendedor?.correo || 'N/A' }}</div>
+                    </td>
+                    <td>
+                      @if (r.estado === 'PENDIENTE') {
+                        <span class="badge bg-warning text-dark">PENDIENTE</span>
+                      } @else if (r.estado === 'REVISADO') {
+                        <span class="badge bg-success">REVISADO</span>
+                      } @else {
+                        <span class="badge bg-secondary">DESCARTADO</span>
+                      }
+                    </td>
+                    <td class="text-end">
+                      <div class="btn-group btn-group-sm">
+                        @if (r.estado === 'PENDIENTE') {
+                          <button 
+                            type="button" 
+                            class="btn btn-outline-success" 
+                            title="Marcar como revisado"
+                            (click)="marcarReporteRevisado(r)">
+                            Revisar
+                          </button>
+                          <button 
+                            type="button" 
+                            class="btn btn-outline-secondary" 
+                            title="Descartar reporte"
+                            (click)="descartarReporte(r)">
+                            Descartar
+                          </button>
+                        }
+                        @if (r.producto?.id) {
+                          <button 
+                            type="button" 
+                            class="btn btn-outline-danger" 
+                            title="Eliminar publicación"
+                            (click)="eliminarProductoDesdeReporte(r)">
+                            Eliminar
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Vista Móvil: Tarjetas apiladas (< 768px) -->
+          <div class="mobile-reports-list d-md-none p-3">
+            @for (r of reportesFiltrados(); track r.id) {
+              <div class="card mobile-report-card mb-3 border shadow-sm rounded-3">
+                <div class="card-body p-3">
+                  <!-- Cabecera de la tarjeta: Motivo + Estado + Fecha -->
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ r.motivo }}</span>
+                    @if (r.estado === 'PENDIENTE') {
+                      <span class="badge bg-warning text-dark">PENDIENTE</span>
+                    } @else if (r.estado === 'REVISADO') {
+                      <span class="badge bg-success">REVISADO</span>
+                    } @else {
+                      <span class="badge bg-secondary">DESCARTADO</span>
+                    }
+                  </div>
+
+                  <!-- Producto -->
+                  <div class="d-flex gap-3 align-items-start mb-2">
+                    <img 
+                      [src]="r.producto?.foto || 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=100&q=80'" 
+                      [alt]="r.producto?.nombre" 
+                      class="rounded"
+                      style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
+                    <div style="min-width: 0; flex: 1;">
+                      <div class="fw-bold text-dark text-truncate">{{ r.producto?.nombre || 'Publicación eliminada' }}</div>
+                      <span class="text-primary fw-semibold small">S/ {{ r.producto?.precio | number:'1.2-2' }}</span>
+                      <div class="text-muted small" style="font-size: 0.72rem;">{{ formatearFechaRelativa(r.fechaCreacion) }}</div>
+                    </div>
+                  </div>
+
+                  <!-- Detalle opcional del reporte -->
+                  @if (r.detalle) {
+                    <div class="report-detail-quote p-2 mb-2 bg-light rounded text-muted small fst-italic" style="overflow-wrap: anywhere;">
+                      "{{ r.detalle }}"
+                    </div>
+                  }
+
+                  <!-- Bloque de Denunciante y Vendedor -->
+                  <div class="user-audit-box p-2 mb-3 bg-light rounded small border">
+                    <div class="mb-1" style="overflow-wrap: anywhere;">
+                      <span class="text-muted">Denunciante:</span> 
+                      <strong class="text-dark"> {{ r.usuarioDenunciante?.nombre }}</strong> 
+                      <span class="text-muted"> ({{ r.usuarioDenunciante?.correo }})</span>
+                    </div>
+                    <div style="overflow-wrap: anywhere;">
+                      <span class="text-muted">Vendedor:</span> 
+                      <strong class="text-dark"> {{ r.producto?.vendedor?.nombre || 'N/A' }}</strong> 
+                      <span class="text-muted"> ({{ r.producto?.vendedor?.correo || 'N/A' }})</span>
+                    </div>
+                  </div>
+
+                  <!-- Botones de Acción Móviles -->
+                  <div class="d-flex flex-column gap-2">
+                    @if (r.estado === 'PENDIENTE') {
+                      <button 
+                        type="button" 
+                        class="btn btn-success btn-sm w-100"
+                        (click)="marcarReporteRevisado(r)">
+                        Marcar como Revisado
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-secondary btn-sm w-100"
+                        (click)="descartarReporte(r)">
+                        Descartar Reporte
+                      </button>
+                    }
+                    @if (r.producto?.id) {
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-danger btn-sm w-100"
+                        (click)="eliminarProductoDesdeReporte(r)">
+                        Eliminar Publicación
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- PESTAÑA 4: NUEVO ADMINISTRADOR -->
   <!-- ========================================== -->
   @if (pestanaActiva() === 'nuevo-admin') {
     <div class="row justify-content-center">
@@ -469,6 +732,72 @@
               </div>
 
             </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL DE SUSPENSIÓN DE USUARIO -->
+  @if (modalSuspensionAbierto()) {
+    <div class="modal-backdrop" (click)="cerrarModalSuspension()" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1050; display: flex; align-items: center; justify-content: center; padding: 16px;">
+      <div class="card shadow-lg border-0" style="max-width: 440px; width: 100%; border-radius: 12px; overflow: hidden;" (click)="$event.stopPropagation()">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+          <h5 class="h6 mb-0 fw-bold text-dark">Suspender Cuenta de Usuario</h5>
+          <button type="button" class="btn-close" (click)="cerrarModalSuspension()" aria-label="Close"></button>
+        </div>
+
+        <div class="card-body p-4">
+          <p class="small text-muted mb-3">
+            El usuario no podrá iniciar sesión en U-Market durante el periodo de suspensión. Si tiene una sesión activa, será revocada de inmediato.
+          </p>
+
+          <div class="mb-3">
+            <span class="small text-muted d-block">Usuario a suspender:</span>
+            <strong class="text-dark">{{ usuarioSeleccionado()?.nombre }}</strong>
+            <span class="text-muted small"> ({{ usuarioSeleccionado()?.correo }})</span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark">Duración de la suspensión *</label>
+            <select class="form-select form-select-sm" [ngModel]="diasSuspension()" (ngModelChange)="diasSuspension.set(+$event)">
+              <option [value]="1">24 horas (1 día)</option>
+              <option [value]="7">7 días (1 semana)</option>
+              <option [value]="30">30 días (1 mes)</option>
+              <option [value]="-1">Indefinido</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-dark">Motivo de la suspensión *</label>
+            <input 
+              type="text" 
+              class="form-control form-control-sm" 
+              placeholder="Ej. Publicaciones no permitidas, conducta inapropiada..."
+              [ngModel]="motivoSuspensionInput()"
+              (ngModelChange)="motivoSuspensionInput.set($event)">
+          </div>
+
+          <div class="d-flex gap-2 pt-2">
+            <button 
+              type="button" 
+              class="btn btn-light btn-sm flex-grow-1" 
+              (click)="cerrarModalSuspension()"
+              [disabled]="guardandoSuspension()">
+              Cancelar
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-warning text-dark btn-sm flex-grow-1 fw-semibold" 
+              (click)="confirmarSuspension()"
+              [disabled]="guardandoSuspension()">
+              @if (guardandoSuspension()) {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                Guardando...
+              } @else {
+                Confirmar Suspensión
+              }
+            </button>
           </div>
         </div>
       </div>

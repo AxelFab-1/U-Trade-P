@@ -39,12 +39,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String correo = jwtService.extraerCorreo(token);
                 String rol = jwtService.extraerRol(token);
 
-                // Revocación inmediata: validar existencia en BD antes de autorizar la sesión
-                if (correo != null && usuarioRepository.findByCorreoIgnoreCase(correo.trim()).isPresent()) {
-                    var autoridades = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
-                    
-                    var auth = new UsernamePasswordAuthenticationToken(correo, null, autoridades);
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                // Revocación inmediata: validar existencia en BD y que no esté suspendido antes de autorizar la sesión
+                if (correo != null) {
+                    var uOpt = usuarioRepository.findByCorreoIgnoreCase(correo.trim());
+                    if (uOpt.isPresent() && !uOpt.get().isSuspendido()) {
+                        var autoridades = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
+                        
+                        var auth = new UsernamePasswordAuthenticationToken(correo, null, autoridades);
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    }
                 }
             }
         }

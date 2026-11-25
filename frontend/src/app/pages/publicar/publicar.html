@@ -254,6 +254,27 @@
             </div>
           </div>
 
+          <!-- Declaración preventiva de moderación y seguridad -->
+          <div class="form-group declaration-group mt-3 mb-3 p-3 rounded-3 bg-light border">
+            <div class="form-check d-flex align-items-start gap-2">
+              <input 
+                type="checkbox" 
+                id="declaracionPreventiva" 
+                formControlName="declaracionPreventiva" 
+                class="form-check-input mt-1" 
+                [class.is-invalid]="publicarForm.get('declaracionPreventiva')?.invalid && (publicarForm.get('declaracionPreventiva')?.touched || isSubmitted())"
+              />
+              <label for="declaracionPreventiva" class="form-check-label small text-muted" style="cursor: pointer; line-height: 1.4;">
+                Declaro que esta publicación es legítima y no incluye artículos prohibidos, ilegales o regulados (como medicamentos, suplementos sin registro, alcohol o sustancias restringidas).
+              </label>
+            </div>
+            @if (publicarForm.get('declaracionPreventiva')?.invalid && (publicarForm.get('declaracionPreventiva')?.touched || isSubmitted())) {
+              <span class="field-error d-block mt-2">
+                Debes marcar la casilla de declaración para poder publicar.
+              </span>
+            }
+          </div>
+
           <!-- Botón de Envío: Bloqueado con [disabled]="publicarForm.invalid" (Requisito Semana 13) -->
           <div class="form-actions">
             <button type="submit" class="btn-submit" [disabled]="publicarForm.invalid || guardando()">

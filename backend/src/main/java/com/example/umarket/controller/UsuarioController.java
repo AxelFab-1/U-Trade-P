@@ -128,4 +128,26 @@ public class UsuarioController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PutMapping("/{id:[0-9]+}/suspender")
+    public ResponseEntity<?> suspender(@PathVariable Long id, @RequestBody java.util.Map<String, Object> body) {
+        Integer dias = null;
+        if (body.get("dias") != null) {
+            try {
+                dias = Integer.valueOf(body.get("dias").toString());
+            } catch (NumberFormatException ignored) {}
+        }
+        String motivo = body.get("motivo") != null ? body.get("motivo").toString() : null;
+
+        Usuario suspendido = service.suspenderUsuario(id, dias, motivo);
+        suspendido.setPassword(null);
+        return ResponseEntity.ok(suspendido);
+    }
+
+    @PutMapping("/{id:[0-9]+}/reactivar")
+    public ResponseEntity<?> reactivar(@PathVariable Long id) {
+        Usuario reactivado = service.reactivarUsuario(id);
+        reactivado.setPassword(null);
+        return ResponseEntity.ok(reactivado);
+    }
 }

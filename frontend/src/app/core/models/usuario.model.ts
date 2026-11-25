@@ -11,4 +11,6 @@ export interface Usuario {
   ciclo?: string;
   reputacion?: number;
   universidad?: string;
+  suspendidoHasta?: string | null;
+  motivoSuspension?: string | null;
 }

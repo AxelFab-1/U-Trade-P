@@ -5,6 +5,7 @@ import com.example.umarket.model.Usuario;
 import com.example.umarket.repository.FavoritoRepository;
 import com.example.umarket.repository.PedidoRepository;
 import com.example.umarket.repository.ProductoRepository;
+import com.example.umarket.repository.ReporteRepository;
 import com.example.umarket.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class ProductoService {
     private final UsuarioRepository usuarioRepository; 
     private final PedidoRepository pedidoRepository;
     private final FavoritoRepository favoritoRepository;
+    private final ReporteRepository reporteRepository;
     private final StockSseService stockSseService;
 
     public static final Set<String> CATEGORIAS_VALIDAS = Set.of("Producto", "Comida", "Servicios");
@@ -31,11 +33,13 @@ public class ProductoService {
                            UsuarioRepository usuarioRepository,
                            PedidoRepository pedidoRepository,
                            FavoritoRepository favoritoRepository,
+                           ReporteRepository reporteRepository,
                            StockSseService stockSseService) {
         this.repository = repository;
         this.usuarioRepository = usuarioRepository;
         this.pedidoRepository = pedidoRepository;
         this.favoritoRepository = favoritoRepository;
+        this.reporteRepository = reporteRepository;
         this.stockSseService = stockSseService;
     }
 
@@ -208,6 +212,7 @@ public class ProductoService {
 
         favoritoRepository.deleteByProductoId(id);
         pedidoRepository.deleteByProductoId(id);
+        reporteRepository.deleteByProductoId(id);
 
         repository.delete(producto);
         return true;

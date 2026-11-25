@@ -27,4 +27,12 @@ export class UsuarioService {
   crearAdmin(adminData: { nombre: string; correo: string; password: string }): Observable<Usuario> {
     return this.http.post<Usuario>(`${this.apiUrl}/admin`, adminData);
   }
+
+  suspender(id: number, dias: number, motivo?: string): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.apiUrl}/${id}/suspender`, { dias, motivo });
+  }
+
+  reactivar(id: number): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.apiUrl}/${id}/reactivar`, {});
+  }
 }

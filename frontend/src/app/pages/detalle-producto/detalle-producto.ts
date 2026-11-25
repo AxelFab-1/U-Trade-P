@@ -10,6 +10,7 @@ import { Producto } from '../../core/models/producto.model';
 import { PagoYapeResponse } from '../../core/models/pedido.model';
 import { AuthService } from '../../core/services/auth.service';
 import { FavoritoService } from '../../core/services/favorito.service';
+import { ReporteService } from '../../core/services/reporte.service';
 import { formatearTiempoRelativo } from '../../core/utils/tiempo-relativo.util';
 import { imprimirComprobante } from '../../core/utils/comprobante-printer.util';
 import { coordinarEntregaWhatsApp } from '../../core/utils/whatsapp.util';
@@ -31,6 +32,7 @@ export class DetalleProducto implements OnInit, OnDestroy {
   private readonly stockSseService = inject(StockSseService);
   public readonly authService = inject(AuthService);
   public readonly favoritoService = inject(FavoritoService);
+  private readonly reporteService = inject(ReporteService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   private sseSubscription?: Subscription;
@@ -51,6 +53,21 @@ export class DetalleProducto implements OnInit, OnDestroy {
   readonly procesandoYape = signal<boolean>(false);
   readonly errorYape = signal<string>('');
   readonly voucherExitoso = signal<PagoYapeResponse | null>(null);
+
+  // Modal de Reporte de Publicación
+  readonly modalReporteAbierto = signal<boolean>(false);
+  readonly motivoReporte = signal<string>('Producto prohibido o regulado');
+  readonly detalleReporte = signal<string>('');
+  readonly enviandoReporte = signal<boolean>(false);
+  readonly errorReporte = signal<string>('');
+  readonly reporteExitoso = signal<boolean>(false);
+
+  readonly motivosDisponibles = [
+    'Producto prohibido o regulado',
+    'Publicación falsa / estafa',
+    'Contenido inapropiado',
+    'Otro'
+  ];
 
   // Estado de Compartir / Copiar Enlace
   readonly enlaceCopiado = signal<boolean>(false);
@@ -501,6 +518,51 @@ export class DetalleProducto implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error al alternar favorito:', err);
+      }
+    });
+  }
+
+  // --- REPORTES / DENUNCIAS DE PUBLICACIÓN ---
+  abrirModalReporte(): void {
+    this.motivoReporte.set('Producto prohibido o regulado');
+    this.detalleReporte.set('');
+    this.errorReporte.set('');
+    this.reporteExitoso.set(false);
+    this.modalReporteAbierto.set(true);
+    this.cdr.markForCheck();
+  }
+
+  cerrarModalReporte(): void {
+    this.modalReporteAbierto.set(false);
+    this.cdr.markForCheck();
+  }
+
+  enviarReporte(): void {
+    const prodId = this.producto()?.id;
+    if (!prodId) return;
+
+    this.enviandoReporte.set(true);
+    this.errorReporte.set('');
+    this.cdr.markForCheck();
+
+    this.reporteService.crearReporte({
+      productoId: prodId,
+      motivo: this.motivoReporte(),
+      detalle: this.detalleReporte() ? this.detalleReporte().trim() : undefined
+    }).subscribe({
+      next: () => {
+        this.enviandoReporte.set(false);
+        this.reporteExitoso.set(true);
+        this.cdr.markForCheck();
+        setTimeout(() => {
+          this.cerrarModalReporte();
+        }, 1800);
+      },
+      error: (err) => {
+        this.enviandoReporte.set(false);
+        const msg = err?.error?.message || err?.error || 'No se pudo enviar el reporte.';
+        this.errorReporte.set(typeof msg === 'string' ? msg : 'Error al enviar reporte.');
+        this.cdr.markForCheck();
       }
     });
   }

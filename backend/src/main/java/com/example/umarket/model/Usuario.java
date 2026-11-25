@@ -22,6 +22,12 @@ public class Usuario {
     private String campus;
     private String carrera;
 
+    @Column(name = "suspendido_hasta")
+    private java.time.LocalDateTime suspendidoHasta;
+
+    @Column(name = "motivo_suspension")
+    private String motivoSuspension;
+
     public Usuario() {
     }
 
@@ -51,4 +57,14 @@ public class Usuario {
 
     public String getCarrera() { return carrera; }
     public void setCarrera(String carrera) { this.carrera = carrera; }
+
+    public java.time.LocalDateTime getSuspendidoHasta() { return suspendidoHasta; }
+    public void setSuspendidoHasta(java.time.LocalDateTime suspendidoHasta) { this.suspendidoHasta = suspendidoHasta; }
+
+    public String getMotivoSuspension() { return motivoSuspension; }
+    public void setMotivoSuspension(String motivoSuspension) { this.motivoSuspension = motivoSuspension; }
+
+    public boolean isSuspendido() {
+        return suspendidoHasta != null && suspendidoHasta.isAfter(java.time.LocalDateTime.now());
+    }
 }

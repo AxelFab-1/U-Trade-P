@@ -282,6 +282,28 @@ $radio-tarjeta: 10px;
     }
   }
 
+  // Lista móvil de reportes apilados
+  .mobile-reports-list {
+    .mobile-report-card {
+      background: #ffffff;
+      border: 1px solid $color-borde;
+      border-radius: $radio-tarjeta;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      min-width: 0;
+      overflow: hidden;
+
+      .report-detail-quote {
+        border-left: 3px solid #dc3545;
+        background-color: #fff8f8;
+      }
+
+      .user-audit-box {
+        background-color: #f8fafc;
+        border-color: #e2e8f0;
+      }
+    }
+  }
+
   // Tabla de publicaciones
   .table-responsive {
     .table {
