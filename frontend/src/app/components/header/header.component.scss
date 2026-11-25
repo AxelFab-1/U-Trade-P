@@ -100,8 +100,12 @@ $sombra-header: 0 1px 3px rgba(0, 0, 0, 0.05);
     white-space: nowrap;
 
     @media (max-width: 640px) {
-      padding: 5px 8px;
+      padding: 6px 8px;
       font-size: 0.75rem;
+
+      span {
+        display: none;
+      }
     }
 
     svg {

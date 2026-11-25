@@ -33,6 +33,7 @@ export class Admin implements OnInit {
   readonly productos = signal<Producto[]>([]);
   readonly cargandoProductos = signal<boolean>(false);
   readonly filtroProducto = signal<string>('');
+  readonly filtroUsuarioPublicaciones = signal<Usuario | null>(null);
 
   // Notificaciones y alertas
   readonly mensajeExito = signal<string>('');
@@ -57,11 +58,29 @@ export class Admin implements OnInit {
     );
   });
 
-  // Lista filtrada de productos
-  readonly productosFiltrados = computed(() => {
-    const q = this.filtroProducto().toLowerCase().trim();
-    if (!q) return this.productos();
+  // Publicaciones del usuario seleccionado actualmente
+  readonly publicacionesUsuarioSeleccionado = computed(() => {
+    const user = this.usuarioSeleccionado();
+    if (!user) return [];
     return this.productos().filter(p => 
+      p.vendedor?.id === user.id || 
+      (p.vendedor?.correo && p.vendedor.correo.toLowerCase() === user.correo.toLowerCase())
+    );
+  });
+
+  // Lista filtrada de productos (con soporte para filtro por usuario seleccionado)
+  readonly productosFiltrados = computed(() => {
+    let list = this.productos();
+    const userFiltro = this.filtroUsuarioPublicaciones();
+    if (userFiltro) {
+      list = list.filter(p => 
+        p.vendedor?.id === userFiltro.id || 
+        (p.vendedor?.correo && p.vendedor.correo.toLowerCase() === userFiltro.correo.toLowerCase())
+      );
+    }
+    const q = this.filtroProducto().toLowerCase().trim();
+    if (!q) return list;
+    return list.filter(p => 
       p.nombre.toLowerCase().includes(q) || 
       p.categoria.toLowerCase().includes(q) ||
       (p.vendedor?.nombre && p.vendedor.nombre.toLowerCase().includes(q))
@@ -104,6 +123,23 @@ export class Admin implements OnInit {
   seleccionarUsuario(u: Usuario): void {
     this.usuarioSeleccionado.set(u);
     this.limpiarMensajes();
+
+    // En pantallas móviles (< 992px), deslizar suavemente hacia el detalle del usuario
+    if (typeof window !== 'undefined' && window.innerWidth < 992) {
+      setTimeout(() => {
+        document.getElementById('detalle-usuario-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+  }
+
+  verPublicacionesDeUsuario(u: Usuario): void {
+    this.filtroUsuarioPublicaciones.set(u);
+    this.pestanaActiva.set('productos');
+    this.limpiarMensajes();
+  }
+
+  limpiarFiltroUsuario(): void {
+    this.filtroUsuarioPublicaciones.set(null);
   }
 
   eliminarUsuario(u: Usuario): void {
