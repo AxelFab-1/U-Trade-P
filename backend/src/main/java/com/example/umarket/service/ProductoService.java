@@ -55,34 +55,74 @@ public class ProductoService {
     }
 
     public List<Producto> listarTodos() {
-        return repository.findAll();
+        List<Producto> lista = repository.findAll();
+        if (esUsuarioAdmin()) {
+            return lista;
+        }
+        return lista.stream()
+                .filter(p -> p.getVendedor() == null || !p.getVendedor().isSuspendido())
+                .toList();
     }
 
     public Producto buscarPorId(Long id) {
-        return repository.findById(id).orElse(null);
+        Producto producto = repository.findById(id).orElse(null);
+        if (producto != null && !esUsuarioAdmin() && producto.getVendedor() != null && producto.getVendedor().isSuspendido()) {
+            producto.setDisponible(false);
+        }
+        return producto;
     }
 
     public List<Producto> buscarPorCategoria(String categoria) {
-        return repository.findByCategoria(categoria);
+        List<Producto> lista = repository.findByCategoria(categoria);
+        if (esUsuarioAdmin()) {
+            return lista;
+        }
+        return lista.stream()
+                .filter(p -> p.getVendedor() == null || !p.getVendedor().isSuspendido())
+                .toList();
     }
 
     public List<Producto> buscar(String termino, String categoria) {
         boolean tieneTermino = termino != null && !termino.trim().isEmpty();
         boolean tieneCategoria = categoria != null && !categoria.trim().isEmpty() && !"TODAS".equalsIgnoreCase(categoria.trim());
 
+        List<Producto> resultados;
         if (tieneTermino && tieneCategoria) {
-            return repository.buscarPorCategoriaYTermino(categoria.trim(), termino.trim());
+            resultados = repository.buscarPorCategoriaYTermino(categoria.trim(), termino.trim());
         } else if (tieneTermino) {
-            return repository.buscarPorTermino(termino.trim());
+            resultados = repository.buscarPorTermino(termino.trim());
         } else if (tieneCategoria) {
-            return repository.listarPorCategoriaDisponibles(categoria.trim());
+            resultados = repository.listarPorCategoriaDisponibles(categoria.trim());
         } else {
-            return repository.listarTodosDisponibles();
+            resultados = repository.listarTodosDisponibles();
         }
+
+        if (esUsuarioAdmin()) {
+            return resultados;
+        }
+
+        return resultados.stream()
+                .filter(p -> p.getVendedor() == null || !p.getVendedor().isSuspendido())
+                .toList();
     }
 
     public List<Producto> buscarPorVendedor(Long usuarioId) {
-        return repository.findByVendedorId(usuarioId);
+        List<Producto> lista = repository.findByVendedorId(usuarioId);
+        if (esUsuarioAdmin()) {
+            return lista;
+        }
+        return lista.stream()
+                .filter(p -> p.getVendedor() == null || !p.getVendedor().isSuspendido())
+                .toList();
+    }
+
+    private boolean esUsuarioAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+            return false;
+        }
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 
     /**
@@ -255,6 +295,10 @@ public class ProductoService {
 
         if (producto.getVendedor() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La publicación no cuenta con un vendedor válido.");
+        }
+
+        if (producto.getVendedor().isSuspendido()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Esta publicación no está disponible actualmente.");
         }
 
         if (producto.getVendedor().getCorreo() != null && producto.getVendedor().getCorreo().equalsIgnoreCase(correoComprador)) {

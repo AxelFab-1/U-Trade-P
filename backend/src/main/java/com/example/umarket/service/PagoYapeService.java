@@ -86,6 +86,10 @@ public class PagoYapeService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La publicación no cuenta con un vendedor válido.");
         }
 
+        if (producto.getVendedor().isSuspendido()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Esta publicación no está disponible actualmente.");
+        }
+
         boolean mismoId = producto.getVendedor().getId() != null && producto.getVendedor().getId().equals(comprador.getId());
         boolean mismoCorreo = producto.getVendedor().getCorreo() != null && producto.getVendedor().getCorreo().equalsIgnoreCase(comprador.getCorreo());
         if (mismoId || mismoCorreo) {
