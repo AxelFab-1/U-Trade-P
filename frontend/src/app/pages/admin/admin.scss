@@ -14,6 +14,12 @@ $radio-tarjeta: 10px;
     .nav-pills-wrapper {
       @media (max-width: 640px) {
         width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+          display: none;
+        }
       }
     }
 
@@ -27,21 +33,25 @@ $radio-tarjeta: 10px;
         display: flex;
         flex-wrap: nowrap;
         width: 100%;
-        gap: 2px;
-        padding: 2px;
+        min-width: min-content;
+        gap: 4px;
+        padding: 3px;
 
         .nav-item {
-          flex: 1;
+          flex: 1 1 auto;
           min-width: 0;
           text-align: center;
         }
 
         .nav-link {
           width: 100%;
-          padding: 7px 4px;
+          padding: 6px 10px;
           font-size: 0.78rem;
           white-space: nowrap;
           text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       }
 
@@ -141,6 +151,8 @@ $radio-tarjeta: 10px;
       border: 1px solid $color-borde;
       border-radius: $radio-tarjeta;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      min-width: 0;
+      overflow: hidden;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
 
       &:active {
@@ -153,6 +165,32 @@ $radio-tarjeta: 10px;
         object-fit: cover;
         border-radius: 8px;
         border: 1px solid #e5e7eb;
+        flex-shrink: 0;
+      }
+
+      .product-info-col {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .mobile-product-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+        overflow-wrap: break-word;
+      }
+
+      .seller-info {
+        min-width: 0;
+        span {
+          min-width: 0;
+        }
       }
     }
   }
