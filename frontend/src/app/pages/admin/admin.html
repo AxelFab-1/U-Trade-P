@@ -256,15 +256,17 @@
 
       <!-- Banner de filtro activo por usuario -->
       @if (filtroUsuarioPublicaciones(); as uFiltro) {
-        <div class="user-filter-banner alert alert-info d-flex flex-wrap justify-content-between align-items-center py-2 px-3 m-3 mb-0 rounded-3 border-0 shadow-sm">
-          <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-primary">Filtrado por usuario</span>
-            <span class="fw-semibold text-dark">{{ uFiltro.nombre }}</span>
-            <span class="text-muted small">({{ uFiltro.correo }})</span>
+        <div class="user-filter-banner alert alert-info py-2 px-3 m-3 mb-0 rounded-3 border-0 shadow-sm">
+          <div class="banner-info-group">
+            <span class="badge bg-primary filter-badge">Filtrado por usuario</span>
+            <div class="user-info-text">
+              <span class="fw-semibold text-dark user-name">{{ uFiltro.nombre }}</span>
+              <span class="text-muted small user-email">({{ uFiltro.correo }})</span>
+            </div>
           </div>
           <button 
             type="button" 
-            class="btn btn-outline-dark btn-sm py-1 px-2 mt-1 mt-sm-0" 
+            class="btn btn-outline-dark btn-sm py-1 px-3 btn-clear-filter" 
             (click)="limpiarFiltroUsuario()">
             Limpiar filtro
           </button>

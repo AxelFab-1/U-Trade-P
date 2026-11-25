@@ -142,6 +142,93 @@ $radio-tarjeta: 10px;
   .user-filter-banner {
     background-color: #eff6ff;
     border: 1px solid #bfdbfe !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+
+    .banner-info-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-width: 0;
+
+      .filter-badge {
+        font-size: 0.78rem;
+        flex-shrink: 0;
+      }
+
+      .user-info-text {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+
+        .user-name {
+          font-size: 0.9rem;
+        }
+
+        .user-email {
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+      }
+    }
+
+    .btn-clear-filter {
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+
+      .banner-info-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .filter-badge {
+        align-self: flex-start;
+      }
+
+      .user-info-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        width: 100%;
+        min-width: 0;
+
+        .user-name {
+          max-width: 100%;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+
+        .user-email {
+          max-width: 100%;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          font-size: 0.8rem;
+        }
+      }
+
+      .btn-clear-filter {
+        width: 100%;
+        margin-top: 4px;
+        text-align: center;
+      }
+    }
   }
 
   // Lista móvil de publicaciones apiladas
