@@ -1,6 +1,5 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { ProductoService } from '../../core/services/producto.service';
@@ -14,7 +13,7 @@ import { formatearTiempoRelativo } from '../../core/utils/tiempo-relativo.util';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './admin.html',
   styleUrl: './admin.scss'
 })
@@ -224,7 +223,6 @@ export class Admin implements OnInit {
     this.limpiarMensajes();
     this.productoService.eliminarProducto(p.id).subscribe({
       next: () => {
-        this.mensajeExito.set(`Publicación "${p.nombre}" eliminada correctamente.`);
         this.productos.update(lista => lista.filter(item => item.id !== p.id));
       },
       error: (err) => {
@@ -289,22 +287,9 @@ export class Admin implements OnInit {
     this.reporteService.revisarReporte(r.id).subscribe({
       next: (actualizado) => {
         this.reportes.update(lista => lista.map(item => item.id === r.id ? actualizado : item));
-        this.mensajeExito.set(`Reporte #${r.id} marcado como revisado.`);
       },
       error: () => {
         this.mensajeError.set('No se pudo actualizar el estado del reporte.');
-      }
-    });
-  }
-
-  descartarReporte(r: Reporte): void {
-    this.reporteService.descartarReporte(r.id).subscribe({
-      next: (actualizado) => {
-        this.reportes.update(lista => lista.map(item => item.id === r.id ? actualizado : item));
-        this.mensajeExito.set(`Reporte #${r.id} descartado.`);
-      },
-      error: () => {
-        this.mensajeError.set('No se pudo descartar el reporte.');
       }
     });
   }
@@ -317,7 +302,6 @@ export class Admin implements OnInit {
     this.limpiarMensajes();
     this.productoService.eliminarProducto(r.producto.id).subscribe({
       next: () => {
-        this.mensajeExito.set(`Publicación "${r.producto.nombre}" eliminada correctamente.`);
         this.productos.update(lista => lista.filter(item => item.id !== r.producto.id));
         this.cargarReportes();
       },
@@ -336,7 +320,6 @@ export class Admin implements OnInit {
     this.reporteService.eliminarReporte(r.id).subscribe({
       next: () => {
         this.reportes.update(lista => lista.filter(item => item.id !== r.id));
-        this.mensajeExito.set(`Reporte #${r.id} eliminado correctamente.`);
       },
       error: () => {
         this.mensajeError.set('No se pudo eliminar el reporte.');

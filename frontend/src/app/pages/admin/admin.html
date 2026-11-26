@@ -556,13 +556,6 @@
                             (click)="marcarReporteRevisado(r)">
                             Revisar
                           </button>
-                          <button 
-                            type="button" 
-                            class="btn btn-outline-secondary" 
-                            title="Descartar reporte"
-                            (click)="descartarReporte(r)">
-                            Descartar
-                          </button>
                         }
                         @if (r.producto?.id) {
                           <button 
@@ -578,7 +571,7 @@
                           class="btn btn-outline-secondary" 
                           title="Eliminar reporte del historial"
                           (click)="eliminarReporte(r)">
-                          Borrar
+                          Eliminar Reporte
                         </button>
                       </div>
                     </td>
@@ -654,12 +647,6 @@
                         class="btn btn-success btn-sm w-100"
                         (click)="marcarReporteRevisado(r)">
                         Marcar como Revisado
-                      </button>
-                      <button 
-                        type="button" 
-                        class="btn btn-outline-secondary btn-sm w-100"
-                        (click)="descartarReporte(r)">
-                        Descartar Reporte
                       </button>
                     }
                     @if (r.producto?.id) {
@@ -908,19 +895,7 @@
           </div>
         </div>
 
-        <div class="card-footer bg-light py-3 px-4 border-top d-flex justify-content-between align-items-center gap-2">
-          <a 
-            [routerLink]="['/producto', pDetalle.id]" 
-            target="_blank" 
-            class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
-            Abrir página del producto
-          </a>
-
+        <div class="card-footer bg-light py-3 px-4 border-top d-flex justify-content-end align-items-center">
           <button type="button" class="btn btn-secondary btn-sm" (click)="cerrarVistaRapida()">
             Cerrar
           </button>
