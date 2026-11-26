@@ -26,4 +26,8 @@ export class ReporteService {
   descartarReporte(id: number): Observable<Reporte> {
     return this.http.put<Reporte>(`${this.apiUrl}/${id}/descartar`, {});
   }
+
+  eliminarReporte(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

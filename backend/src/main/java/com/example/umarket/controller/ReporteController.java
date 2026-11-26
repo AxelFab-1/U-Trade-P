@@ -101,4 +101,13 @@ public class ReporteController {
         Reporte actualizado = reporteRepository.save(reporte);
         return ResponseEntity.ok(actualizado);
     }
+
+    @DeleteMapping("/{id:[0-9]+}")
+    public ResponseEntity<Void> eliminarReporte(@PathVariable Long id) {
+        if (reporteRepository.existsById(id)) {
+            reporteRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

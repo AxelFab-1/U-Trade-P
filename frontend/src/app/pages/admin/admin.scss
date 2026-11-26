@@ -324,4 +324,69 @@ $radio-tarjeta: 10px;
       }
     }
   }
+
+  // Elementos clickeables para Vista Rápida de Publicación
+  .clickable-preview {
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      opacity: 0.88;
+      transform: scale(1.04);
+    }
+  }
+
+  .clickable-title {
+    cursor: pointer;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: $color-primario !important;
+      text-decoration: underline;
+    }
+  }
+
+  // Modal de Vista Rápida de Publicación
+  .modal-backdrop-custom {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1055;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(2px);
+  }
+
+  .quick-view-modal-card {
+    max-width: 520px;
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+
+    .quick-view-modal-body {
+      overflow-y: auto;
+    }
+
+    @media (max-width: 640px) {
+      max-height: 94vh;
+      border-radius: 12px;
+
+      .card-header, .card-footer {
+        padding: 10px 14px !important;
+      }
+
+      .card-body {
+        padding: 14px !important;
+      }
+
+      .quick-view-img {
+        max-height: 180px !important;
+      }
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { ProductoService } from '../../core/services/producto.service';
@@ -13,7 +14,7 @@ import { formatearTiempoRelativo } from '../../core/utils/tiempo-relativo.util';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink],
   templateUrl: './admin.html',
   styleUrl: './admin.scss'
 })
@@ -38,6 +39,7 @@ export class Admin implements OnInit {
   readonly cargandoProductos = signal<boolean>(false);
   readonly filtroProducto = signal<string>('');
   readonly filtroUsuarioPublicaciones = signal<Usuario | null>(null);
+  readonly productoParaVistaRapida = signal<Producto | null>(null);
 
   // Signals para Moderación de Reportes
   readonly reportes = signal<Reporte[]>([]);
@@ -323,6 +325,32 @@ export class Admin implements OnInit {
         this.mensajeError.set('No se pudo eliminar el producto reportado.');
       }
     });
+  }
+
+  eliminarReporte(r: Reporte): void {
+    if (!r.id) return;
+    const confirmacion = confirm(`¿Eliminar el reporte #${r.id} del historial?`);
+    if (!confirmacion) return;
+
+    this.limpiarMensajes();
+    this.reporteService.eliminarReporte(r.id).subscribe({
+      next: () => {
+        this.reportes.update(lista => lista.filter(item => item.id !== r.id));
+        this.mensajeExito.set(`Reporte #${r.id} eliminado correctamente.`);
+      },
+      error: () => {
+        this.mensajeError.set('No se pudo eliminar el reporte.');
+      }
+    });
+  }
+
+  abrirVistaRapida(p?: Producto | null): void {
+    if (!p) return;
+    this.productoParaVistaRapida.set(p);
+  }
+
+  cerrarVistaRapida(): void {
+    this.productoParaVistaRapida.set(null);
   }
 
   formatearFechaRelativa(fecha?: string): string {
