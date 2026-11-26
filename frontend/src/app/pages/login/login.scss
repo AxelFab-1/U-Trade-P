@@ -150,9 +150,7 @@
 .login-options {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  justify-content: flex-start;
   font-size: 0.85rem;
 
   .remember-me {
@@ -168,16 +166,6 @@
       width: 1rem;
       height: 1rem;
       cursor: pointer;
-    }
-  }
-
-  .forgot-link {
-    color: var(--primary-color);
-    font-weight: 500;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
     }
   }
 }
