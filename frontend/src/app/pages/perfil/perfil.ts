@@ -48,7 +48,7 @@ export class Perfil implements OnInit {
     correo: '',
     telefono: '',
     carrera: '',
-    campus: '',
+    campus: 'Campus Piura',
     bio: ''
   });
 
@@ -96,7 +96,6 @@ export class Perfil implements OnInit {
     correo: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
     telefono: [{ value: '', disabled: true }, [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
     carrera: [{ value: '', disabled: true }, [Validators.required]],
-    campus: [{ value: '', disabled: true }, [Validators.required]],
     bio: [{ value: '', disabled: true }, [Validators.maxLength(200)]]
   });
 
@@ -132,7 +131,6 @@ export class Perfil implements OnInit {
     this.perfilForm.get('nombre')?.enable();
     this.perfilForm.get('telefono')?.enable();
     this.perfilForm.get('carrera')?.enable();
-    this.perfilForm.get('campus')?.enable();
     this.perfilForm.get('bio')?.enable();
   }
 
@@ -141,7 +139,6 @@ export class Perfil implements OnInit {
     this.perfilForm.get('nombre')?.disable();
     this.perfilForm.get('telefono')?.disable();
     this.perfilForm.get('carrera')?.disable();
-    this.perfilForm.get('campus')?.disable();
     this.perfilForm.get('bio')?.disable();
   }
 
@@ -151,7 +148,6 @@ export class Perfil implements OnInit {
       nombre: est.nombre,
       telefono: est.telefono,
       carrera: est.carrera,
-      campus: est.campus,
       bio: est.bio
     });
     this.desactivarEdicion();
@@ -204,7 +200,7 @@ export class Perfil implements OnInit {
 
         const campusReal = (perfilDb.campus && perfilDb.campus.trim().length > 0)
           ? perfilDb.campus
-          : (datosLocales?.campus || '');
+          : 'Campus Piura';
 
         const carreraReal = (perfilDb.carrera && perfilDb.carrera.trim().length > 0)
           ? perfilDb.carrera
@@ -224,7 +220,6 @@ export class Perfil implements OnInit {
           correo: datos.correo,
           telefono: datos.telefono,
           carrera: datos.carrera,
-          campus: datos.campus,
           bio: datos.bio
         });
       },
@@ -234,7 +229,7 @@ export class Perfil implements OnInit {
           correo: correoAuth,
           telefono: datosLocales?.telefono || '',
           carrera: datosLocales?.carrera || '',
-          campus: datosLocales?.campus || '',
+          campus: 'Campus Piura',
           bio: datosLocales?.bio || ''
         };
         this.estudiante.set(datos);
@@ -243,7 +238,6 @@ export class Perfil implements OnInit {
           correo: datos.correo,
           telefono: datos.telefono,
           carrera: datos.carrera,
-          campus: datos.campus,
           bio: datos.bio
         });
       }
@@ -515,7 +509,7 @@ export class Perfil implements OnInit {
     this.http.put<any>(`${environment.apiUrl}/auth/perfil`, {
       nombre: formValues.nombre,
       telefono: formValues.telefono || '',
-      campus: formValues.campus || '',
+      campus: 'Campus Piura',
       carrera: formValues.carrera || ''
     }).subscribe({
       next: (res) => {
@@ -524,7 +518,7 @@ export class Perfil implements OnInit {
           correo: res.correo || this.estudiante().correo,
           telefono: res.telefono || '',
           carrera: res.carrera || '',
-          campus: res.campus || '',
+          campus: res.campus || 'Campus Piura',
           bio: formValues.bio || ''
         };
 
@@ -548,7 +542,7 @@ export class Perfil implements OnInit {
           correo: this.estudiante().correo,
           telefono: formValues.telefono || '',
           carrera: formValues.carrera || '',
-          campus: formValues.campus || '',
+          campus: 'Campus Piura',
           bio: formValues.bio || ''
         };
 

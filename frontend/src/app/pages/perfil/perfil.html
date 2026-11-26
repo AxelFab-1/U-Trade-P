@@ -198,13 +198,8 @@
             </svg>
             <div class="alert-info-content">
               <strong>Completa tu información para publicar</strong>
-              <span>Para publicar en el catálogo, es necesario registrar tu número de teléfono, campus y carrera profesional.</span>
+              <span>Para publicar en el catálogo, es necesario registrar tu número de teléfono y carrera profesional.</span>
             </div>
-            @if (!modoEdicion()) {
-              <button type="button" class="btn-banner-action" (click)="activarEdicion()">
-                Editar Datos
-              </button>
-            }
           </div>
         }
 
@@ -273,26 +268,6 @@
             </div>
 
             <div class="form-field">
-              <label for="campus">Campus UTP *</label>
-              <select id="campus" formControlName="campus" class="field-input field-select" [class.is-invalid]="perfilForm.get('campus')?.invalid && perfilForm.get('campus')?.touched">
-                <option value="">Selecciona tu campus</option>
-                <option value="Campus Lima Centro">Campus Lima Centro</option>
-                <option value="Campus Lima Norte">Campus Lima Norte</option>
-                <option value="Campus San Juan de Lurigancho">Campus San Juan de Lurigancho</option>
-                <option value="Campus Ate">Campus Ate</option>
-                <option value="Campus Lima Sur">Campus Lima Sur</option>
-                <option value="Campus Arequipa">Campus Arequipa</option>
-                <option value="Campus Chiclayo">Campus Chiclayo</option>
-                <option value="Campus Huancayo">Campus Huancayo</option>
-              </select>
-              @if (perfilForm.get('campus')?.invalid && perfilForm.get('campus')?.touched) {
-                <span class="field-error-text">
-                  Selecciona tu campus UTP.
-                </span>
-              }
-            </div>
-
-            <div class="form-field full-col">
               <label for="carrera">Carrera Profesional *</label>
               <select id="carrera" formControlName="carrera" class="field-input field-select" [class.is-invalid]="perfilForm.get('carrera')?.invalid && perfilForm.get('carrera')?.touched">
                 <option value="">Selecciona tu carrera</option>

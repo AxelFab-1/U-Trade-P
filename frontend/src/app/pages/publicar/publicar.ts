@@ -53,12 +53,10 @@ export class Publicar implements OnInit {
     this.http.get<any>(`${environment.apiUrl}/auth/perfil`).subscribe({
       next: (perfil) => {
         const tel = perfil?.telefono?.trim();
-        const camp = perfil?.campus?.trim();
         const carr = perfil?.carrera?.trim();
 
         const faltantes: string[] = [];
         if (!tel) faltantes.push('Teléfono celular de contacto');
-        if (!camp) faltantes.push('Campus UTP');
         if (!carr) faltantes.push('Carrera profesional');
 
         this.datosFaltantes.set(faltantes);
@@ -67,7 +65,7 @@ export class Publicar implements OnInit {
       },
       error: () => {
         this.perfilCompleto.set(false);
-        this.datosFaltantes.set(['Teléfono celular de contacto', 'Campus UTP', 'Carrera profesional']);
+        this.datosFaltantes.set(['Teléfono celular de contacto', 'Carrera profesional']);
         this.cargandoPerfil.set(false);
       }
     });
