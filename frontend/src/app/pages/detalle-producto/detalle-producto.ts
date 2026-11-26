@@ -11,7 +11,6 @@ import { PagoYapeResponse } from '../../core/models/pedido.model';
 import { AuthService } from '../../core/services/auth.service';
 import { FavoritoService } from '../../core/services/favorito.service';
 import { ReporteService } from '../../core/services/reporte.service';
-import { formatearTiempoRelativo } from '../../core/utils/tiempo-relativo.util';
 import { imprimirComprobante } from '../../core/utils/comprobante-printer.util';
 import { coordinarEntregaWhatsApp } from '../../core/utils/whatsapp.util';
 import { ProductCard } from '../../components/product-card/product-card';
@@ -73,7 +72,6 @@ export class DetalleProducto implements OnInit, OnDestroy {
   readonly enlaceCopiado = signal<boolean>(false);
   private copyTimeout?: any;
 
-  readonly tiempoPublicacion = computed(() => formatearTiempoRelativo(this.producto()?.fechaPublicacion));
   readonly esComida = computed(() => this.producto()?.categoria === 'Comida');
   readonly esFavorito = computed(() => {
     const prod = this.producto();

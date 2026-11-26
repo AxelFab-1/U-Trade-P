@@ -86,7 +86,7 @@
   @media (max-width: 640px) {
     gap: 8px;
 
-    .date-text {
+    .btn-compartir {
       margin-left: 0;
     }
   }
@@ -117,22 +117,8 @@
     color: #DC2626;
   }
 
-  .date-text {
-    color: #1D4ED8;
-    background-color: #EFF6FF;
-    border: 1px solid #BFDBFE;
-    padding: 3px 10px;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-left: auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    white-space: nowrap;
-  }
-
   .btn-compartir {
+    margin-left: auto;
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -229,13 +215,6 @@
         animation: heartPulse 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
     }
-  }
-
-  [data-theme='dark'] & .date-text,
-  [data-theme='dark'] .date-text {
-    color: #93C5FD !important;
-    background-color: #1E3A8A !important;
-    border-color: #3B82F6 !important;
   }
 
   [data-theme='dark'] & .btn-compartir,

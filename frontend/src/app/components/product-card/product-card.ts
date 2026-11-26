@@ -2,7 +2,6 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Producto } from '../../core/models/producto.model';
-import { formatearTiempoRelativo } from '../../core/utils/tiempo-relativo.util';
 import { FavoritoService } from '../../core/services/favorito.service';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -23,10 +22,6 @@ export class ProductCard {
 
   // Comunicación Hijo -> Padre vía EventEmitter (Requisito Semana 12)
   @Output() verDetalle = new EventEmitter<number>();
-
-  get tiempoRelativo(): string {
-    return formatearTiempoRelativo(this.producto?.fechaPublicacion);
-  }
 
   get esFavorito(): boolean {
     return this.favoritoService.esFavorito(this.producto?.id);
